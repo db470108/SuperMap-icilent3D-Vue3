@@ -11,6 +11,12 @@
     window.viewer = viewer;
     let sceneUrl = 'http://localhost:8090/iserver/services/3D-WuhanWorkspace/rest/realspace';
     let promise = viewer.scene.open(sceneUrl);
+    viewer.imageryLayers.addImageryProvider(
+        new SuperMap3D.UrlTemplateImageryProvider({
+          url: 'https://api.mapbox.com/styles/v1/x02lgc32/cmcrn6jkm022901s12pbf1lnn/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoieDAybGdjMzIiLCJhIjoiY21jbTBpejVtMGNjczJscXFqOGc0OHgxMSJ9.g2aByb1XDIrtSF66FgfAtA',
+          tilingScheme: new SuperMap3D.WebMercatorTilingScheme(),
+        })
+    );
 
     SuperMap3D.when(promise, function () {
       // 获取到当前视窗场景图层中的建筑物图层
@@ -24,7 +30,7 @@
       waterLayer.waterParameter.waveStrength = 3;
       waterLayer.waterParameter.waveDirection = 45;
       waterLayer.waterParameter.wavebodySize = 2;
-      waterLayer.waterParameter.color = SuperMap3D.Color.CADETBLUE;
+      waterLayer.waterParameter.color = SuperMap3D.Color.DODGERBLUE;
     })
   })
 
