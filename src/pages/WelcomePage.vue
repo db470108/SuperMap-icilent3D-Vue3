@@ -69,6 +69,7 @@
   align-items: center;
   width: 80%;
   max-width: 1200px;
+  pointer-events: none;
 }
 
 .left {
@@ -83,12 +84,14 @@
   font-size: 48px;
   margin: 0;
   color: #00bfff;
+  user-select: none;
 }
 
 .left h2 {
   font-size: 24px;
   margin-top: 10px;
   color: #80d8ff;
+  user-select: none;
 }
 
 .left p {
@@ -96,6 +99,7 @@
   font-size: 16px;
   line-height: 1.6;
   color: #e0e0e0;
+  user-select: none;
 }
 
 .left button {
@@ -108,6 +112,7 @@
   border-radius: 8px;
   cursor: pointer;
   transition: 0.3s;
+  pointer-events: auto;
 }
 .left button:hover {
   transform: translateY(-3px);
@@ -136,6 +141,7 @@
   position: absolute;
   top: 300px;
   bottom: 200px;
+  user-select: none;
 }
 
 .spinner {
