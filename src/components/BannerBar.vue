@@ -5,9 +5,9 @@
 <template>
   <!-- 横幅条 -->
   <div class="banner-bar">
+
     <div class="banner-left">武汉市智慧城市平台</div>
-    <div class="banner-right">
-    </div>
+
   </div>
 
 </template>
@@ -40,13 +40,6 @@
   text-shadow: 0 0 8px rgba(51, 153, 255, 0.6);
   pointer-events: none;
   z-index: 1000;
-}
-
-.banner-right {
-  display: flex;
-  gap: 16px;
-  z-index: 1000;
-  pointer-events: auto;
 }
 
 </style>

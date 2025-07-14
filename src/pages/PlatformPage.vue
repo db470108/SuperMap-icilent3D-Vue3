@@ -4,17 +4,26 @@
       <!-- 主窗口，动态加载当前地图组件 -->
       <div class="main-container" id="main-container">
         <SceneViewer3D/>
-      </div>
 
-      <!-- 上层的横幅和按钮 -->
-      <BannerBar @selectMap="handleSelectMap"/>
+        <!-- 上层的横幅和按钮 -->
+        <BannerBar/>
+
+        <!-- 视角控制 -->
+        <ViewControl/>
+
+        <!-- 图层管理 -->
+        <LayerControl/>
+      </div>
 
     </div>
 </template>
 
 <script setup>
   import BannerBar from "@/components/BannerBar.vue";
+  import ViewControl from "@/components/ViewControl.vue";
+  import LayerControl from "@/components/LayerControl.vue";
   import SceneViewer3D from "@/components/SceneViewer3D.vue";
+
 </script>
 
 <style scoped>
