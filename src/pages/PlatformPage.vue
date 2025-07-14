@@ -3,6 +3,7 @@
 
       <!-- 主窗口，动态加载当前地图组件 -->
       <div class="main-container" id="main-container">
+        <!-- 图层加载 -->
         <SceneViewer3D/>
 
         <!-- 上层的横幅和按钮 -->
