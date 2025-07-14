@@ -3,7 +3,7 @@ import {createRouter, createWebHistory} from 'vue-router'
 
 // 引入一个个可能要呈现的组件
 import PlatformPage from "@/pages/PlatformPage.vue";
-import SceneViewer3D from "@/components/SceneViewer3D.vue";
+import Buildings3D from "@/components/SceneViewer3D.vue";
 import WelcomePage from "@/pages/WelcomePage.vue";
 
 const router = createRouter({
@@ -26,9 +26,9 @@ const router = createRouter({
 
         // 三维场景页面
         {
-            name: 'SceneViewer3D',
+            name: 'Buildings3D',
             path: '/scene3D',
-            component: SceneViewer3D,
+            component: Buildings3D,
         },
 
 
