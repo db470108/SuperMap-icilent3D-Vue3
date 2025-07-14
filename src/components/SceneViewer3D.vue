@@ -1,19 +1,22 @@
 <template>
   <div id="SceneViewer3D-Container" class="SceneViewer3D-Container">
-
   </div>
-
 
 </template>
 
 <script setup>
-  import {onMounted, onUnmounted} from "vue";
+import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 
   const SuperMap3D = window.SuperMap3D;
+  let viewer;
+
+  const props = defineProps({
+    showBuildings: Boolean,
+  })
 
 
   onMounted(()=>{
-    let viewer = new SuperMap3D.Viewer('SceneViewer3D-Container', {
+    viewer = new SuperMap3D.Viewer('SceneViewer3D-Container', {
       imageryProvider: false, // 取消默认底图
       sceneMode: SuperMap3D.SceneMode.SCENE3D
     });
@@ -37,7 +40,58 @@
 
     // 添加三维瓦片缓存
     let buildingsS3MUrl = 'http://localhost:8090/iserver/services/3D-local3DCache-buildings_3D/rest/realspace/datas/buildings_3D/config';
-    let promise = viewer.scene.addS3MTilesLayerByScp(buildingsS3MUrl, {name: '建筑物3D'});
+    let promise = viewer.scene.addS3MTilesLayerByScp(buildingsS3MUrl, {name: 'buildings_3D'});
+
+    // 设置建筑物的风格
+    promise.then((layer) => {
+      window.buildingsLayer = layer;
+      // 冷灰蓝主题
+      layer.style3D.enableFill = true;
+      layer.style3D.enableFillForeColor = true;
+      layer.style3D.fillForeColor = new SuperMap3D.Color(0.12, 0.2, 0.35, 0.88);
+
+      // 深灰描边
+      layer.style3D.enableLine = true;
+      layer.style3D.lineColor = new SuperMap3D.Color(0.3, 0.4, 0.6, 0.5);
+
+      // 阴影增强立体感
+      viewer.shadows = true;
+      viewer.scene.shadowMap.enabled = true;
+      viewer.scene.light = new SuperMap3D.DirectionalLight({
+        direction: new SuperMap3D.Cartesian3(-1, -1, -0.5)
+      });
+      console.log('白膜风格应用成功');
+
+      viewer.camera.setView({
+        destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.53, 3000), // 武汉中心点
+        orientation: {
+          heading: SuperMap3D.Math.toRadians(0),
+          pitch: SuperMap3D.Math.toRadians(-30), // 朝下看 45°
+          roll: 0
+        },
+      });
+    })
+  })
+
+  onUnmounted(() => {
+    if (window.viewer) {
+      window.viewer.destroy()
+      window.viewer = null
+    }
+  })
+
+  watch(()=>props.showBuildings, (value)=>{
+    if (value) {
+      loadBuildings()
+    } else {
+      unloadBuildings()
+    }
+  })
+
+  function loadBuildings () {
+    // 添加三维瓦片缓存
+    let buildingsS3MUrl = 'http://localhost:8090/iserver/services/3D-local3DCache-buildings_3D/rest/realspace/datas/buildings_3D/config';
+    let promise = viewer.scene.addS3MTilesLayerByScp(buildingsS3MUrl, {name: 'buildings_3D'});
 
     // 设置建筑物的风格
     promise.then((layer) => {
@@ -61,32 +115,11 @@
 
     })
 
-    SuperMap3D.when(promise, function () {
-      viewer.camera.setView({
-        destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.53, 3000), // 武汉中心点
-        orientation: {
-          heading: SuperMap3D.Math.toRadians(0),
-          pitch: SuperMap3D.Math.toRadians(-30), // 朝下看 45°
-          roll: 0
-        }
-      });
-      // 获取到当前视窗场景图层中的水系面图层，并通过waterParameter属性设置其样式
-      let waterLayer = viewer.scene.layers.find('水系面');
-      waterLayer.waterParameter.waveStrength = 3;
-      waterLayer.waterParameter.waveDirection = 45;
-      waterLayer.waterParameter.wavebodySize = 2;
-      waterLayer.waterParameter.color = SuperMap3D.Color.DODGERBLUE;
-    });
-
-
-  })
-
-  onUnmounted(() => {
-    if (window.viewer) {
-      window.viewer.destroy()
-      window.viewer = null
-    }
-  })
+  }
+  function unloadBuildings () {
+    viewer.scene.layers.remove('buildings_3D', false);
+    console.log("图层已移除");
+  }
 </script>
 
 <style scoped>

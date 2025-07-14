@@ -16,7 +16,8 @@
         heading: SuperMap3D.Math.toRadians(0),
         pitch: SuperMap3D.Math.toRadians(-30), // 朝下看 45°
         roll: 0
-      }
+      },
+      duration: 3
     });
   }
 
@@ -27,7 +28,8 @@
         heading: SuperMap3D.Math.toRadians(0),
         pitch: SuperMap3D.Math.toRadians(-90), // 朝下看 45°
         roll: 0
-      }
+      },
+      duration: 3
     });
   }
 

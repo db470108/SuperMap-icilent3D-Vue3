@@ -8,6 +8,12 @@ import { ref } from "vue";
     menuVisible.value = !menuVisible.value;
   }
 
+  const showBuildings = ref(true);
+  const emit = defineEmits(['toggle-layer'])
+
+  function changeBuildingsVisibility() {
+    emit('toggle-layer', showBuildings.value);
+  }
 </script>
 
 <template>
@@ -19,11 +25,7 @@ import { ref } from "vue";
       <ul v-if="menuVisible" class="dropdown-menu">
 
         <li>
-          <input type="checkbox">
-          矢量地图
-        </li>
-        <li>
-          <input type="checkbox">
+          <input type="checkbox" v-model="showBuildings" @change="changeBuildingsVisibility">
           建筑物
         </li>
 

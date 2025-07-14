@@ -4,7 +4,7 @@
       <!-- 主窗口，动态加载当前地图组件 -->
       <div class="main-container" id="main-container">
         <!-- 图层加载 -->
-        <SceneViewer3D/>
+        <SceneViewer3D :show-buildings="showBuildings"/>
 
         <!-- 上层的横幅和按钮 -->
         <BannerBar/>
@@ -13,7 +13,7 @@
         <ViewControl/>
 
         <!-- 图层管理 -->
-        <LayerControl/>
+        <LayerControl @toggle-layer="handleChangeBuildingsVisibility"/>
       </div>
 
     </div>
@@ -24,6 +24,14 @@
   import ViewControl from "@/components/ViewControl.vue";
   import LayerControl from "@/components/LayerControl.vue";
   import SceneViewer3D from "@/components/SceneViewer3D.vue";
+  import {ref} from "vue";
+
+  const showBuildings = ref(true);
+
+  function handleChangeBuildingsVisibility(val) {
+    showBuildings.value = val;
+    console.log("是否显示建筑物：", val);
+  }
 
 </script>
 
