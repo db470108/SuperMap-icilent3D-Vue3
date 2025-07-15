@@ -15,7 +15,7 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
   })
 
 
-  onMounted(()=>{
+  onMounted(()=> {
     viewer = new SuperMap3D.Viewer('SceneViewer3D-Container', {
       imageryProvider: false, // 取消默认底图
       sceneMode: SuperMap3D.SceneMode.SCENE3D
@@ -38,13 +38,51 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
         })
     );
 
+    // 添加场景(水系、公路、铁路)
+    let sceneUrl = 'http://localhost:8090/iserver/services/3D-WuhanScene/rest/realspace';
+    let sceneLayer = viewer.scene.open(sceneUrl);
+    SuperMap3D.when(sceneLayer, (layer) => {
+      window.sceneLayer = layer;
+      console.log("场景加载完毕");
+      console.log("场景属性：", layer);
+
+      let waterLayer = viewer.scene.layers.find('water@wuhan');
+      let roadsLayer = viewer.scene.layers.find('roads@wuhan');
+      let railwaysLayer = viewer.scene.layers.find('railways@wuhan');
+
+      // 设置水体的风格
+      if (waterLayer && waterLayer.waterParameter) {
+        console.log("水体属性：", waterLayer);
+        waterLayer.waterParameter.waveDirection = 45; // 设置水流方向为东北
+        waterLayer.waterParameter.color = SuperMap3D.Color.STEELBLUE; // 设置水体颜色
+        waterLayer.waterParameter.waveStrength = SuperMap3D.WaveStrength.MODERATE;
+        waterLayer.waterParameter.waterBodySize = SuperMap3D.WaterbodySize.MILD;
+        waterLayer.waterParameter.speed = 10;
+        waterLayer.waterParameter.fresnelPower = 0.6;
+      } else {
+        console.warn("未获取到水面图层或水面图层不具备waterParameter属性")
+      }
+
+      // 设置公路风格
+      if (roadsLayer) {
+        console.log("公路属性：", roadsLayer);
+      }
+
+      // 设置铁路风格
+      if (railwaysLayer) {
+        console.log("铁路属性：", railwaysLayer);
+      }
+    })
+
     // 添加建筑物三维瓦片缓存
     let buildingsS3MUrl = 'http://localhost:8090/iserver/services/3D-local3DCache-buildings_3D/rest/realspace/datas/buildings_3D/config';
-    let promise = viewer.scene.addS3MTilesLayerByScp(buildingsS3MUrl, {name: 'buildings_3D'});
+    let buildingsLayer = viewer.scene.addS3MTilesLayerByScp(buildingsS3MUrl, {name: 'buildings_3D'});
 
     // 设置建筑物的风格
-    promise.then((layer) => {
+    SuperMap3D.when(buildingsLayer, (layer) => {
       window.buildingsLayer = layer;
+      console.log("三维建筑物加载完毕");
+      console.log("三维建筑物属性：", layer);
       // 冷灰蓝主题
       layer.style3D.enableFill = true;
       layer.style3D.enableFillForeColor = true;
@@ -71,6 +109,10 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
         },
       });
     })
+
+
+
+
   })
 
   onUnmounted(() => {
