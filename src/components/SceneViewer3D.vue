@@ -38,7 +38,7 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
         })
     );
 
-    // 添加三维瓦片缓存
+    // 添加建筑物三维瓦片缓存
     let buildingsS3MUrl = 'http://localhost:8090/iserver/services/3D-local3DCache-buildings_3D/rest/realspace/datas/buildings_3D/config';
     let promise = viewer.scene.addS3MTilesLayerByScp(buildingsS3MUrl, {name: 'buildings_3D'});
 
