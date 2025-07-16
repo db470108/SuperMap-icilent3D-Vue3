@@ -47,19 +47,15 @@
 
   function handleChangeBuildingsVisibility(val) {
     showBuildings.value = val;
-    console.log("是否显示建筑物：", val);
   }
   function handleChangeWaterVisibility(val) {
     showWater.value = val;
-    console.log("是否显示水体：", val);
   }
   function handleChangeRoadsVisibility(val) {
     showRoads.value = val;
-    console.log("是否显示公路：", val);
   }
   function handleChangeRailwaysVisibility(val) {
     showRailways.value = val;
-    console.log("是否显示铁路：", val);
   }
 </script>
 
