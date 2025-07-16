@@ -12,6 +12,9 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 
   const props = defineProps({
     showBuildings: Boolean,
+    showWater: Boolean,
+    showRoads: Boolean,
+    showRailways: Boolean,
   })
 
 
@@ -52,6 +55,7 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 
       // 设置水体的风格
       if (waterLayer && waterLayer.waterParameter) {
+        console.log("水体加载完毕")
         console.log("水体属性：", waterLayer);
         waterLayer.waterParameter.waveDirection = 45; // 设置水流方向为东北
         waterLayer.waterParameter.color = SuperMap3D.Color.STEELBLUE; // 设置水体颜色
@@ -65,11 +69,13 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
 
       // 设置公路风格
       if (roadsLayer) {
+        console.log("公路加载完毕")
         console.log("公路属性：", roadsLayer);
       }
 
       // 设置铁路风格
       if (railwaysLayer) {
+        console.log("铁路加载完毕")
         console.log("铁路属性：", railwaysLayer);
       }
     })
@@ -81,8 +87,8 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
     // 设置建筑物的风格
     SuperMap3D.when(buildingsLayer, (layer) => {
       window.buildingsLayer = layer;
-      console.log("三维建筑物加载完毕");
-      console.log("三维建筑物属性：", layer);
+      console.log("建筑物加载完毕");
+      console.log("建筑物属性：", layer);
       // 冷灰蓝主题
       layer.style3D.enableFill = true;
       layer.style3D.enableFillForeColor = true;
@@ -98,7 +104,7 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
       viewer.scene.light = new SuperMap3D.DirectionalLight({
         direction: new SuperMap3D.Cartesian3(-1, -1, -0.5)
       });
-      console.log('白膜风格应用成功');
+      console.log('建筑物白膜风格应用成功');
 
       viewer.camera.setView({
         destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.53, 3000), // 武汉中心点
@@ -110,9 +116,6 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
       });
     })
 
-
-
-
   })
 
   onUnmounted(() => {
@@ -122,18 +125,17 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
     }
   })
 
-  watch(()=>props.showBuildings, (value)=>{
-    if (value) {
-      loadBuildings()
-    } else {
-      unloadBuildings()
-    }
-  })
 
+
+  // 建筑物图层的监视
+  watch(() => props.showBuildings, (value) => {
+    value ? loadBuildings() : unloadBuildings();
+  })
   function loadBuildings () {
     // 添加三维瓦片缓存
     let buildingsS3MUrl = 'http://localhost:8090/iserver/services/3D-local3DCache-buildings_3D/rest/realspace/datas/buildings_3D/config';
     let promise = viewer.scene.addS3MTilesLayerByScp(buildingsS3MUrl, {name: 'buildings_3D'});
+    console.log("建筑物图层已加载");
 
     // 设置建筑物的风格
     promise.then((layer) => {
@@ -153,15 +155,68 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
       viewer.scene.light = new SuperMap3D.DirectionalLight({
         direction: new SuperMap3D.Cartesian3(-1, -1, -0.5)
       });
-      console.log('白膜风格应用成功');
+      console.log('建筑物白膜风格应用成功');
 
     })
 
   }
   function unloadBuildings () {
     viewer.scene.layers.remove('buildings_3D', false);
-    console.log("图层已移除");
+    console.log("建筑物图层已卸载");
   }
+
+
+
+  // 水体图层的监视
+  watch(() => props.showWater, (value) => {
+    value ? loadWater() : unloadWater();
+  })
+  function loadWater () {
+    let waterLayer = viewer.scene.layers.find('water@wuhan');
+    waterLayer.visible = true;
+    console.log("水体图层已加载");
+  }
+  function unloadWater () {
+    let waterLayer = viewer.scene.layers.find('water@wuhan');
+    waterLayer.visible = false;
+    console.log("水体图层已卸载");
+  }
+
+
+
+  // 公路图层的监视
+  watch(() => props.showRoads, (value) => {
+    value ? loadRoads() : unloadRoads();
+  })
+  function loadRoads () {
+    let roadsLayer = viewer.scene.layers.find('roads@wuhan');
+    roadsLayer.visible = true;
+    console.log("公路图层已加载");
+  }
+  function unloadRoads () {
+    let roadsLayer = viewer.scene.layers.find('roads@wuhan');
+    roadsLayer.visible = false;
+    console.log("公路图层已卸载");
+  }
+
+
+
+  // 公路图层的监视
+  watch(() => props.showRailways, (value) => {
+    value ? loadRailways() : unloadRailways();
+  })
+  function loadRailways() {
+    let railwaysLayer = viewer.scene.layers.find('railways@wuhan');
+    railwaysLayer.visible = true;
+    console.log("铁路图层已加载");
+  }
+  function unloadRailways() {
+    let railwaysLayer = viewer.scene.layers.find('railways@wuhan');
+    railwaysLayer.visible = false;
+    console.log("铁路图层已卸载");
+  }
+
+
 </script>
 
 <style scoped>

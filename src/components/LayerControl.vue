@@ -9,11 +9,33 @@ import { ref } from "vue";
   }
 
   const showBuildings = ref(true);
-  const emit = defineEmits(['toggle-layer'])
+  const showWater = ref(true);
+  const showRoads = ref(true);
+  const showRailways = ref(true);
+
+  const emit = defineEmits([
+      'toggle-buildingsLayer',
+      'toggle-waterLayer',
+      'toggle-roadsLayer',
+      'toggle-railwaysLayer'
+  ]);
 
   function changeBuildingsVisibility() {
-    emit('toggle-layer', showBuildings.value);
+    emit('toggle-buildingsLayer', showBuildings.value);
   }
+
+  function changeWaterVisibility() {
+    emit('toggle-waterLayer', showWater.value);
+  }
+
+  function changeRoadsVisibility() {
+    emit('toggle-roadsLayer', showRoads.value);
+  }
+
+  function changeRailwaysVisibility() {
+    emit('toggle-railwaysLayer', showRailways.value);
+  }
+
 </script>
 
 <template>
@@ -30,13 +52,18 @@ import { ref } from "vue";
         </li>
 
         <li>
-          <input type="checkbox">
+          <input type="checkbox" v-model="showWater" @change="changeWaterVisibility">
           水系
         </li>
 
         <li>
-          <input type="checkbox">
-          交通网
+          <input type="checkbox" v-model="showRoads" @change="changeRoadsVisibility">
+          公路
+        </li>
+
+        <li>
+          <input type="checkbox" v-model="showRailways" @change="changeRailwaysVisibility">
+          铁路
         </li>
 
         <li class="warning">
