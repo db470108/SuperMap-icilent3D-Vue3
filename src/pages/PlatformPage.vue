@@ -24,6 +24,9 @@
             @toggle-roadsLayer="handleChangeRoadsVisibility"
             @toggle-railwaysLayer="handleChangeRailwaysVisibility"
         />
+
+        <!-- 时间显示 -->
+        <TimeDisplay/>
       </div>
 
     </div>
