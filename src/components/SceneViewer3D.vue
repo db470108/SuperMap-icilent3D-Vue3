@@ -59,9 +59,9 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
         console.log("水体属性：", waterLayer);
         waterLayer.waterParameter.waveDirection = 45; // 设置水流方向为东北
         waterLayer.waterParameter.color = SuperMap3D.Color.STEELBLUE; // 设置水体颜色
-        waterLayer.waterParameter.waveStrength = SuperMap3D.WaveStrength.MODERATE;
-        waterLayer.waterParameter.waterBodySize = SuperMap3D.WaterbodySize.MILD;
-        waterLayer.waterParameter.speed = 10;
+        waterLayer.waterParameter.waveStrength = SuperMap3D.WaveStrength.MILD;
+        waterLayer.waterParameter.waterBodySize = SuperMap3D.WaterbodySize.LARGE;
+        waterLayer.waterParameter.speed = 7;
         waterLayer.waterParameter.fresnelPower = 0.6;
       } else {
         console.warn("未获取到水面图层或水面图层不具备waterParameter属性")
