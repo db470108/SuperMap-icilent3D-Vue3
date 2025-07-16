@@ -38,6 +38,7 @@
   import LayerControl from "@/components/LayerControl.vue";
   import SceneViewer3D from "@/components/SceneViewer3D.vue";
   import {ref} from "vue";
+  import TimeDisplay from "@/components/TimeDisplay.vue";
 
   const showBuildings = ref(true);
   const showWater = ref(true);
