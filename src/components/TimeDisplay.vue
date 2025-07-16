@@ -25,7 +25,7 @@
     position: absolute;
     top: 65px;
     left: 20px;
-    font-size: 16px;
+    font-size: 14px;
     background-color: rgba(5, 10, 25, 0.6);;
     padding: 6px 12px;
     border-radius: 8px;
