@@ -23,15 +23,6 @@ const router = createRouter({
             component: PlatformPage,
         },
 
-
-        // 三维场景页面
-        {
-            name: 'Buildings3D',
-            path: '/scene3D',
-            component: Buildings3D,
-        },
-
-
         // 重定向，每次进入到网页时，跳转到首页
         {
             path:'/',
