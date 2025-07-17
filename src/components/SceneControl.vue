@@ -77,6 +77,11 @@ import {ref} from "vue";
           <input type="radio" value="snow" v-model="weatherMode" @change="changeWeatherMode">
           雪
         </li>
+
+        <li class="warning">
+          请勿频繁切换！
+        </li>
+
       </ul>
     </transition>
   </div>
@@ -134,7 +139,7 @@ import {ref} from "vue";
 }
 
 .warning {
-  color: #ff4d51;
+  color: rgba(67, 67, 67, 0.94);
   font-size: 12px;
   pointer-events: none;
 }

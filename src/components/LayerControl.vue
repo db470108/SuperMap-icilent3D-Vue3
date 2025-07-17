@@ -127,7 +127,7 @@ import { ref } from "vue";
 }
 
 .warning {
-  color: #ff4d51;
+  color: rgba(67, 67, 67, 0.94);
   font-size: 12px;
   pointer-events: none;
 }
