@@ -16,7 +16,8 @@ import {onMounted, onUnmounted, watch} from "vue";
     showRoads: Boolean,
     showRailways: Boolean,
     showSkyBox: Boolean,
-    skyBoxMode: String
+    skyBoxMode: String,
+    weatherMode: String
   })
 
   onMounted(()=> {
@@ -42,7 +43,6 @@ import {onMounted, onUnmounted, watch} from "vue";
         negativeZ : 'Day/Down.jpg'
       }
     });
-
 
     // 添加Mapbox矢量底图
     viewer.imageryLayers.addImageryProvider(
@@ -228,16 +228,22 @@ import {onMounted, onUnmounted, watch} from "vue";
       loadSkyBox(mode);
     }
   })
+
   function loadSkyBox (mode) {
     if (mode === 'day') {
       loadDaySkyBox();
     } else if (mode === 'night') {
       loadNightSkyBox();
     }
+
+    // 手动触发当前天气
+    applyWeather(props.weatherMode);
   }
+
   function unloadSkyBox () {
     let skyBox = viewer.scene.skyBox;
     skyBox.show = false;
+    loadClearWeather(); // 禁用天气效果
   }
 
   // 加载白天的天空盒
@@ -268,6 +274,37 @@ import {onMounted, onUnmounted, watch} from "vue";
         negativeZ : 'Night/Down.jpg'
       }
     });
+  }
+
+  // 天气的监视
+  watch(() => props.weatherMode, (weather) => {
+    applyWeather(weather);
+  })
+  // 天空盒的天气的切换
+  function applyWeather (weather) {
+    if (weather === 'clear') {
+      loadClearWeather();
+    } else if (weather === 'rain') {
+      loadRainWeather();
+    } else if (weather === 'snow') {
+      loadSnowWeather();
+    }
+  }
+  function loadClearWeather () {
+    viewer.scene.postProcessStages.rain.enabled = false;
+    viewer.scene.postProcessStages.snow.enabled = false;
+  }
+  function loadRainWeather () {
+    viewer.scene.postProcessStages.rain.enabled = true;
+    viewer.scene.postProcessStages.rain.uniforms.angle = 6.1;
+    viewer.scene.postProcessStages.rain.uniforms.speed = 5;
+    viewer.scene.postProcessStages.snow.enabled = false;
+  }
+  function loadSnowWeather () {
+    viewer.scene.postProcessStages.snow.enabled = true;
+    viewer.scene.postProcessStages.snow.uniforms.angle = 1;
+    viewer.scene.postProcessStages.snow.uniforms.speed = 1;
+    viewer.scene.postProcessStages.rain.enabled = false;
   }
 
 </script>
