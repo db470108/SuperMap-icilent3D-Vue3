@@ -10,7 +10,8 @@ import {ref} from "vue";
   // 向PlatformPage发送参数
   const emit = defineEmits([
       'changeSkyBox',
-      'changeDayOrNight'
+      'changeDayOrNight',
+      'changeWeatherMode'
   ]);
 
   // 默认开启天空盒
@@ -20,12 +21,19 @@ import {ref} from "vue";
     emit('changeSkyBox', showSkyBox.value);
   }
 
-  let skyBoxMode = ref('day');
+  // 默认为白天
+  const skyBoxMode = ref('day');
   // 切换白天或夜晚
   function changeDayOrNight() {
     emit('changeDayOrNight', skyBoxMode.value);
   }
 
+  // 默认为晴天
+  const weatherMode = ref('clear');
+  // 切换天气
+  function changeWeatherMode() {
+    emit('changeWeatherMode', weatherMode.value);
+  }
 
 </script>
 
@@ -41,6 +49,8 @@ import {ref} from "vue";
           天空盒
         </li>
 
+        <hr v-if="showSkyBox">
+
         <li v-if="showSkyBox">
           <input type="radio" value="day" v-model="skyBoxMode" @change="changeDayOrNight">
           白天
@@ -51,10 +61,22 @@ import {ref} from "vue";
           夜晚
         </li>
 
-        <li class="warning">
-          请勿频繁切换！
+        <hr v-if="showSkyBox">
+
+        <li v-if="showSkyBox">
+          <input type="radio" value="clear" v-model="weatherMode" @change="changeWeatherMode">
+          晴
         </li>
 
+        <li v-if="showSkyBox">
+          <input type="radio" value="rain" v-model="weatherMode" @change="changeWeatherMode">
+          雨
+        </li>
+
+        <li v-if="showSkyBox">
+          <input type="radio" value="snow" v-model="weatherMode" @change="changeWeatherMode">
+          雪
+        </li>
       </ul>
     </transition>
   </div>

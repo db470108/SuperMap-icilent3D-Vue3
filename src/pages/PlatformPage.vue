@@ -11,6 +11,7 @@
             :show-railways="showRailways"
             :show-sky-box="showSkyBox"
             :sky-box-mode="skyBoxMode"
+            :weather-mode="weatherMode"
         />
 
         <!-- 上层的横幅和按钮 -->
@@ -34,6 +35,7 @@
         <SceneControl
         @changeSkyBox="handleChangeSkyBox"
         @changeDayOrNight="handleChangeDayOrNight"
+        @changeWeatherMode="handleChangeWeatherMode"
         />
       </div>
 
@@ -73,14 +75,18 @@
 
   // 场景设置
   const showSkyBox = ref(true);
-  let skyBoxMode = ref("");
-
+  const skyBoxMode = ref("day");
+  const weatherMode = ref("clear");
   function handleChangeSkyBox(val) {
     showSkyBox.value = val;
   }
 
   function handleChangeDayOrNight(val) {
     skyBoxMode.value = val;
+  }
+
+  function handleChangeWeatherMode(val) {
+    weatherMode.value = val;
   }
 
 
