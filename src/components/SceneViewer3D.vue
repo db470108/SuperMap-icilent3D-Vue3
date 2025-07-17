@@ -15,8 +15,9 @@ import {onMounted, onUnmounted, watch} from "vue";
     showWater: Boolean,
     showRoads: Boolean,
     showRailways: Boolean,
+    showSkyBox: Boolean,
+    skyBoxMode: String
   })
-
 
   onMounted(()=> {
     viewer = new SuperMap3D.Viewer('SceneViewer3D-Container', {
@@ -28,6 +29,20 @@ import {onMounted, onUnmounted, watch} from "vue";
     viewer.scene.skyAtmosphere.show = false; // 开启大气层
     viewer.scene.globe.enableLighting = false; // 关闭地球光照，开启后画面明显卡顿
     viewer.scene.sun.show = true;
+
+    // 初始化天空盒
+    viewer.scene.skyBox = new SuperMap3D.SkyBox({
+      show: true,
+      sources: {
+        positiveX : 'Day/Right.jpg',
+        negativeX : 'Day/Left.jpg',
+        positiveY : 'Day/Front.jpg',
+        negativeY : 'Day/Back.jpg',
+        positiveZ : 'Day/Top.jpg',
+        negativeZ : 'Day/Down.jpg'
+      }
+    });
+
 
     // 添加Mapbox矢量底图
     viewer.imageryLayers.addImageryProvider(
@@ -46,8 +61,6 @@ import {onMounted, onUnmounted, watch} from "vue";
     let sceneLayer = viewer.scene.open(sceneUrl);
     SuperMap3D.when(sceneLayer, (layer) => {
       window.sceneLayer = layer;
-      console.log("场景加载完毕");
-      console.log("场景属性：", layer);
 
       let waterLayer = viewer.scene.layers.find('water@wuhan');
       let roadsLayer = viewer.scene.layers.find('roads@wuhan');
@@ -55,11 +68,9 @@ import {onMounted, onUnmounted, watch} from "vue";
 
       // 设置水体的风格
       if (waterLayer && waterLayer.waterParameter) {
-        console.log("水体加载完毕")
-        console.log("水体属性：", waterLayer);
         waterLayer.waterParameter.waveDirection = 45; // 设置水流方向为东北
         waterLayer.waterParameter.color = SuperMap3D.Color.STEELBLUE; // 设置水体颜色
-        waterLayer.waterParameter.waveStrength = SuperMap3D.WaveStrength.MILD;
+        waterLayer.waterParameter.waveStrength = SuperMap3D.WaveStrength.MODERATE;
         waterLayer.waterParameter.waterBodySize = SuperMap3D.WaterbodySize.LARGE;
         waterLayer.waterParameter.speed = 7;
         waterLayer.waterParameter.fresnelPower = 0.6;
@@ -87,8 +98,7 @@ import {onMounted, onUnmounted, watch} from "vue";
     // 设置建筑物的风格
     SuperMap3D.when(buildingsLayer, (layer) => {
       window.buildingsLayer = layer;
-      console.log("建筑物加载完毕");
-      console.log("建筑物属性：", layer);
+      console.log("建筑物：", layer);
       // 冷灰蓝主题
       layer.style3D.enableFill = true;
       layer.style3D.enableFillForeColor = true;
@@ -96,7 +106,8 @@ import {onMounted, onUnmounted, watch} from "vue";
 
       // 深灰描边
       layer.style3D.enableLine = true;
-      layer.style3D.lineColor = new SuperMap3D.Color(0.3, 0.4, 0.6, 0.5);
+      layer.style3D.lineColor = new SuperMap3D.Color(0, 0.8, 1, 1);
+      layer.style3D.lineWidth = 2;
 
       // 阴影增强立体感
       viewer.shadows = true;
@@ -104,7 +115,6 @@ import {onMounted, onUnmounted, watch} from "vue";
       viewer.scene.light = new SuperMap3D.DirectionalLight({
         direction: new SuperMap3D.Cartesian3(-1, -1, -0.5)
       });
-      console.log('建筑物白膜风格应用成功');
 
       viewer.camera.setView({
         destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.53, 3000), // 武汉中心点
@@ -135,7 +145,6 @@ import {onMounted, onUnmounted, watch} from "vue";
     // 添加三维瓦片缓存
     let buildingsS3MUrl = 'http://localhost:8090/iserver/services/3D-local3DCache-buildings_3D/rest/realspace/datas/buildings_3D/config';
     let promise = viewer.scene.addS3MTilesLayerByScp(buildingsS3MUrl, {name: 'buildings_3D'});
-    console.log("建筑物图层已加载");
 
     // 设置建筑物的风格
     promise.then((layer) => {
@@ -155,14 +164,12 @@ import {onMounted, onUnmounted, watch} from "vue";
       viewer.scene.light = new SuperMap3D.DirectionalLight({
         direction: new SuperMap3D.Cartesian3(-1, -1, -0.5)
       });
-      console.log('建筑物白膜风格应用成功');
 
     })
 
   }
   function unloadBuildings () {
     viewer.scene.layers.remove('buildings_3D', false);
-    console.log("建筑物图层已卸载");
   }
 
 
@@ -174,12 +181,10 @@ import {onMounted, onUnmounted, watch} from "vue";
   function loadWater () {
     let waterLayer = viewer.scene.layers.find('water@wuhan');
     waterLayer.visible = true;
-    console.log("水体图层已加载");
   }
   function unloadWater () {
     let waterLayer = viewer.scene.layers.find('water@wuhan');
     waterLayer.visible = false;
-    console.log("水体图层已卸载");
   }
 
 
@@ -191,12 +196,10 @@ import {onMounted, onUnmounted, watch} from "vue";
   function loadRoads () {
     let roadsLayer = viewer.scene.layers.find('roads@wuhan');
     roadsLayer.visible = true;
-    console.log("公路图层已加载");
   }
   function unloadRoads () {
     let roadsLayer = viewer.scene.layers.find('roads@wuhan');
     roadsLayer.visible = false;
-    console.log("公路图层已卸载");
   }
 
 
@@ -204,18 +207,68 @@ import {onMounted, onUnmounted, watch} from "vue";
   // 公路图层的监视
   watch(() => props.showRailways, (value) => {
     value ? loadRailways() : unloadRailways();
-  })
+  });
   function loadRailways() {
     let railwaysLayer = viewer.scene.layers.find('railways@wuhan');
     railwaysLayer.visible = true;
-    console.log("铁路图层已加载");
   }
   function unloadRailways() {
     let railwaysLayer = viewer.scene.layers.find('railways@wuhan');
     railwaysLayer.visible = false;
-    console.log("铁路图层已卸载");
   }
 
+  // 是否开启天空盒的监视
+  watch(() => props.showSkyBox, (visible) => {
+    visible ? loadSkyBox(props.skyBoxMode) : unloadSkyBox();
+  })
+
+  // 天空盒的模式(白天/夜晚)
+  watch(() => props.skyBoxMode, (mode) => {
+    if (props.showSkyBox) {
+      loadSkyBox(mode);
+    }
+  })
+  function loadSkyBox (mode) {
+    if (mode === 'day') {
+      loadDaySkyBox();
+    } else if (mode === 'night') {
+      loadNightSkyBox();
+    }
+  }
+  function unloadSkyBox () {
+    let skyBox = viewer.scene.skyBox;
+    skyBox.show = false;
+  }
+
+  // 加载白天的天空盒
+  function loadDaySkyBox () {
+    viewer.scene.skyBox = new SuperMap3D.SkyBox({
+      show: true,
+      sources: {
+        positiveX : 'Day/Right.jpg',
+        negativeX : 'Day/Left.jpg',
+        positiveY : 'Day/Front.jpg',
+        negativeY : 'Day/Back.jpg',
+        positiveZ : 'Day/Top.jpg',
+        negativeZ : 'Day/Down.jpg'
+      }
+    });
+  }
+
+  // 加载夜晚的天空盒子
+  function loadNightSkyBox () {
+    viewer.scene.skyBox = new SuperMap3D.SkyBox({
+      show: true,
+      sources: {
+        positiveX : 'Night/Right.jpg',
+        negativeX : 'Night/Left.jpg',
+        positiveY : 'Night/Front.jpg',
+        negativeY : 'Night/Back.jpg',
+        positiveZ : 'Night/Top.jpg',
+        negativeZ : 'Night/Down.jpg'
+      }
+    });
+  }
 
 </script>
 
