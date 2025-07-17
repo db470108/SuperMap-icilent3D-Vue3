@@ -5,7 +5,7 @@
 </template>
 
 <script setup>
-import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
+import {onMounted, onUnmounted, watch} from "vue";
 
   const SuperMap3D = window.SuperMap3D;
   let viewer;
