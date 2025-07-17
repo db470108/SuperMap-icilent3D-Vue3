@@ -25,7 +25,7 @@ import {onMounted, onUnmounted, ref, watch, watchEffect} from "vue";
     });
     window.viewer = viewer;
 
-    viewer.scene.skyAtmosphere.show = true; // 开启大气层
+    viewer.scene.skyAtmosphere.show = false; // 开启大气层
     viewer.scene.globe.enableLighting = false; // 关闭地球光照，开启后画面明显卡顿
     viewer.scene.sun.show = true;
 
