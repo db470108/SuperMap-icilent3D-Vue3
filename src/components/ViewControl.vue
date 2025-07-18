@@ -37,9 +37,9 @@
 
 <template>
   <div class="view-control">
-    <button class="glow-button" @click="toggleMenu">视角控制</button>
-    <transition name="fade-slide">
-      <ul v-if="menuVisible" class="dropdown-menu">
+    <button class="glow-button" :class="{ active: menuVisible }" @click="toggleMenu">视角控制</button>
+    <transition name="fade-slide" mode="out-in">
+      <ul v-show="menuVisible" class="dropdown-menu">
         <li @click="resetView">默认视角</li>
         <li @click="topView">垂直俯视</li>
       </ul>
@@ -52,60 +52,98 @@
   display: inline-block;
   z-index: 2000;
   position: absolute;
-  top: 8px;
-  right: 160px;
+  top: 5px;
+  right: 160px; /* 根据实际情况调整 */
   user-select: none;
 }
 
 .glow-button {
-  background-color: #1e3c72;
-  color: #fff;
-  padding: 10px 14px;
+  background: linear-gradient(45deg, #00bfff80, #0077ff80);
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.3s, box-shadow 0.3s;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
   font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
 .glow-button:hover {
-  background-color: #2a4fa3;
-  box-shadow: 0 0 10px rgba(42, 79, 163, 0.6);
+  transform: scale(1.1);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.glow-button.active {
+  background: linear-gradient(45deg, #ffc40080, #004f9980); /* 半透明背景颜色 */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* 更强的阴影效果 */
+  transform: scale(1.1); /* 保持按钮放大效果 */
 }
 
 .dropdown-menu {
   position: absolute;
-  top: 45px;
+  top: 50px; /* 调整这个值以避免与其他菜单重叠 */
   left: 0;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  background: linear-gradient(135deg, #ffffff4d, #f8f9fa4d);
+  border-radius: 12px;
+  padding: 8px 10px; /* 调整内边距 */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
   list-style: none;
-  padding: 8px 0;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
+  overflow: hidden;
+  animation: fadeInScale 0.3s ease-in-out;
 }
 
 .dropdown-menu li {
-  padding: 8px 12px;
+  display: flex; /* 确保文字水平显示 */
+  align-items: center;
+  padding: 8px 15px; /* 调整内边距 */
+  font-size: 14px; /* 调整字体大小 */
+  color: #333;
+  transition: background 0.3s, transform 0.2s;
   cursor: pointer;
-  white-space: nowrap;
 }
 
 .dropdown-menu li:hover {
-  background-color: #f0f0f0;
-  color: #1e3c72;
+  background: rgba(0, 119, 255, 0.1);
+  transform: translateX(2px);
 }
 
-/* 过渡动画样式 */
-.fade-slide-enter-active,
+.dropdown-menu input[type="checkbox"],
+.dropdown-menu input[type="radio"] {
+  margin-right: 10px;
+}
+
+.dropdown-menu hr {
+  margin: 4px 0;
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu li {
+  color: #000000;
+}
+
+/* 动画增强 */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.fade-slide-enter-active {
+  animation: fadeInScale 0.3s ease;
+}
 .fade-slide-leave-active {
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.fade-slide-enter-from,
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
+  animation: fadeInScale 0.3s reverse;
 }
 </style>
