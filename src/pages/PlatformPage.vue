@@ -37,6 +37,9 @@
         @changeDayOrNight="handleChangeDayOrNight"
         @changeWeatherMode="handleChangeWeatherMode"
         />
+
+        <!-- 全屏按钮 -->
+        <FullScreen/>
       </div>
 
     </div>
@@ -50,6 +53,7 @@
   import {ref} from "vue";
   import TimeDisplay from "@/components/TimeDisplay.vue";
   import SceneControl from "@/components/SceneControl.vue";
+  import FullScreen from "@/components/FullScreen.vue";
 
 
   // 图层管理
