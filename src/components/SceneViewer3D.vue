@@ -10,6 +10,7 @@ import {onMounted, onUnmounted, watch} from "vue";
   const SuperMap3D = window.SuperMap3D;
   let viewer;
 
+  // 接受PlatformPage传来的参数
   const props = defineProps({
     showBuildings: Boolean,
     showWater: Boolean,
