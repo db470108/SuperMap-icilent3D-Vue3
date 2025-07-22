@@ -12,6 +12,7 @@
             :show-sky-box="showSkyBox"
             :sky-box-mode="skyBoxMode"
             :weather-mode="weatherMode"
+            @select-building="handleSelectBuilding"
         />
 
         <!-- 上层的横幅和按钮 -->
@@ -40,6 +41,13 @@
 
         <!-- 全屏按钮 -->
         <FullScreen/>
+
+        <!-- 弹窗组件 -->
+        <BuildingInfoWindow
+            v-if="selectedBuilding"
+            :building="selectedBuilding"
+            @close="selectedBuilding = null"
+        />
       </div>
 
     </div>
@@ -54,6 +62,7 @@
   import TimeDisplay from "@/components/TimeDisplay.vue";
   import SceneControl from "@/components/SceneControl.vue";
   import FullScreen from "@/components/FullScreen.vue";
+  import BuildingInfoWindow from "@/components/BuildingInfoWindow.vue";
 
 
   // 图层管理
@@ -91,6 +100,16 @@
 
   function handleChangeWeatherMode(val) {
     weatherMode.value = val;
+  }
+
+
+
+  // 建筑物信息弹窗
+  const selectedBuilding = ref(null);
+
+  function handleSelectBuilding(building) {
+    console.log("接收到建筑信息:", building); // ✅ 调试输出
+    selectedBuilding.value = building;
   }
 
 

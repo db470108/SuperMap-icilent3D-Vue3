@@ -21,6 +21,8 @@ import {onMounted, onUnmounted, watch} from "vue";
     weatherMode: String
   })
 
+  const emit = defineEmits(['selectBuilding']);
+  
   onMounted(()=> {
     viewer = new SuperMap3D.Viewer('SceneViewer3D-Container', {
       imageryProvider: false, // 取消默认底图
@@ -125,7 +127,31 @@ import {onMounted, onUnmounted, watch} from "vue";
           roll: 0
         },
       });
+
+      // 添加点击事件监听，使用 pick 方法获取点击建筑物的属性信息
+      const handler = new SuperMap3D.ScreenSpaceEventHandler(viewer.scene.canvas);
+
+      handler.setInputAction((movement) => {
+        // 清除之前的选中状态
+        const buildingsLayer = viewer.scene.layers.find('buildings_3D');
+        if (buildingsLayer && buildingsLayer.clearSelection) {
+          buildingsLayer.clearSelection();
+        }
+
+        // 执行 pick 操作
+        let picked = viewer.scene.pick(movement.position);
+        console.log("pick到的对象是", picked);
+
+        if (!picked) return; // 确保pick到了有效对象
+        let attr = buildingsLayer.getAttributesById(picked.id).then((attr) => {
+          emit('select-building', attr);
+        })
+
+      }, SuperMap3D.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+
     })
+
 
   })
 
