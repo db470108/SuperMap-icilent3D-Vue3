@@ -140,6 +140,7 @@ import { ref } from "vue";
   z-index: 1000;
   overflow: hidden;
   animation: fadeInScale 0.3s ease-in-out;
+  backdrop-filter: blur(10px);
 }
 
 .dropdown-menu li {

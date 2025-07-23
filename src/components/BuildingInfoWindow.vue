@@ -84,6 +84,11 @@
   z-index: 1000;
 }
 
+.close-btn:hover {
+  color: #e15151;
+  transform: scale(1.1);
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
