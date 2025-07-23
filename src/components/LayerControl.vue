@@ -1,6 +1,11 @@
 <script setup>
 import { ref } from "vue";
 
+  // 根据建筑物信息窗口弹出与否，判断是否禁用按钮
+  const props = defineProps({
+    disableButtons: Boolean
+  });
+
   // 控制菜单可见性
   const menuVisible = ref(false);
 
@@ -41,7 +46,14 @@ import { ref } from "vue";
 <template>
 
   <div class="layer-control">
-    <button class="glow-button" :class="{ active: menuVisible }" @click="toggleMenu">图层管理</button>
+    <button
+        class="glow-button"
+        :class="{ active: menuVisible }"
+        @click="toggleMenu"
+        :disabled="props.disableButtons"
+    >
+      图层管理
+    </button>
 
     <transition name="fade-slide" mode="out-in">
       <ul v-show="menuVisible" class="dropdown-menu">
@@ -108,6 +120,12 @@ import { ref } from "vue";
   background: linear-gradient(45deg, #ffc40080, #004f9980); /* 半透明背景颜色 */
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* 更强的阴影效果 */
   transform: scale(1.1); /* 保持按钮放大效果 */
+}
+
+.glow-button:disabled {
+  background-color: #272727;
+  color: #878787;
+  pointer-events: none;
 }
 
 .dropdown-menu {

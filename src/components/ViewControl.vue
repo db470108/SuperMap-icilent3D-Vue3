@@ -7,6 +7,11 @@
     menuVisible.value = !menuVisible.value;
   }
 
+  // 根据建筑物信息窗口弹出与否，判断是否禁用按钮
+  const props = defineProps({
+    disableButtons: Boolean
+  });
+
   const SuperMap3D = window.SuperMap3D;
 
   function resetView() {
@@ -37,7 +42,14 @@
 
 <template>
   <div class="view-control">
-    <button class="glow-button" :class="{ active: menuVisible }" @click="toggleMenu">视角控制</button>
+    <button
+        class="glow-button"
+        :class="{ active: menuVisible }"
+        @click="toggleMenu"
+        :disabled="props.disableButtons"
+    >
+      视角控制
+    </button>
     <transition name="fade-slide" mode="out-in">
       <ul v-show="menuVisible" class="dropdown-menu">
         <li @click="resetView">默认视角</li>
@@ -82,6 +94,12 @@
   background: linear-gradient(45deg, #ffc40080, #004f9980); /* 半透明背景颜色 */
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* 更强的阴影效果 */
   transform: scale(1.1); /* 保持按钮放大效果 */
+}
+
+.glow-button:disabled {
+  background-color: #272727;
+  color: #878787;
+  pointer-events: none;
 }
 
 .dropdown-menu {
