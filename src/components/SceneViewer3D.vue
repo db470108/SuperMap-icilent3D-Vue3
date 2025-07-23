@@ -6,6 +6,7 @@
 
 <script setup>
 import {onMounted, onUnmounted, watch} from "vue";
+import axios from "@/utils/axios.js";
 
   const SuperMap3D = window.SuperMap3D;
   let viewer;
@@ -18,7 +19,7 @@ import {onMounted, onUnmounted, watch} from "vue";
     showRailways: Boolean,
     showSkyBox: Boolean,
     skyBoxMode: String,
-    weatherMode: String
+    weatherMode: String,
   })
 
   const emit = defineEmits(['selectBuilding']);
@@ -132,21 +133,25 @@ import {onMounted, onUnmounted, watch} from "vue";
       const handler = new SuperMap3D.ScreenSpaceEventHandler(viewer.scene.canvas);
 
       handler.setInputAction((movement) => {
-        // 清除之前的选中状态
-        const buildingsLayer = viewer.scene.layers.find('buildings_3D');
-        if (buildingsLayer && buildingsLayer.clearSelection) {
-          buildingsLayer.clearSelection();
+        // 使用 viewer.pick 选取建筑物要素
+        let pickedFeature = viewer.scene.pick(movement.position);
+
+        if (pickedFeature.primitive._name === 'buildings_3D') {
+          let pickedId = pickedFeature.id;
+          console.log("点击的id：", pickedId)
+          async function fetchBuildingInfo(pickedId) {
+            const response = await axios({
+              method: 'GET',
+              url: `/buildings/${pickedId}`
+            })
+            console.log("返回的属性信息：", response.data)
+            emit('select-building', response.data)
+          }
+          fetchBuildingInfo(pickedId)
+
+        } else {
+          console.warn("未点击到建筑物")
         }
-
-        // 执行 pick 操作
-        let picked = viewer.scene.pick(movement.position);
-        console.log("pick到的对象是", picked);
-
-        if (!picked) return; // 确保pick到了有效对象
-        let attr = buildingsLayer.getAttributesById(picked.id).then((attr) => {
-          emit('select-building', attr);
-        })
-
       }, SuperMap3D.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
 

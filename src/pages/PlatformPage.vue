@@ -19,7 +19,9 @@
         <BannerBar/>
 
         <!-- 视角控制 -->
-        <ViewControl/>
+        <ViewControl
+        :disableButtons="isBuildingInfoWindowOpen"
+        />
 
         <!-- 图层管理 -->
         <LayerControl
@@ -27,6 +29,7 @@
             @toggle-waterLayer="handleChangeWaterVisibility"
             @toggle-roadsLayer="handleChangeRoadsVisibility"
             @toggle-railwaysLayer="handleChangeRailwaysVisibility"
+            :disableButtons="isBuildingInfoWindowOpen"
         />
 
         <!-- 时间显示 -->
@@ -37,6 +40,7 @@
         @changeSkyBox="handleChangeSkyBox"
         @changeDayOrNight="handleChangeDayOrNight"
         @changeWeatherMode="handleChangeWeatherMode"
+        :disableButtons="isBuildingInfoWindowOpen"
         />
 
         <!-- 全屏按钮 -->
@@ -46,7 +50,7 @@
         <BuildingInfoWindow
             v-if="selectedBuilding"
             :building="selectedBuilding"
-            @close="selectedBuilding = null"
+            @close="handleClose"
         />
       </div>
 
@@ -107,9 +111,18 @@
   // 建筑物信息弹窗
   const selectedBuilding = ref(null);
 
+  // 弹窗状态
+  const isBuildingInfoWindowOpen = ref(false);
+
   function handleSelectBuilding(building) {
-    console.log("接收到建筑信息:", building); // ✅ 调试输出
+    console.log("接收到建筑信息:", building); // 调试输出
     selectedBuilding.value = building;
+    isBuildingInfoWindowOpen.value = true;
+  }
+
+  function handleClose() {
+    selectedBuilding.value = null;
+    isBuildingInfoWindowOpen.value = false;
   }
 
 
