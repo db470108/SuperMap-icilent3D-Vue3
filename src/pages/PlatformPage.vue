@@ -19,9 +19,7 @@
         <BannerBar/>
 
         <!-- 视角控制 -->
-        <ViewControl
-        :disableButtons="isBuildingInfoWindowOpen"
-        />
+        <ViewControl/>
 
         <!-- 图层管理 -->
         <LayerControl
@@ -29,7 +27,6 @@
             @toggle-waterLayer="handleChangeWaterVisibility"
             @toggle-roadsLayer="handleChangeRoadsVisibility"
             @toggle-railwaysLayer="handleChangeRailwaysVisibility"
-            :disableButtons="isBuildingInfoWindowOpen"
         />
 
         <!-- 时间显示 -->
@@ -37,10 +34,9 @@
 
         <!-- 场景设置 -->
         <SceneControl
-        @changeSkyBox="handleChangeSkyBox"
-        @changeDayOrNight="handleChangeDayOrNight"
-        @changeWeatherMode="handleChangeWeatherMode"
-        :disableButtons="isBuildingInfoWindowOpen"
+            @changeSkyBox="handleChangeSkyBox"
+            @changeDayOrNight="handleChangeDayOrNight"
+            @changeWeatherMode="handleChangeWeatherMode"
         />
 
         <!-- 全屏按钮 -->
@@ -52,6 +48,9 @@
             :building="selectedBuilding"
             @close="handleClose"
         />
+
+        <!-- 搜索框 -->
+        <Search @changeSearchMode="handleChangeSearchMode"/>
       </div>
 
     </div>
@@ -67,6 +66,7 @@
   import SceneControl from "@/components/SceneControl.vue";
   import FullScreen from "@/components/FullScreen.vue";
   import BuildingInfoWindow from "@/components/BuildingInfoWindow.vue";
+  import Search from "@/components/Search.vue";
 
 
   // 图层管理
@@ -105,6 +105,7 @@
   function handleChangeWeatherMode(val) {
     weatherMode.value = val;
   }
+
 
 
 

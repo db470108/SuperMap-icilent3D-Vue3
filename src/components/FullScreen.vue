@@ -46,33 +46,56 @@
 </script>
 
 <template>
-  <button
-      class="fullscreen-button"
-      @click="toggleFullScreen"
-      :title="isFullscreen ? '退出全屏' : '进入全屏'"
-  >
-    <font-awesome-icon :icon="isFullscreen ? 'compress' : 'expand'"/>
-  </button>
+  <div class="fullscreen">
+    <button
+        class="icon-button"
+        @click="toggleFullScreen"
+        :title="isFullscreen ? '退出全屏' : '进入全屏'"
+    >
+      <font-awesome-icon :icon="isFullscreen ? 'compress' : 'expand'" class="icon-border"/>
+    </button>
+  </div>
 </template>
 
 <style scoped>
-.fullscreen-button {
+.fullscreen {
+  display: inline-block;
+  z-index: 2000;
   position: absolute;
-  top: 12px;
+  top: 7px;
   right: 10px;
-  background: rgba(5, 10, 25, 0.7);
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 16px;
-  z-index: 1000;
-  transition: all 0.2s ease-in-out;
+  user-select: none;
 }
 
-.fullscreen-button:hover {
-  background: rgba(5, 10, 25, 0.9);
-  transform: scale(1.1);
+.icon-button {
+  all: unset;
+  cursor: pointer;
+}
+
+.icon-button:disabled {
+  pointer-events: none;
+}
+
+.icon-border {
+  font-size: 20px;
+  color: white;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  padding: 3px;
+  transition: border-color 0.3s ease;
+}
+
+/* 悬停时变边框颜色 */
+.icon-border:hover {
+  border-color: #4aa8a8;
+}
+
+/* 激活时边框颜色 */
+.icon-border.active {
+  border-color: #4aa8a8;
+}
+
+.icon-button:disabled {
+  pointer-events: none;
 }
 </style>

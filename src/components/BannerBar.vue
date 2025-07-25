@@ -17,7 +17,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 60px;
+  height: 45px;
   width: 100%;
   display: flex;
   align-items: center;
@@ -34,7 +34,7 @@
 }
 
 .banner-left {
-  font-size: 25px;
+  font-size: 22px;
   font-weight: bold;
   color: whitesmoke;
   text-shadow: 0 0 8px rgba(51, 153, 255, 0.6);

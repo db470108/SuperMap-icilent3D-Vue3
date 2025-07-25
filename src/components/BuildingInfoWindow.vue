@@ -23,9 +23,9 @@
       <button class="close-btn" @click="close">✖</button>
       <h3>建筑信息</h3>
       <ul>
-        <li><strong>名称：</strong>{{ props.building.type === "未录入" ? "未知" : props.building.name }}</li>
-        <li><strong>楼层数：</strong>{{ props.building.type === "未录入" ? "未知" : props.building.floor }}</li>
-        <li><strong>高度：</strong>{{ props.building.type === "未录入" ? "未知" : props.building.height + " 米"}}</li>
+        <li><strong>名称：</strong>{{ props.building.type === "未录入" ? "未知" : props.building.name }} </li>
+        <li><strong>楼层数：</strong>{{ props.building.type === "未录入" ? "未知" : props.building.floor }} </li>
+        <li><strong>高度：</strong>{{ props.building.type === "未录入" ? "未知" : props.building.height + " 米"}} </li>
         <li><strong>录入状态：</strong>{{ props.building.type }}</li>
       </ul>
     </div>
@@ -41,11 +41,10 @@
 }
 
 .info-card {
-  /*background: rgba(5, 10, 25, 0.95);*/
-  background: linear-gradient(135deg, #ffffff4d, #f8f9fa4d);
+  background: rgba(255, 255, 255, 0.08);
   padding: 16px;
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   color: white;
   width: 240px;
   animation: fadeIn 0.3s ease;
@@ -78,7 +77,7 @@
   right: 8px;
   background: transparent;
   border: none;
-  color: black;
+  color: rgb(9, 27, 58);
   font-size: 16px;
   cursor: pointer;
   z-index: 1000;

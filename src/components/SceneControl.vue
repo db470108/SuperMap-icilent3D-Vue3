@@ -1,11 +1,6 @@
 <script setup>
 import {ref} from "vue";
 
-  // 根据建筑物信息窗口弹出与否，判断是否禁用按钮
-  const props = defineProps({
-    disableButtons: Boolean
-  });
-
   // 控制菜单可见性
   const menuVisible = ref(false);
   function toggleMenu(){
@@ -46,51 +41,47 @@ import {ref} from "vue";
 
   <div class="scene-control">
     <button
-        class="glow-button"
-        :class="{active: menuVisible}"
+        class="icon-button"
         @click="toggleMenu"
-        :disabled="props.disableButtons"
+        :title="'场景设置'"
     >
-      场景设置
+      <font-awesome-icon icon="cloud" :class="['icon-border', { active: menuVisible }]"/>
     </button>
     <transition name="fade-slide" mode="out-in">
-      <ul class="dropdown-menu" v-show="menuVisible">
-
-        <li>
+      <div class="skybox-menu" v-if="menuVisible">
+        <label>
           <input type="checkbox" v-model="showSkyBox" @change="changeSkyBox">
           天空
-        </li>
+        </label>
 
-        <hr v-if="showSkyBox">
-
-        <li v-if="showSkyBox">
+        <label v-if="showSkyBox">
           <input type="radio" value="day" v-model="skyBoxMode" @change="changeDayOrNight">
           白天
-        </li>
+        </label>
 
-        <li v-if="showSkyBox">
+        <label v-if="showSkyBox">
           <input type="radio" value="night" v-model="skyBoxMode" @change="changeDayOrNight">
           夜晚
-        </li>
+        </label>
 
-        <hr v-if="showSkyBox">
+        <br v-if="showSkyBox">
 
-        <li v-if="showSkyBox">
+        <label v-if="showSkyBox">
           <input type="radio" value="clear" v-model="weatherMode" @change="changeWeatherMode">
           晴天
-        </li>
+        </label>
 
-        <li v-if="showSkyBox">
+        <label v-if="showSkyBox">
           <input type="radio" value="rain" v-model="weatherMode" @change="changeWeatherMode">
           雨天
-        </li>
+        </label>
 
-        <li v-if="showSkyBox">
+        <label v-if="showSkyBox">
           <input type="radio" value="snow" v-model="weatherMode" @change="changeWeatherMode">
           雪天
-        </li>
+        </label>
 
-      </ul>
+      </div>
     </transition>
   </div>
 
@@ -101,88 +92,70 @@ import {ref} from "vue";
   display: inline-block;
   z-index: 2000;
   position: absolute;
-  top: 5px;
-  right: 400px;
+  top: 7px;
+  left: 250px;
   user-select: none;
 }
 
-.glow-button {
-  background: linear-gradient(45deg, #00bfff80, #0077ff80);
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
+.icon-button {
+  all: unset;
   cursor: pointer;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
 }
 
-.glow-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-.glow-button.active {
-  background: linear-gradient(45deg, #ffc40080, #004f9980); /* 半透明背景颜色 */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* 更强的阴影效果 */
-  transform: scale(1.1); /* 保持按钮放大效果 */
-}
-
-.glow-button:disabled {
-  background-color: #272727;
-  color: #878787;
+.icon-button:disabled {
   pointer-events: none;
 }
 
-.dropdown-menu {
-  position: absolute;
-  top: 50px;
-  left: 0;
-  background: linear-gradient(135deg, #ffffff4d, #f8f9fa4d);
-  border-radius: 12px;
-  padding: 8px 10px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  list-style: none;
-  z-index: 1000;
-  overflow: hidden;
-  animation: fadeInScale 0.3s ease-in-out;
-  backdrop-filter: blur(10px);
+.icon-border {
+  font-size: 20px;
+  color: white;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  padding: 3px;
+  transition: border-color 0.3s ease;
 }
 
-.dropdown-menu li {
+/* 悬停时变边框颜色 */
+.icon-border:hover {
+  border-color: #4aa8a8;
+}
+
+/* 激活时边框颜色 */
+.icon-border.active {
+  border-color: #4aa8a8;
+}
+
+.icon-button:disabled {
+  pointer-events: none;
+}
+
+/* 横向弹出菜单 */
+.skybox-menu {
+  position: fixed;
+  top: 4px;
+  left: 290px;
+  display: flex;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: white;
+  z-index: 3000;
+}
+
+.skybox-menu label {
+  font-size: 14px;
   display: flex;
   align-items: center;
-  padding: 8px 15px;
-  font-size: 14px;
-  color: #ffffff; /* 修改为显眼的颜色，匹配按钮的橙色渐变风格 */
-  transition: background 0.3s, transform 0.2s;
+  gap: 6px;
+  white-space: nowrap;
   cursor: pointer;
 }
 
-.dropdown-menu li:hover {
-  background: rgba(0, 119, 255, 0.1);
-  transform: translateX(5px);
-}
-
-.dropdown-menu input[type="checkbox"],
-.dropdown-menu input[type="radio"] {
-  margin-right: 10px;
-}
-
-.dropdown-menu hr {
-  margin: 4px 0;
-  border: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.dropdown-menu li {
-  color: #000000;
+.skybox-menu label:hover {
+  color: #4aa8a8;
 }
 
 /* 动画增强 */

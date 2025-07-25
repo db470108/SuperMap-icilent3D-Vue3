@@ -1,10 +1,6 @@
 <script setup>
 import { ref } from "vue";
 
-  // 根据建筑物信息窗口弹出与否，判断是否禁用按钮
-  const props = defineProps({
-    disableButtons: Boolean
-  });
 
   // 控制菜单可见性
   const menuVisible = ref(false);
@@ -49,36 +45,34 @@ import { ref } from "vue";
     <button
         class="icon-button"
         @click="toggleMenu"
-        :disabled="props.disableButtons"
+        :title="'图层管理'"
     >
       <font-awesome-icon icon="list" :class="['icon-border', { active: menuVisible }]"/>
     </button>
 
+    <!-- 横向弹出菜单 -->
     <transition name="fade-slide" mode="out-in">
-      <ul v-show="menuVisible" class="dropdown-menu">
-
-        <li>
+      <div v-if="menuVisible" class="layer-menu">
+        <label>
           <input type="checkbox" v-model="showBuildings" @change="changeBuildingsVisibility">
           建筑
-        </li>
+        </label>
 
-        <li>
+        <label>
           <input type="checkbox" v-model="showWater" @change="changeWaterVisibility">
           水系
-        </li>
+        </label>
 
-        <li>
+        <label>
           <input type="checkbox" v-model="showRoads" @change="changeRoadsVisibility">
           公路
-        </li>
+        </label>
 
-        <li>
+        <label>
           <input type="checkbox" v-model="showRailways" @change="changeRailwaysVisibility">
           铁路
-        </li>
-
-
-      </ul>
+        </label>
+      </div>
     </transition>
   </div>
 
@@ -90,7 +84,7 @@ import { ref } from "vue";
   z-index: 2000;
   position: absolute;
   top: 7px;
-  right: 310px;
+  right: 820px;
   user-select: none;
 }
 
@@ -122,49 +116,33 @@ import { ref } from "vue";
   border-color: #4aa8a8;
 }
 
-.dropdown-menu {
-  position: absolute;
-  top: 50px;
-  right: 10px;
-  background: linear-gradient(135deg, #ffffff4d, #f8f9fa4d);
-  border-radius: 12px;
-  padding: 8px 10px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-  list-style: none;
-  z-index: 1000;
-  overflow: hidden;
-  animation: fadeInScale 0.3s ease-in-out;
+/* 横向弹出菜单 */
+.layer-menu {
+  position: fixed;
+  top: 4px;
+  right: 525px;
+  display: flex;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  color: white;
+  z-index: 3000;
 }
 
-.dropdown-menu li {
+.layer-menu label {
+  font-size: 14px;
   display: flex;
   align-items: center;
-  padding: 8px 15px;
-  font-size: 14px;
-  color: #ffffff;
-  transition: background 0.3s, transform 0.2s;
+  gap: 6px;
+  white-space: nowrap;
   cursor: pointer;
 }
 
-.dropdown-menu li:hover {
-  background: rgba(0, 119, 255, 0.1);
-  transform: translateX(2px);
-}
-
-.dropdown-menu input[type="checkbox"],
-.dropdown-menu input[type="radio"] {
-  margin-right: 10px;
-}
-
-.dropdown-menu hr {
-  margin: 4px 0;
-  border: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.dropdown-menu li {
-  color: #000000;
+.layer-menu label:hover {
+  color: #4aa8a8;
 }
 
 /* 动画增强 */

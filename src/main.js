@@ -4,11 +4,11 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router/router.js';
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faExpand, faCompress } from "@fortawesome/free-solid-svg-icons";
+import { faExpand, faCompress, faMagnifyingGlass, faCloud, faEye, faList } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 // 添加图标到库中
-library.add(faExpand, faCompress);
+library.add(faExpand, faCompress, faMagnifyingGlass, faCloud, faEye, faList);
 
 // 创建 Vue 应用
 const app = createApp(App)

@@ -107,7 +107,8 @@ import axios from "@/utils/axios.js";
       // 冷灰蓝主题
       layer.style3D.enableFill = true;
       layer.style3D.enableFillForeColor = true;
-      layer.style3D.fillForeColor = new SuperMap3D.Color(0.12, 0.2, 0.3, 0.88);
+      // layer.style3D.fillForeColor = new SuperMap3D.Color(0.12, 0.2, 0.3, 0.88);
+      layer.style3D.fillForeColor = new SuperMap3D.Color(0.85, 0.85, 0.85, 1);
 
       // 深灰描边
       layer.style3D.enableLine = true;
