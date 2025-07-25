@@ -47,12 +47,11 @@ import { ref } from "vue";
 
   <div class="layer-control">
     <button
-        class="glow-button"
-        :class="{ active: menuVisible }"
+        class="icon-button"
         @click="toggleMenu"
         :disabled="props.disableButtons"
     >
-      图层管理
+      <font-awesome-icon icon="list" :class="['icon-border', { active: menuVisible }]"/>
     </button>
 
     <transition name="fade-slide" mode="out-in">
@@ -90,48 +89,43 @@ import { ref } from "vue";
   display: inline-block;
   z-index: 2000;
   position: absolute;
-  top: 5px;
-  right: 280px;
+  top: 7px;
+  right: 310px;
   user-select: none;
 }
 
-.glow-button {
-  background: linear-gradient(45deg, #00bfff80, #0077ff80);
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
+.icon-button {
+  all: unset;
   cursor: pointer;
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
 }
 
-.glow-button:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-}
-
-.glow-button.active {
-  background: linear-gradient(45deg, #ffc40080, #004f9980); /* 半透明背景颜色 */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4); /* 更强的阴影效果 */
-  transform: scale(1.1); /* 保持按钮放大效果 */
-}
-
-.glow-button:disabled {
-  background-color: #272727;
-  color: #878787;
+.icon-button:disabled {
   pointer-events: none;
+}
+
+.icon-border {
+  font-size: 20px;
+  color: white;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  padding: 3px;
+  transition: border-color 0.3s ease;
+}
+
+/* 悬停时变边框颜色 */
+.icon-border:hover {
+  border-color: #4aa8a8;
+}
+
+/* 激活时边框颜色 */
+.icon-border.active {
+  border-color: #4aa8a8;
 }
 
 .dropdown-menu {
   position: absolute;
   top: 50px;
-  left: 0;
+  right: 10px;
   background: linear-gradient(135deg, #ffffff4d, #f8f9fa4d);
   border-radius: 12px;
   padding: 8px 10px;
