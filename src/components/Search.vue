@@ -65,6 +65,7 @@
   // 清空输入框内容
   function clearInput() {
     searchQuery.value = "";
+    showResult.value = false;
   }
 
 </script>
