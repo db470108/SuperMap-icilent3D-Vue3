@@ -5,6 +5,7 @@
       <div class="main-container" id="main-container">
         <!-- 图层加载 -->
         <SceneViewer3D
+            ref="sceneViewer3DRef"
             :show-buildings="showBuildings"
             :show-water="showWater"
             :show-roads="showRoads"
@@ -50,7 +51,7 @@
         />
 
         <!-- 搜索框 -->
-        <Search @changeSearchMode="handleChangeSearchMode"/>
+        <Search @fly-to-building="handleFlyToBuilding"/>
       </div>
 
     </div>
@@ -126,6 +127,16 @@
     isBuildingInfoWindowOpen.value = false;
   }
 
+
+  // 添加SceneViewer3D的引用
+  const sceneViewer3DRef = ref(null);
+  // 处理点击后飞向建筑物
+  function handleFlyToBuilding(building) {
+    if (sceneViewer3DRef.value) {
+      sceneViewer3DRef.value.flyToBuilding(building);
+      console.log("点击了")
+    }
+  }
 
 </script>
 

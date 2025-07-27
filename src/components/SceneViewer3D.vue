@@ -20,9 +20,65 @@ import axios from "@/utils/axios.js";
     showSkyBox: Boolean,
     skyBoxMode: String,
     weatherMode: String,
+    isBuildingInfoWindowOpen: Boolean,
   })
 
-  const emit = defineEmits(['selectBuilding']);
+  const emit = defineEmits(['select-building']);
+
+  // 飞向建筑物的方法
+  function flyToBuilding(building) {
+    if (!viewer || !building) return;
+    console.log("这是选中的建筑物" + building.value)
+    // 通过建筑物ID在场景中查找并飞向对应的建筑物
+    const buildingsLayer = viewer.scene.layers.find('buildings_3D');
+
+    // 如果建筑物有经纬度信息，则飞向该位置
+    if (building.longitude_X && building.latitude_Y) {
+      // 将经纬度转换为笛卡尔坐标
+      const position = SuperMap3D.Cartesian3.fromDegrees(
+        building.longitude_X,
+        building.latitude_Y,
+          300
+      );
+
+      // 创建一个包围球，使视图能够更好地包含目标建筑物
+      const boundingSphere = new SuperMap3D.BoundingSphere(position, 300);
+
+      // 飞向目标位置
+      viewer.camera.flyToBoundingSphere(boundingSphere,{
+        offset: new SuperMap3D.HeadingPitchRange(
+            SuperMap3D.Math.toRadians(0),    // 方向角
+            SuperMap3D.Math.toRadians(-50),  // 俯仰角
+            1500                             // 距离
+        ),
+        duration: 3 // 飞行时间，单位秒
+      });
+
+      // 飞向建筑物后，选中并高亮显示该建筑物
+      // 使用 buildingsLayer.setSelection 方法设置选中状态
+      if (buildingsLayer && building.id !== undefined) {
+        // 先清除之前的选中状态
+        buildingsLayer.setSelection([]);
+        // 设置当前建筑物为选中状态
+        buildingsLayer.setSelection([building.id]);
+
+        // 延迟触发，当视角飞往目标位置后，再触发select-building事件
+        setTimeout(()=>{
+          // 触发select-building事件，使得信息窗口可以显示
+          emit('select-building', building);
+        }, 2800)
+
+      }
+    } else {
+      console.warn("建筑物缺少经纬度信息");
+    }
+  }
+
+  // 将方法暴露给父组件
+  defineExpose({
+    flyToBuilding
+  });
+
   
   onMounted(()=> {
     viewer = new SuperMap3D.Viewer('SceneViewer3D-Container', {
@@ -340,6 +396,7 @@ import axios from "@/utils/axios.js";
     viewer.scene.postProcessStages.snow.uniforms.speed = 1;
     viewer.scene.postProcessStages.rain.enabled = false;
   }
+
 
 </script>
 

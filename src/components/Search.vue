@@ -52,17 +52,19 @@
 
   // 点击搜索结果
   function selectBuilding(building) {
+    // 搜索框内容替换为点击内容
+    searchQuery.value = building.name;
+    /*// 隐藏搜索结果列表
+    showResult.value = false;*/
     // 发送事件到父组件
     emit('fly-to-building', building);
-    // 隐藏搜索框和结果
-    searchBoxVisible.value = false;
-    showResult.value = false;
+  }
+  const emit = defineEmits(["fly-to-building"])
+
+  // 清空输入框内容
+  function clearInput() {
     searchQuery.value = "";
   }
-  const emit = defineEmits([
-      "fly-to-building",
-  ])
-
 
 </script>
 
@@ -83,7 +85,7 @@
         <input
             class="search-input"
             type="text"
-            placeholder="搜索建筑物"
+            placeholder="查找地点"
             v-model="searchQuery"
             @input="handleInput"
         >
@@ -94,14 +96,14 @@
     </transition>
 
     <transition name="fade-slide" mode="out-in">
-      <div class="search-results" v-if="(showResult && searchResults.length > 0) || searchBoxVisible">
+      <div class="search-results" v-if="(showResult && searchResults.length > 0)">
         <div
             class="result-item"
             v-for="building in searchResults"
             :key="building.id"
             @click="selectBuilding(building)"
           >
-          {{ building.name }}
+          <font-awesome-icon icon="location-dot" class="location-dot"/> {{ building.name }}
         </div>
       </div>
     </transition>
@@ -228,6 +230,11 @@
 
 .result-item:hover {
   background: rgba(74, 168, 168, 0.3);
+}
+
+.location-dot {
+  font-size: 15px;
+  color: rgb(19, 58, 142);
 }
 
 /* 动画增强 */
