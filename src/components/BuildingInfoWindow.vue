@@ -25,10 +25,10 @@
       </button>
       <h3>建筑信息</h3>
       <ul>
-        <li><strong>名称：</strong>{{ props.building.type === "未录入" ? "未知" : props.building.name }} </li>
-        <li><strong>楼层数：</strong>{{ props.building.type === "未录入" ? "未知" : props.building.floor }} </li>
-        <li><strong>高度：</strong>{{ props.building.type === "未录入" ? "未知" : props.building.height + " 米"}} </li>
-        <li><strong>录入状态：</strong>{{ props.building.type }}</li>
+        <li>名称：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.name }} </strong></li>
+        <li>楼层数：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.floor }} </strong></li>
+        <li>高度：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.height + " 米"}} </strong></li>
+        <li>录入状态：<strong> {{ props.building.type }} </strong></li>
       </ul>
     </div>
   </div>
@@ -57,7 +57,7 @@
 .info-card h3 {
   margin-top: 0;
   font-size: 19px;
-  color: white;
+  color: #f3f3f3;
   margin-bottom: 12px;
 }
 
@@ -70,7 +70,11 @@
 .info-card li {
   font-size: 15px;
   margin-bottom: 8px;
-  color: white;
+  color: #f3f3f3;
+}
+
+.info-card li strong{
+  color: rgb(19, 58, 142);
 }
 
 .close-btn {
@@ -79,8 +83,8 @@
   right: 8px;
   background: transparent;
   border: none;
-  color: white;
-  font-size: 16px;
+  color: #f3f3f3;
+  font-size: 19px;
   cursor: pointer;
   z-index: 1000;
 }
@@ -100,4 +104,6 @@
     transform: translateY(0);
   }
 }
+
+
 </style>
