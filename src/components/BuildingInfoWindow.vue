@@ -36,7 +36,7 @@
 .info-window {
   position: fixed;
   top: 100px;
-  right: 200px;
+  right: 350px;
   z-index: 9999;
 }
 
