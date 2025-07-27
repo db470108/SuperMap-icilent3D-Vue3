@@ -54,8 +54,8 @@
 
 .info-card h3 {
   margin-top: 0;
-  font-size: 18px;
-  color: black;
+  font-size: 19px;
+  color: white;
   margin-bottom: 12px;
 }
 
@@ -66,9 +66,9 @@
 }
 
 .info-card li {
-  font-size: 14px;
+  font-size: 15px;
   margin-bottom: 8px;
-  color: black;
+  color: white;
 }
 
 .close-btn {
@@ -77,7 +77,7 @@
   right: 8px;
   background: transparent;
   border: none;
-  color: rgb(9, 27, 58);
+  color: white;
   font-size: 16px;
   cursor: pointer;
   z-index: 1000;
