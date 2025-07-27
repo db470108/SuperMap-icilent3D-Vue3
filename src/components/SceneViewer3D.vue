@@ -28,7 +28,6 @@ import axios from "@/utils/axios.js";
   // 飞向建筑物的方法
   function flyToBuilding(building) {
     if (!viewer || !building) return;
-    console.log("这是选中的建筑物" + building.value)
     // 通过建筑物ID在场景中查找并飞向对应的建筑物
     const buildingsLayer = viewer.scene.layers.find('buildings_3D');
 

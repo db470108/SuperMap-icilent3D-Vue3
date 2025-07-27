@@ -24,6 +24,7 @@
   // 实时搜索
   function handleInput() {
     clearTimeout(searchTimeout);
+    // 判空
     if (searchQuery.value.trim() === '') {
       showResult.value = false;
       searchResults.value = [];
