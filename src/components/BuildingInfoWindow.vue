@@ -20,7 +20,9 @@
 <template>
   <div v-if="props.building" class="info-window">
     <div class="info-card">
-      <button class="close-btn" @click="close">✖</button>
+      <button class="close-btn" @click="close">
+        <font-awesome-icon icon="xmark"/>
+      </button>
       <h3>建筑信息</h3>
       <ul>
         <li><strong>名称：</strong>{{ props.building.type === "未录入" ? "未知" : props.building.name }} </li>
