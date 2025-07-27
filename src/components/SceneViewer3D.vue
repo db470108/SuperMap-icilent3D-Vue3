@@ -37,11 +37,10 @@ import axios from "@/utils/axios.js";
       const position = SuperMap3D.Cartesian3.fromDegrees(
         building.longitude_X,
         building.latitude_Y,
-          300
       );
 
       // 创建一个包围球，使视图能够更好地包含目标建筑物
-      const boundingSphere = new SuperMap3D.BoundingSphere(position, 300);
+      const boundingSphere = new SuperMap3D.BoundingSphere(position, 350);
 
       // 飞向目标位置
       viewer.camera.flyToBoundingSphere(boundingSphere,{
