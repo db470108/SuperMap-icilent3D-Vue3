@@ -18,18 +18,27 @@
 </script>
 
 <template>
-  <div v-if="props.building" class="info-window">
+  <div v-if="props.building" class="info-window" :style="windowStyle">
     <div class="info-card">
-      <button class="close-btn" @click="close">
-        <font-awesome-icon icon="xmark"/>
-      </button>
-      <h3>建筑信息</h3>
-      <ul>
-        <li>名称：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.name }} </strong></li>
-        <li>楼层数：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.floor }} </strong></li>
-        <li>高度：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.height + " 米"}} </strong></li>
-        <li>录入状态：<strong> {{ props.building.type }} </strong></li>
-      </ul>
+        <button class="close-btn" @click="close">
+          <font-awesome-icon icon="xmark"/>
+        </button>
+        <h3>地物属性信息</h3>
+        <ul>
+          <li>名称：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.name }} </strong></li>
+          <li>楼层数：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.floor }} </strong></li>
+          <li>高度：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.height + " 米"}} </strong></li>
+          <li>录入状态：<strong> {{ props.building.type }} </strong></li>
+        </ul>
+
+        <div class="longitude-latitude">
+          坐标位置：
+          <br>
+          {{ props.building.longitude_X.toFixed(6) }} 东
+          <br>
+          {{ props.building.latitude_Y.toFixed(6) }} 北
+        </div>
+
     </div>
   </div>
 </template>
@@ -94,6 +103,13 @@
   transform: scale(1.1);
 }
 
+.longitude-latitude {
+  font-size: 11px;
+  color: #f3f3f3;
+  margin-top: 12px;
+  font-style: italic;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -104,6 +120,4 @@
     transform: translateY(0);
   }
 }
-
-
 </style>
