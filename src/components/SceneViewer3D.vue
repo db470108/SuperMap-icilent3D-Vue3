@@ -85,7 +85,6 @@ import axios from "@/utils/axios.js";
       infoBox: false
     });
     window.viewer = viewer;
-
     viewer.scene.skyAtmosphere.show = false; // 开启大气层
     viewer.scene.globe.enableLighting = false; // 关闭地球光照，开启后画面明显卡顿
     viewer.scene.sun.show = true;
@@ -194,7 +193,7 @@ import axios from "@/utils/axios.js";
         destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.53, 3000), // 武汉中心点
         orientation: {
           heading: SuperMap3D.Math.toRadians(0),
-          pitch: SuperMap3D.Math.toRadians(-30), // 朝下看 45°
+          pitch: SuperMap3D.Math.toRadians(-30),
           roll: 0
         },
       });

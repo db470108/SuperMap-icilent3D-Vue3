@@ -18,6 +18,8 @@
 
 <!--       侧边菜单 -->
         <LeftMenu
+            :user-type="userType"
+            :user="user"
             @toggle-buildingsLayer="handleChangeBuildingsVisibility"
             @toggle-waterLayer="handleChangeWaterVisibility"
             @toggle-roadsLayer="handleChangeRoadsVisibility"
@@ -25,11 +27,11 @@
             @changeSkyBox="handleChangeSkyBox"
             @changeDayOrNight="handleChangeDayOrNight"
             @changeWeatherMode="handleChangeWeatherMode"
+            @logout="logout"
         />
 
 <!--         上层的横幅和按钮 -->
         <BannerBar/>
-
 
 <!--         时间显示 -->
         <TimeDisplay/>
@@ -54,13 +56,42 @@
 <script setup>
   import BannerBar from "@/components/BannerBar.vue";
   import SceneViewer3D from "@/components/SceneViewer3D.vue";
-  import {ref} from "vue";
+  import {ref, onMounted} from "vue";
   import TimeDisplay from "@/components/TimeDisplay.vue";
   import FullScreen from "@/components/FullScreen.vue";
   import BuildingInfoWindow from "@/components/BuildingInfoWindow.vue";
   import Search from "@/components/Search.vue";
   import LeftMenu from "@/layouts/LeftMenu.vue";
+  import {useRouter} from "vue-router";
 
+  // 获取用户信息
+  const user = ref(null);
+  const userType = ref('citizen'); // 默认为市民
+
+  onMounted(() => {
+    // 从localStorage获取用户信息
+    const userData = JSON.parse(localStorage.getItem('user'));
+    if (userData && userData.loggedIn) {
+      user.value = userData;
+      userType.value = userData.type;
+    } else {
+      // 如果没有有效的用户信息，重定向到登录页
+      router.push('/welcome');
+    }
+  });
+
+  const router = useRouter();
+
+  // 退出登录
+  function logout() {
+    // 清除用户信息
+    localStorage.removeItem('user');
+    // 清空用户状态
+    user.value = null;
+    userType.value = 'citizen';
+    // 跳转到欢迎页面
+    router.push('/welcome');
+  }
 
   // 图层管理
   const showBuildings = ref(true);

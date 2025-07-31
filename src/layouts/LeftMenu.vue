@@ -1,7 +1,33 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, defineProps, defineEmits, computed } from 'vue';
 import { ElMenu, ElMenuItem, ElSubMenu, ElCol, ElRow } from 'element-plus';
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+import { useRouter } from 'vue-router';
+
+  // 接收用户类型和用户信息
+  const props = defineProps({
+    userType: {
+      type: String,
+      default: 'citizen'
+    },
+    user: {
+      type: Object,
+      default: null
+    }
+  });
+
+  const emit = defineEmits([
+    'toggle-buildingsLayer',
+    'toggle-waterLayer',
+    'toggle-roadsLayer',
+    'toggle-railwaysLayer',
+    'changeSkyBox',
+    'changeDayOrNight',
+    'changeWeatherMode',
+    'logout'
+  ]);
+
+  const router = useRouter();
 
   // 控制菜单展开/收起状态
   const isCollapse = ref(true);
@@ -26,44 +52,43 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
     }
   }
 
-
+  // 退出登录
+  function handleLogout() {
+    emit('logout');
+  }
 
   // 视角控制
   const SuperMap3D = window.SuperMap3D;
 
-  function resetView() {
+  function View3D() {
     viewer.camera.flyTo({
       destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.53, 3000), // 武汉中心点
       orientation: {
         heading: SuperMap3D.Math.toRadians(0),
-        pitch: SuperMap3D.Math.toRadians(-30), // 朝下看 45°
+        pitch: SuperMap3D.Math.toRadians(-30),
         roll: 0
       },
       duration: 3
     });
   }
 
-  function topView() {
+  function View2D() {
     viewer.camera.flyTo({
       destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.59, 30000), // 武汉中心点
       orientation: {
         heading: SuperMap3D.Math.toRadians(0),
-        pitch: SuperMap3D.Math.toRadians(-90), // 朝下看 45°
+        pitch: SuperMap3D.Math.toRadians(-90),
         roll: 0
       },
       duration: 3
     });
   }
-
-
 
   // 图层管理
   const showBuildings = ref(true);
   const showWater = ref(true);
   const showRoads = ref(true);
   const showRailways = ref(true);
-
-
 
   function changeBuildingsVisibility() {
     emit('toggle-buildingsLayer', showBuildings.value);
@@ -81,8 +106,6 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
     emit('toggle-railwaysLayer', showRailways.value);
   }
 
-
-
   // 切换天气和时间
   // 默认为白天
   const skyBoxMode = ref('day');
@@ -98,18 +121,16 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
     emit('changeWeatherMode', weatherMode.value);
   }
 
+  // 基础设置（市民用户）
+  const showSkyBox = ref(true);
+  function changeSkyBox() {
+    emit('changeSkyBox', showSkyBox.value);
+  }
 
-
-  // 要向父组件发送的事件
-  const emit = defineEmits([
-    'toggle-buildingsLayer',
-    'toggle-waterLayer',
-    'toggle-roadsLayer',
-    'toggle-railwaysLayer',
-    'changeDayOrNight',
-    'changeWeatherMode'
-  ]);
-
+  // 检查用户是否已登录的计算属性
+  const isLoggedIn = computed(() => {
+    return props.user && props.user.loggedIn === true;
+  });
 </script>
 
 <template>
@@ -129,7 +150,7 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
         <el-row class="el-row">
           <el-col :span="24">
             <el-menu
-                default-active="2"
+                default-active="1"
                 class="el-menu"
                 mode="vertical"
                 :collapse="isCollapse"
@@ -137,14 +158,34 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
                 text-color="#f3f3f3"
                 active-text-color="rgba(51, 153, 255, 0.8)"
             >
+              <!-- 用户信息区域 -->
+              <el-sub-menu index="0" v-if="isLoggedIn">
+                <template #title>
+                  <font-awesome-icon icon="user"/>&nbsp;
+                  <span>用户管理</span>
+                </template>
+                <el-menu-item index="0-1" disabled>
+                  <span class="user-name" v-if="userType === 'admin'">
+                    行政人员
+                  </span>
+                  <span class="user-name" v-else>
+                    市民
+                  </span>
+                </el-menu-item>
+                <el-menu-item index="0-2" @click="handleLogout">
+                  <font-awesome-icon icon="right-from-bracket"/>&nbsp;退出登录
+                </el-menu-item>
+              </el-sub-menu>
+
               <el-sub-menu index="1">
                 <template #title>
                   <font-awesome-icon icon="eye"/>&nbsp;视角控制
                 </template>
-                <el-menu-item index="1-1" @click="resetView">默认视角</el-menu-item>
-                <el-menu-item index="1-2" @click="topView">垂直俯视</el-menu-item>
+                <el-menu-item index="1-1" @click="View3D">三维视角</el-menu-item>
+                <el-menu-item index="1-2" @click="View2D">二维视角</el-menu-item>
               </el-sub-menu>
 
+              <!-- 图层管理对所有用户可见 -->
               <el-sub-menu index="2">
                 <template #title>
                   <font-awesome-icon icon="layer-group"/>&nbsp;图层管理
@@ -166,7 +207,8 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
                 </el-menu-item>
               </el-sub-menu>
 
-              <el-sub-menu index="3">
+              <!-- 行政人员可以访问高级设置 -->
+              <el-sub-menu index="3" v-if="isLoggedIn && userType === 'admin'">
                 <template #title>
                   <font-awesome-icon icon="cloud"/>&nbsp;场景设置
                 </template>
@@ -217,7 +259,17 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
                     </el-radio>
                   </el-menu-item>
                 </el-sub-menu>
+              </el-sub-menu>
 
+              <!-- 市民用户只能访问基础设置 -->
+              <el-sub-menu index="4" v-else-if="isLoggedIn">
+                <template #title>
+                  <font-awesome-icon icon="cloud"/>&nbsp;基础设置
+                </template>
+
+                <el-menu-item index="4-1">
+                  <el-checkbox label="显示天空" v-model="showSkyBox" @change="changeSkyBox"/>
+                </el-menu-item>
               </el-sub-menu>
             </el-menu>
           </el-col>
@@ -299,5 +351,11 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 :deep(.el-menu-item:hover),
 :deep(.el-sub-menu__title:hover) {
   background-color: rgba(51, 153, 255, 0.5);
+}
+
+.user-name {
+  font-weight: bold;
+  color: #6cd5fd;
+  font-size: 18px;
 }
 </style>

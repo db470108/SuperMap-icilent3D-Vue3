@@ -4,14 +4,42 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router/router.js';
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faExpand, faCompress, faMagnifyingGlass, faCloud, faEye, faList, faXmark, faLocationDot, faBars, faLayerGroup } from "@fortawesome/free-solid-svg-icons";
+import { 
+  faExpand, 
+  faCompress, 
+  faMagnifyingGlass, 
+  faCloud, 
+  faEye, 
+  faList, 
+  faXmark, 
+  faLocationDot, 
+  faBars, 
+  faLayerGroup,
+  faUser,
+  faRightFromBracket,
+  faRightToBracket
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css' // 引入暗黑模式CSS变量
 
 // 添加图标到库中
-library.add(faExpand, faCompress, faMagnifyingGlass, faCloud, faEye, faList, faXmark, faLocationDot, faBars, faLayerGroup);
+library.add(
+  faExpand, 
+  faCompress, 
+  faMagnifyingGlass, 
+  faCloud, 
+  faEye, 
+  faList, 
+  faXmark, 
+  faLocationDot, 
+  faBars, 
+  faLayerGroup,
+  faUser,
+  faRightFromBracket,
+  faRightToBracket
+);
 
 // 创建 Vue 应用
 const app = createApp(App)
