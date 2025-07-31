@@ -90,6 +90,12 @@ import axios from "@/utils/axios.js";
     viewer.scene.globe.enableLighting = false; // 关闭地球光照，开启后画面明显卡顿
     viewer.scene.sun.show = true;
 
+    // WebGL启用色调映射
+    viewer.scene.postProcessStages.fxaa.enabled = true;  // 先开启后期处理
+    viewer.scene.highDynamicRange = true;  // 启用HDR
+    // 调整曝光（关键参数）
+    viewer.scene.exposure = 0.3;  // 降低曝光，默认1.0，建议0.3-0.8
+
     // 隐藏credits
     setTimeout(() => {
       const creditsElements = document.querySelectorAll('.supermap3d-widget-credits');
@@ -330,6 +336,8 @@ import axios from "@/utils/axios.js";
       loadDaySkyBox();
     } else if (mode === 'night') {
       loadNightSkyBox();
+    } else if (mode === 'sunset') {
+      loadSunsetSkyBox();
     }
 
     // 手动触发当前天气
@@ -354,6 +362,14 @@ import axios from "@/utils/axios.js";
         positiveZ : 'Day/Top.jpg',
         negativeZ : 'Day/Down.jpg'
       }
+    });
+  }
+
+  // 加载傍晚的天空盒
+  function loadSunsetSkyBox () {
+    viewer.scene.skyBox = new SuperMap3D.SkyBox({
+      show: true,
+      imageUrl:'Sunset/kloppenheim_06_puresky_4k.hdr'
     });
   }
 

@@ -206,6 +206,12 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
                   </el-menu-item>
 
                   <el-menu-item index="3-2-2">
+                    <el-radio value="sunset" v-model="skyBoxMode" @change="changeDayOrNight">
+                      傍晚
+                    </el-radio>
+                  </el-menu-item>
+
+                  <el-menu-item index="3-2-3">
                     <el-radio value="night" v-model="skyBoxMode" @change="changeDayOrNight">
                       夜晚
                     </el-radio>

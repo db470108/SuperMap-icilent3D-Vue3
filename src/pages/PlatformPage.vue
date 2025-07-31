@@ -30,26 +30,9 @@
 <!--         上层的横幅和按钮 -->
         <BannerBar/>
 
-<!--&lt;!&ndash;         视角控制 &ndash;&gt;
-        <ViewControl/>
-
-&lt;!&ndash;         图层管理 &ndash;&gt;
-        <LayerControl
-            @toggle-buildingsLayer="handleChangeBuildingsVisibility"
-            @toggle-waterLayer="handleChangeWaterVisibility"
-            @toggle-roadsLayer="handleChangeRoadsVisibility"
-            @toggle-railwaysLayer="handleChangeRailwaysVisibility"
-        />-->
 
 <!--         时间显示 -->
         <TimeDisplay/>
-
-<!--&lt;!&ndash;         场景设置 &ndash;&gt;
-        <SceneControl
-            @changeSkyBox="handleChangeSkyBox"
-            @changeDayOrNight="handleChangeDayOrNight"
-            @changeWeatherMode="handleChangeWeatherMode"
-        />-->
 
 <!--         全屏按钮 -->
         <FullScreen/>
@@ -70,12 +53,9 @@
 
 <script setup>
   import BannerBar from "@/components/BannerBar.vue";
-  import ViewControl from "@/components/ViewControl.vue";
-  import LayerControl from "@/components/LayerControl.vue";
   import SceneViewer3D from "@/components/SceneViewer3D.vue";
   import {ref} from "vue";
   import TimeDisplay from "@/components/TimeDisplay.vue";
-  import SceneControl from "@/components/SceneControl.vue";
   import FullScreen from "@/components/FullScreen.vue";
   import BuildingInfoWindow from "@/components/BuildingInfoWindow.vue";
   import Search from "@/components/Search.vue";
