@@ -190,10 +190,10 @@ import axios from "@/utils/axios.js";
       });
 
       viewer.camera.setView({
-        destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.53, 3000), // 武汉中心点
+        destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.51, 2000), // 武汉中心点
         orientation: {
           heading: SuperMap3D.Math.toRadians(0),
-          pitch: SuperMap3D.Math.toRadians(-30),
+          pitch: SuperMap3D.Math.toRadians(-10),
           roll: 0
         },
       });

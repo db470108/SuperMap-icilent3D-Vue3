@@ -62,10 +62,10 @@ import { useRouter } from 'vue-router';
 
   function View3D() {
     viewer.camera.flyTo({
-      destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.53, 3000), // 武汉中心点
+      destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.51, 2000), // 武汉中心点
       orientation: {
         heading: SuperMap3D.Math.toRadians(0),
-        pitch: SuperMap3D.Math.toRadians(-30),
+        pitch: SuperMap3D.Math.toRadians(-10),
         roll: 0
       },
       duration: 3
@@ -207,8 +207,8 @@ import { useRouter } from 'vue-router';
                 </el-menu-item>
               </el-sub-menu>
 
-              <!-- 行政人员可以访问高级设置 -->
-              <el-sub-menu index="3" v-if="isLoggedIn && userType === 'admin'">
+              <!-- 场景设置对所有用户可见 -->
+              <el-sub-menu index="3">
                 <template #title>
                   <font-awesome-icon icon="cloud"/>&nbsp;场景设置
                 </template>
@@ -261,16 +261,6 @@ import { useRouter } from 'vue-router';
                 </el-sub-menu>
               </el-sub-menu>
 
-              <!-- 市民用户只能访问基础设置 -->
-              <el-sub-menu index="4" v-else-if="isLoggedIn">
-                <template #title>
-                  <font-awesome-icon icon="cloud"/>&nbsp;基础设置
-                </template>
-
-                <el-menu-item index="4-1">
-                  <el-checkbox label="显示天空" v-model="showSkyBox" @change="changeSkyBox"/>
-                </el-menu-item>
-              </el-sub-menu>
             </el-menu>
           </el-col>
         </el-row>
