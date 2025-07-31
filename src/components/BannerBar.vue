@@ -40,6 +40,8 @@
   text-shadow: 0 0 8px rgba(51, 153, 255, 0.6);
   pointer-events: none;
   z-index: 1000;
+  position: absolute;
+  left: 45vw;
 }
 
 </style>

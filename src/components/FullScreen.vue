@@ -87,12 +87,12 @@
 
 /* 悬停时变边框颜色 */
 .icon-border:hover {
-  border-color: #4aa8a8;
+  border-color: rgba(51, 153, 255, 0.6);
 }
 
 /* 激活时边框颜色 */
 .icon-border.active {
-  border-color: #4aa8a8;
+  border-color: rgba(51, 153, 255, 0.6);
 }
 
 .icon-button:disabled {

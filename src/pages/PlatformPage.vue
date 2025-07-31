@@ -1,9 +1,9 @@
 <template>
     <div class="platform-page">
 
-      <!-- 主窗口，动态加载当前地图组件 -->
+<!--       主窗口，动态加载当前地图组件 -->
       <div class="main-container" id="main-container">
-        <!-- 图层加载 -->
+<!--         图层加载 -->
         <SceneViewer3D
             ref="sceneViewer3DRef"
             :show-buildings="showBuildings"
@@ -16,41 +16,44 @@
             @select-building="handleSelectBuilding"
         />
 
-        <!-- 上层的横幅和按钮 -->
+<!--       侧边菜单 -->
+        <LeftMenu/>
+
+<!--         上层的横幅和按钮 -->
         <BannerBar/>
 
-        <!-- 视角控制 -->
+<!--&lt;!&ndash;         视角控制 &ndash;&gt;
         <ViewControl/>
 
-        <!-- 图层管理 -->
+&lt;!&ndash;         图层管理 &ndash;&gt;
         <LayerControl
             @toggle-buildingsLayer="handleChangeBuildingsVisibility"
             @toggle-waterLayer="handleChangeWaterVisibility"
             @toggle-roadsLayer="handleChangeRoadsVisibility"
             @toggle-railwaysLayer="handleChangeRailwaysVisibility"
-        />
+        />-->
 
-        <!-- 时间显示 -->
+<!--         时间显示 -->
         <TimeDisplay/>
 
-        <!-- 场景设置 -->
+<!--&lt;!&ndash;         场景设置 &ndash;&gt;
         <SceneControl
             @changeSkyBox="handleChangeSkyBox"
             @changeDayOrNight="handleChangeDayOrNight"
             @changeWeatherMode="handleChangeWeatherMode"
-        />
+        />-->
 
-        <!-- 全屏按钮 -->
+<!--         全屏按钮 -->
         <FullScreen/>
 
-        <!-- 弹窗组件 -->
+<!--         弹窗组件 -->
         <BuildingInfoWindow
             v-if="selectedBuilding"
             :building="selectedBuilding"
             @close="handleClose"
         />
 
-        <!-- 搜索框 -->
+<!--         搜索框 -->
         <Search @fly-to-building="handleFlyToBuilding"/>
       </div>
 
@@ -68,6 +71,7 @@
   import FullScreen from "@/components/FullScreen.vue";
   import BuildingInfoWindow from "@/components/BuildingInfoWindow.vue";
   import Search from "@/components/Search.vue";
+  import LeftMenu from "@/layouts/LeftMenu.vue";
 
 
   // 图层管理
