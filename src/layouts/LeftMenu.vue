@@ -3,54 +3,113 @@ import { ref } from 'vue';
 import { ElMenu, ElMenuItem, ElSubMenu, ElCol, ElRow } from 'element-plus';
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
-// 控制菜单展开/收起状态
-const isCollapse = ref(true);
-// 控制菜单是否可见
-const isMenuVisible = ref(false);
+  // 控制菜单展开/收起状态
+  const isCollapse = ref(true);
+  // 控制菜单是否可见
+  const isMenuVisible = ref(false);
 
-// 切换菜单状态
-function toggleMenu() {
-  if (!isMenuVisible.value) {
-    // 如果菜单不可见，先显示菜单再展开
-    isMenuVisible.value = true;
-    // 使用nextTick确保DOM更新后再展开菜单
-    setTimeout(() => {
-      isCollapse.value = false;
-    }, 0);
-  } else {
-    // 如果菜单可见，则先收起再隐藏
-    isCollapse.value = true;
-    setTimeout(() => {
-      isMenuVisible.value = false;
-    }, 300);
+  // 切换菜单状态
+  function toggleMenu() {
+    if (!isMenuVisible.value) {
+      // 如果菜单不可见，先显示菜单再展开
+      isMenuVisible.value = true;
+      // 使用nextTick确保DOM更新后再展开菜单
+      setTimeout(() => {
+        isCollapse.value = false;
+      }, 0);
+    } else {
+      // 如果菜单可见，则先收起再隐藏
+      isCollapse.value = true;
+      setTimeout(() => {
+        isMenuVisible.value = false;
+      }, 300);
+    }
   }
-}
 
-const SuperMap3D = window.SuperMap3D;
 
-function resetView() {
-  viewer.camera.flyTo({
-    destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.53, 3000), // 武汉中心点
-    orientation: {
-      heading: SuperMap3D.Math.toRadians(0),
-      pitch: SuperMap3D.Math.toRadians(-30), // 朝下看 45°
-      roll: 0
-    },
-    duration: 3
-  });
-}
 
-function topView() {
-  viewer.camera.flyTo({
-    destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.59, 30000), // 武汉中心点
-    orientation: {
-      heading: SuperMap3D.Math.toRadians(0),
-      pitch: SuperMap3D.Math.toRadians(-90), // 朝下看 45°
-      roll: 0
-    },
-    duration: 3
-  });
-}
+  // 视角控制
+  const SuperMap3D = window.SuperMap3D;
+
+  function resetView() {
+    viewer.camera.flyTo({
+      destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.53, 3000), // 武汉中心点
+      orientation: {
+        heading: SuperMap3D.Math.toRadians(0),
+        pitch: SuperMap3D.Math.toRadians(-30), // 朝下看 45°
+        roll: 0
+      },
+      duration: 3
+    });
+  }
+
+  function topView() {
+    viewer.camera.flyTo({
+      destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.59, 30000), // 武汉中心点
+      orientation: {
+        heading: SuperMap3D.Math.toRadians(0),
+        pitch: SuperMap3D.Math.toRadians(-90), // 朝下看 45°
+        roll: 0
+      },
+      duration: 3
+    });
+  }
+
+
+
+  // 图层管理
+  const showBuildings = ref(true);
+  const showWater = ref(true);
+  const showRoads = ref(true);
+  const showRailways = ref(true);
+
+
+
+  function changeBuildingsVisibility() {
+    emit('toggle-buildingsLayer', showBuildings.value);
+  }
+
+  function changeWaterVisibility() {
+    emit('toggle-waterLayer', showWater.value);
+  }
+
+  function changeRoadsVisibility() {
+    emit('toggle-roadsLayer', showRoads.value);
+  }
+
+  function changeRailwaysVisibility() {
+    emit('toggle-railwaysLayer', showRailways.value);
+  }
+
+
+
+  // 切换天气和时间
+  // 默认为白天
+  const skyBoxMode = ref('day');
+  // 切换白天或夜晚
+  function changeDayOrNight() {
+    emit('changeDayOrNight', skyBoxMode.value);
+  }
+
+  // 默认为晴天
+  const weatherMode = ref('clear');
+  // 切换天气
+  function changeWeatherMode() {
+    emit('changeWeatherMode', weatherMode.value);
+  }
+
+
+
+  // 要向父组件发送的事件
+  const emit = defineEmits([
+    'toggle-buildingsLayer',
+    'toggle-waterLayer',
+    'toggle-roadsLayer',
+    'toggle-railwaysLayer',
+    'changeDayOrNight',
+    'changeWeatherMode'
+  ]);
+
 </script>
 
 <template>
@@ -74,9 +133,9 @@ function topView() {
                 class="el-menu"
                 mode="vertical"
                 :collapse="isCollapse"
-                background-color="rgba(5, 10, 25, 0.85)"
+                background-color="rgba(5, 10, 25, 0.7)"
                 text-color="#f3f3f3"
-                active-text-color="rgba(51, 153, 255, 0.9)"
+                active-text-color="rgba(51, 153, 255, 0.8)"
             >
               <el-sub-menu index="1">
                 <template #title>
@@ -90,17 +149,69 @@ function topView() {
                 <template #title>
                   <font-awesome-icon icon="layer-group"/>&nbsp;图层管理
                 </template>
-                <el-menu-item index="2-1">建筑图层</el-menu-item>
-                <el-menu-item index="2-2">水系图层</el-menu-item>
-                <el-menu-item index="2-3">道路图层</el-menu-item>
+                <el-menu-item index="2-1">
+                  <el-checkbox label="建筑图层" v-model="showBuildings" @change="changeBuildingsVisibility"/>
+                </el-menu-item>
+
+                <el-menu-item index="2-2">
+                  <el-checkbox label="水系图层" v-model="showWater" @change="changeWaterVisibility"/>
+                </el-menu-item>
+
+                <el-menu-item index="2-3">
+                  <el-checkbox label="公路图层" v-model="showRoads" @change="changeRoadsVisibility"/>
+                </el-menu-item>
+
+                <el-menu-item index="2-4">
+                  <el-checkbox label="铁路图层" v-model="showRailways" @change="changeRailwaysVisibility"/>
+                </el-menu-item>
               </el-sub-menu>
 
               <el-sub-menu index="3">
                 <template #title>
                   <font-awesome-icon icon="cloud"/>&nbsp;场景设置
                 </template>
-                <el-menu-item index="3-1">天气设置</el-menu-item>
-                <el-menu-item index="3-2">时间设置</el-menu-item>
+
+                <el-sub-menu index="3-1">
+                  <template #title>
+                    天气设置
+                  </template>
+                  <el-menu-item index="3-1-1">
+                    <el-radio value="clear" v-model="weatherMode" @change="changeWeatherMode">
+                      晴天
+                    </el-radio>
+                  </el-menu-item>
+
+                  <el-menu-item index="3-1-2">
+                    <el-radio value="rain" v-model="weatherMode" @change="changeWeatherMode">
+                      雨天
+                    </el-radio>
+                  </el-menu-item>
+
+                  <el-menu-item index="3-1-3">
+                    <el-radio value="snow" v-model="weatherMode" @change="changeWeatherMode">
+                      雪天
+                    </el-radio>
+                  </el-menu-item>
+                </el-sub-menu>
+
+                <el-sub-menu index="3-2">
+                  <template #title>
+                    时间设置
+                  </template>
+
+                  <el-menu-item index="3-2-1">
+                    <el-radio value="day" v-model="skyBoxMode" @change="changeDayOrNight">
+                      白天
+                    </el-radio>
+                  </el-menu-item>
+
+                  <el-menu-item index="3-2-2">
+                    <el-radio value="night" v-model="skyBoxMode" @change="changeDayOrNight">
+                      夜晚
+                    </el-radio>
+                  </el-menu-item>
+                </el-sub-menu>
+
               </el-sub-menu>
             </el-menu>
           </el-col>
@@ -181,6 +292,6 @@ function topView() {
 /* 菜单项样式优化 */
 :deep(.el-menu-item:hover),
 :deep(.el-sub-menu__title:hover) {
-  background-color: rgba(51, 153, 255, 0.6) !important;
+  background-color: rgba(51, 153, 255, 0.5);
 }
 </style>

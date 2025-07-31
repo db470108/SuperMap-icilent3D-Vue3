@@ -41,7 +41,7 @@
   pointer-events: none;
   z-index: 1000;
   position: absolute;
-  left: 45vw;
+  left: 44vw;
 }
 
 </style>

@@ -17,7 +17,15 @@
         />
 
 <!--       侧边菜单 -->
-        <LeftMenu/>
+        <LeftMenu
+            @toggle-buildingsLayer="handleChangeBuildingsVisibility"
+            @toggle-waterLayer="handleChangeWaterVisibility"
+            @toggle-roadsLayer="handleChangeRoadsVisibility"
+            @toggle-railwaysLayer="handleChangeRailwaysVisibility"
+            @changeSkyBox="handleChangeSkyBox"
+            @changeDayOrNight="handleChangeDayOrNight"
+            @changeWeatherMode="handleChangeWeatherMode"
+        />
 
 <!--         上层的横幅和按钮 -->
         <BannerBar/>
