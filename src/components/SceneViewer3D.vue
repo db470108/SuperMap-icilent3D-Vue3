@@ -10,6 +10,7 @@ import axios from "@/utils/axios.js";
 
   const SuperMap3D = window.SuperMap3D;
   let viewer;
+  let timeCheckInterval = null; // 用于存储时间检查的定时器
 
   // 接受PlatformPage传来的参数
   const props = defineProps({
@@ -17,7 +18,6 @@ import axios from "@/utils/axios.js";
     showWater: Boolean,
     showRoads: Boolean,
     showRailways: Boolean,
-    showSkyBox: Boolean,
     skyBoxMode: String,
     weatherMode: String,
     isBuildingInfoWindowOpen: Boolean,
@@ -104,17 +104,10 @@ import axios from "@/utils/axios.js";
     }, 100);
 
     // 初始化天空盒
-    viewer.scene.skyBox = new SuperMap3D.SkyBox({
-      show: true,
-      sources: {
-        positiveX : 'Day/Right.jpg',
-        negativeX : 'Day/Left.jpg',
-        positiveY : 'Day/Front.jpg',
-        negativeY : 'Day/Back.jpg',
-        positiveZ : 'Day/Top.jpg',
-        negativeZ : 'Day/Down.jpg'
-      }
-    });
+    initializeSkyBox();
+
+    // 每分钟检查一次时间并更新天空盒
+    timeCheckInterval = setInterval(updateSkyBoxByTime, 60000);
 
     // 添加Mapbox矢量底图
     viewer.imageryLayers.addImageryProvider(
@@ -230,13 +223,55 @@ import axios from "@/utils/axios.js";
   })
 
   onUnmounted(() => {
+    // 清除定时器
+    if (timeCheckInterval) {
+      clearInterval(timeCheckInterval);
+    }
+
     if (window.viewer) {
       window.viewer.destroy()
       window.viewer = null
     }
   })
 
+  // 根据当前时间获取合适的天空盒类型
+  function getCurrentSkyBoxMode() {
+    const now = new Date();
+    const hours = now.getHours();
 
+    // 根据小时数判断时间段
+    if (hours >= 6 && hours < 16) {
+      return 'day'; // 白天 (6:00-16:00)
+    } else if (hours >= 7 && hours < 18) {
+      return 'sunset'; // 日落 (16:00-19:00)
+    } else {
+      return 'night'; // 夜晚 (19:00-6:00)
+    }
+  }
+
+  // 初始化天空盒
+  function initializeSkyBox() {
+    // 如果模式为自动，则根据时间加载合适的天空盒
+    if (!props.skyBoxMode || props.skyBoxMode === 'auto') {
+      loadAppropriateSkyBoxByTime();
+    } else {
+      loadSkyBox(props.skyBoxMode);
+    }
+  }
+
+  // 根据当前时间加载合适的天空盒
+  function loadAppropriateSkyBoxByTime() {
+    const skyBoxMode = getCurrentSkyBoxMode();
+    loadSkyBox(skyBoxMode);
+  }
+
+  // 更新天空盒（根据时间）
+  function updateSkyBoxByTime() {
+    // 只有当模式为自动时才自动更新
+    if (!props.skyBoxMode || props.skyBoxMode === 'auto') {
+      loadAppropriateSkyBoxByTime();
+    }
+  }
 
   // 建筑物图层的监视
   watch(() => props.showBuildings, (value) => {
@@ -273,8 +308,6 @@ import axios from "@/utils/axios.js";
     viewer.scene.layers.remove('buildings_3D', false);
   }
 
-
-
   // 水体图层的监视
   watch(() => props.showWater, (value) => {
     value ? loadWater() : unloadWater();
@@ -287,8 +320,6 @@ import axios from "@/utils/axios.js";
     let waterLayer = viewer.scene.layers.find('water@wuhan');
     waterLayer.visible = false;
   }
-
-
 
   // 公路图层的监视
   watch(() => props.showRoads, (value) => {
@@ -303,8 +334,6 @@ import axios from "@/utils/axios.js";
     roadsLayer.visible = false;
   }
 
-
-
   // 公路图层的监视
   watch(() => props.showRailways, (value) => {
     value ? loadRailways() : unloadRailways();
@@ -318,19 +347,23 @@ import axios from "@/utils/axios.js";
     railwaysLayer.visible = false;
   }
 
-  // 是否开启天空盒的监视
-  watch(() => props.showSkyBox, (visible) => {
-    visible ? loadSkyBox(props.skyBoxMode) : unloadSkyBox();
-  })
-
-  // 天空盒的模式(白天/夜晚)
+  // 天空盒模式的监视
   watch(() => props.skyBoxMode, (mode) => {
-    if (props.showSkyBox) {
+    if (mode === 'auto') {
+      loadAppropriateSkyBoxByTime();
+    } else {
       loadSkyBox(mode);
     }
   })
 
   function loadSkyBox (mode) {
+    // 如果没有指定模式且模式为auto，则根据时间自动选择
+    if (!mode || mode === 'auto') {
+      mode = getCurrentSkyBoxMode();
+    }
+
+    console.log("加载天空盒模式:", mode); // 调试信息
+
     if (mode === 'day') {
       loadDaySkyBox();
     } else if (mode === 'night') {
@@ -351,6 +384,7 @@ import axios from "@/utils/axios.js";
 
   // 加载白天的天空盒
   function loadDaySkyBox () {
+    console.log("加载白天天空盒");
     viewer.scene.skyBox = new SuperMap3D.SkyBox({
       show: true,
       sources: {
@@ -366,6 +400,7 @@ import axios from "@/utils/axios.js";
 
   // 加载傍晚的天空盒
   function loadSunsetSkyBox () {
+    console.log("加载傍晚天空盒");
     viewer.scene.skyBox = new SuperMap3D.SkyBox({
       show: true,
       imageUrl:'Sunset/kloppenheim_06_puresky_4k.hdr'
@@ -374,6 +409,7 @@ import axios from "@/utils/axios.js";
 
   // 加载夜晚的天空盒子
   function loadNightSkyBox () {
+    console.log("加载夜晚天空盒");
     viewer.scene.skyBox = new SuperMap3D.SkyBox({
       show: true,
       sources: {

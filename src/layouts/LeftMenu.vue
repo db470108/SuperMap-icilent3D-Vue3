@@ -107,8 +107,8 @@ import { useRouter } from 'vue-router';
   }
 
   // 切换天气和时间
-  // 默认为白天
-  const skyBoxMode = ref('day');
+  // 默认为自动模式
+  const skyBoxMode = ref('auto'); // 'auto', 'day', 'night', 'sunset'
   // 切换白天或夜晚
   function changeDayOrNight() {
     emit('changeDayOrNight', skyBoxMode.value);
@@ -240,6 +240,12 @@ import { useRouter } from 'vue-router';
                   <template #title>
                     时间设置
                   </template>
+
+                  <el-menu-item index="3-2-0">
+                    <el-radio value="auto" v-model="skyBoxMode" @change="changeDayOrNight">
+                      自动
+                    </el-radio>
+                  </el-menu-item>
 
                   <el-menu-item index="3-2-1">
                     <el-radio value="day" v-model="skyBoxMode" @change="changeDayOrNight">

@@ -10,7 +10,6 @@
             :show-water="showWater"
             :show-roads="showRoads"
             :show-railways="showRailways"
-            :show-sky-box="showSkyBox"
             :sky-box-mode="skyBoxMode"
             :weather-mode="weatherMode"
             @select-building="handleSelectBuilding"
@@ -24,7 +23,6 @@
             @toggle-waterLayer="handleChangeWaterVisibility"
             @toggle-roadsLayer="handleChangeRoadsVisibility"
             @toggle-railwaysLayer="handleChangeRailwaysVisibility"
-            @changeSkyBox="handleChangeSkyBox"
             @changeDayOrNight="handleChangeDayOrNight"
             @changeWeatherMode="handleChangeWeatherMode"
             @logout="logout"
@@ -115,12 +113,8 @@
 
 
   // 场景设置
-  const showSkyBox = ref(true);
-  const skyBoxMode = ref("day");
+  const skyBoxMode = ref("auto"); // 默认为自动模式
   const weatherMode = ref("clear");
-  function handleChangeSkyBox(val) {
-    showSkyBox.value = val;
-  }
 
   function handleChangeDayOrNight(val) {
     skyBoxMode.value = val;
