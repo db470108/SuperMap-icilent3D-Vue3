@@ -76,7 +76,7 @@ function topView() {
                 :collapse="isCollapse"
                 background-color="rgba(5, 10, 25, 0.85)"
                 text-color="#f3f3f3"
-                active-text-color="#4aa8a8"
+                active-text-color="rgba(51, 153, 255, 0.9)"
             >
               <el-sub-menu index="1">
                 <template #title>
@@ -138,6 +138,11 @@ function topView() {
   z-index: 1001; /* 确保按钮在BannerBar之上 */
 }
 
+.menu-toggle-btn:hover {
+  border-color: rgba(51, 102, 204, 0.6);
+  transform: scale(1.05);
+}
+
 .side-menu {
   transition: all 0.3s;
   position: absolute;
@@ -176,6 +181,6 @@ function topView() {
 /* 菜单项样式优化 */
 :deep(.el-menu-item:hover),
 :deep(.el-sub-menu__title:hover) {
-  background-color: rgba(74, 168, 168, 0.2) !important;
+  background-color: rgba(51, 153, 255, 0.6) !important;
 }
 </style>
