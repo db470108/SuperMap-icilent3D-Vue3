@@ -90,6 +90,14 @@ import axios from "@/utils/axios.js";
     viewer.scene.globe.enableLighting = false; // 关闭地球光照，开启后画面明显卡顿
     viewer.scene.sun.show = true;
 
+    // 隐藏credits
+    setTimeout(() => {
+      const creditsElements = document.querySelectorAll('.supermap3d-widget-credits');
+      creditsElements.forEach(el => {
+        el.style.display = 'none';
+      });
+    }, 100);
+
     // 初始化天空盒
     viewer.scene.skyBox = new SuperMap3D.SkyBox({
       show: true,
