@@ -115,7 +115,7 @@ import { useRouter } from 'vue-router';
   }
 
   // 默认为晴天
-  const weatherMode = ref('clear');
+  const weatherMode = ref('auto'); // 'auto', 'clear', 'rain', 'snow'
   // 切换天气
   function changeWeatherMode() {
     emit('changeWeatherMode', weatherMode.value);
@@ -217,6 +217,13 @@ import { useRouter } from 'vue-router';
                   <template #title>
                     天气设置
                   </template>
+
+                  <el-menu-item index="3-1-0">
+                    <el-radio value="auto" v-model="weatherMode" @change="changeWeatherMode">
+                      自动
+                    </el-radio>
+                  </el-menu-item>
+
                   <el-menu-item index="3-1-1">
                     <el-radio value="clear" v-model="weatherMode" @change="changeWeatherMode">
                       晴天

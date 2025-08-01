@@ -47,8 +47,8 @@
 <!--         搜索框 -->
         <Search @fly-to-building="handleFlyToBuilding"/>
 
-<!--        天气显示-->
-        <WeatherDisplay/>
+<!--         天气显示 -->
+        <WeatherDisplay />
       </div>
 
     </div>
@@ -57,14 +57,14 @@
 <script setup>
   import BannerBar from "@/components/BannerBar.vue";
   import SceneViewer3D from "@/components/SceneViewer3D.vue";
-  import {ref, onMounted} from "vue";
+  import {ref, onMounted, onUnmounted} from "vue";
   import TimeDisplay from "@/components/TimeDisplay.vue";
   import FullScreen from "@/components/FullScreen.vue";
   import BuildingInfoWindow from "@/components/BuildingInfoWindow.vue";
   import Search from "@/components/Search.vue";
   import LeftMenu from "@/layouts/LeftMenu.vue";
-  import {useRouter} from "vue-router";
   import WeatherDisplay from "@/components/WeatherDisplay.vue";
+  import {useRouter} from "vue-router";
 
   // 获取用户信息
   const user = ref(null);
@@ -80,6 +80,14 @@
       // 如果没有有效的用户信息，重定向到登录页
       router.push('/welcome');
     }
+
+    // 监听天气更新事件
+    window.addEventListener('weatherUpdate', handleWeatherUpdate);
+  });
+
+  onUnmounted(() => {
+    // 移除事件监听
+    window.removeEventListener('weatherUpdate', handleWeatherUpdate);
   });
 
   const router = useRouter();
@@ -114,11 +122,9 @@
     showRailways.value = val;
   }
 
-
-
   // 场景设置
   const skyBoxMode = ref("auto"); // 默认为自动模式
-  const weatherMode = ref("auto"); // 默认为自动模式
+  const weatherMode = ref("clear");
 
   function handleChangeDayOrNight(val) {
     skyBoxMode.value = val;
@@ -127,9 +133,6 @@
   function handleChangeWeatherMode(val) {
     weatherMode.value = val;
   }
-
-
-
 
   // 建筑物信息弹窗
   const selectedBuilding = ref(null);
@@ -148,7 +151,6 @@
     isBuildingInfoWindowOpen.value = false;
   }
 
-
   // 添加SceneViewer3D的引用
   const sceneViewer3DRef = ref(null);
   // 处理点击后飞向建筑物
@@ -159,6 +161,24 @@
     }
   }
 
+  // 处理天气更新
+  function handleWeatherUpdate(event) {
+    const { weather } = event.detail;
+
+    // 根据天气自动调整场景
+    if (weather.includes('雨')) {
+      weatherMode.value = 'rain';
+    } else if (weather.includes('雪')) {
+      weatherMode.value = 'snow';
+    } else {
+      weatherMode.value = 'clear';
+    }
+
+    // 如果是晴天，可以考虑根据时间调整天空盒
+    if (weather.includes('晴')) {
+      skyBoxMode.value = 'auto'; // 使用自动模式，根据时间切换
+    }
+  }
 </script>
 
 <style scoped>

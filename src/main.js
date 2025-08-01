@@ -17,7 +17,14 @@ import {
   faLayerGroup,
   faUser,
   faRightFromBracket,
-  faRightToBracket
+  faRightToBracket,
+  faSun,
+  faSnowflake,
+  faCloudRain,
+  faWind,
+  faTint,
+  faTemperatureHigh,
+  faTemperatureLow
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import ElementPlus from 'element-plus'
@@ -38,7 +45,14 @@ library.add(
   faLayerGroup,
   faUser,
   faRightFromBracket,
-  faRightToBracket
+  faRightToBracket,
+  faSun,
+  faSnowflake,
+  faCloudRain,
+  faWind,
+  faTint,
+  faTemperatureHigh,
+  faTemperatureLow
 );
 
 // 创建 Vue 应用
