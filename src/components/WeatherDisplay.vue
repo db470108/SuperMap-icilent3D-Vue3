@@ -2,8 +2,10 @@
 import { onMounted, reactive, ref, watch } from "vue";
 import * as echarts from 'echarts';
 import {usePanelStore} from "@/store/panel.js";
+import {useWeatherStore} from "@/store/weather.js";
 
 const panelStore = usePanelStore();
+const weatherStore = useWeatherStore();
 
 const weatherInfo = reactive([]);
 
@@ -28,7 +30,10 @@ const getCurrentWeather = async (city) => {
     // 确保数据存在再赋值
     if (data.lives && data.lives.length > 0) {
       Object.assign(weatherInfo, data.lives[0]);
+      // 更新store中的天气
+      weatherStore.setCurrentWeather(weatherInfo.weather);
     }
+
   } catch (error) {
     console.error('请求当前天气失败:', error);
   }
@@ -47,6 +52,7 @@ const getForecastWeather = async (city) => {
     if (data.forecasts && data.forecasts.length > 0) {
       Object.assign(forecastInfo, data.forecasts[0].casts);
     }
+
   } catch (error) {
     console.error('请求天气预报失败:', error);
   }
@@ -186,7 +192,7 @@ watch(() => panelStore.activePanel, (newPanel) => {
 
 onMounted(() => {
   // 获取当前天气
-  getCurrentWeather('420100'); // 武汉市的 cityCode
+  getCurrentWeather('420100'); // 武汉市的 cityCode:420100
 
   // 每30分钟更新一次天气
   setInterval(() => {

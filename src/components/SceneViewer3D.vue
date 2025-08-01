@@ -7,6 +7,9 @@
 <script setup>
 import {onMounted, onUnmounted, watch} from "vue";
 import axios from "@/utils/axios.js";
+import {useWeatherStore} from "@/store/weather.js";
+
+  const weatherStore = useWeatherStore();
 
   const SuperMap3D = window.SuperMap3D;
   let viewer;
@@ -423,6 +426,16 @@ import axios from "@/utils/axios.js";
   }
 
   // 天气的监视
+  watch(() => weatherStore.currentWeather, (weather) => {
+    if (weather.includes('雨')) {
+      loadRainWeather();
+    } else if (weather.includes('雪')) {
+      loadSnowWeather();
+    } else {
+      loadClearWeather();
+    }
+  })
+
   watch(() => props.weatherMode, (weather) => {
     applyWeather(weather);
   })
