@@ -77,7 +77,6 @@ import axios from "@/utils/axios.js";
     flyToBuilding
   });
 
-  
   onMounted(()=> {
     viewer = new SuperMap3D.Viewer('SceneViewer3D-Container', {
       imageryProvider: false, // 取消默认底图
