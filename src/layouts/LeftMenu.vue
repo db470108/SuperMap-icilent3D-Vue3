@@ -40,9 +40,9 @@ import { useRouter } from 'vue-router';
       // 如果菜单不可见，先显示菜单再展开
       isMenuVisible.value = true;
       // 使用nextTick确保DOM更新后再展开菜单
-      setTimeout(() => {
+      nextTick(() => {
         isCollapse.value = false;
-      }, 0);
+      })
     } else {
       // 如果菜单可见，则先收起再隐藏
       isCollapse.value = true;
@@ -161,8 +161,7 @@ import { useRouter } from 'vue-router';
               <!-- 用户信息区域 -->
               <el-sub-menu index="0" v-if="isLoggedIn">
                 <template #title>
-                  <font-awesome-icon icon="user"/>&nbsp;
-                  <span>用户管理</span>
+                  <font-awesome-icon icon="user"/>&nbsp;用户管理
                 </template>
                 <el-menu-item index="0-1" disabled>
                   <span class="user-name" v-if="userType === 'admin'">
