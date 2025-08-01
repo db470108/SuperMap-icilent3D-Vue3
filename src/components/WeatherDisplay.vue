@@ -292,7 +292,13 @@ onMounted(() => {
               <font-awesome-icon icon="clock" class="detail-icon" />
               <div class="detail-info">
                 <div class="detail-label">更新时间</div>
-                <div class="detail-value">{{ weatherInfo.reporttime }}</div>
+                <div class="detail-value">
+                  {{
+                    weatherInfo.reporttime.split('-')[0] + "/" +
+                    weatherInfo.reporttime.split('-')[1] + "/" +
+                    weatherInfo.reporttime.split('-')[2]
+                  }}
+                </div>
               </div>
             </div>
           </div>
@@ -312,7 +318,8 @@ onMounted(() => {
               :key="index"
               class="forecast-item"
             >
-              <div class="forecast-date">{{ forecast.date }}</div>
+              <div class="forecast-date">{{ formatDate(forecast.date) }}</div>
+              <div class="forecast-day">{{ formatWeekday(forecast.week) }}</div>
               <div class="forecast-weather">
                 <font-awesome-icon :icon="getWeatherIcon(forecast.dayweather)" class="forecast-icon" />
               </div>
@@ -368,19 +375,20 @@ onMounted(() => {
 /* 详细天气面板 */
 .weather-detail-panel {
   position: absolute;
-  bottom: 95px;
+  bottom: 100px;
   right: 20px;
-  width: 480px;
+  width: 460px;
   max-height: 80vh;
   background: rgba(5, 10, 25, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(51, 102, 204, 0.3);
+  border: 1px solid rgba(58, 112, 214, 0.65);
   border-radius: 12px;
   padding: 20px;
   color: #f4f0f0;
   z-index: 10000;
   overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  user-select: none;
 }
 
 .panel-header {
@@ -474,7 +482,7 @@ onMounted(() => {
 }
 
 .detail-value {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: bold;
 }
 
@@ -517,8 +525,14 @@ onMounted(() => {
 }
 
 .forecast-date {
-  font-size: 12px;
-  color: #aaa;
+  font-size: 13px;
+  color: white;
+  margin-bottom: 5px;
+}
+
+.forecast-day {
+  font-size: 13px;
+  color: white;
   margin-bottom: 5px;
 }
 
@@ -546,7 +560,8 @@ onMounted(() => {
 
 .forecast-desc {
   font-size: 12px;
-  color: #aaa;
+  color: white;
+  font-weight: bold;
 }
 
 /* 渐进过渡动画 */
