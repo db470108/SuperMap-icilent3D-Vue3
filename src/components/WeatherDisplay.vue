@@ -58,6 +58,37 @@ const getForecastWeather = async (city) => {
   }
 };
 
+// 格式化日期，去除‘-’，并加上月日
+function formatDate(date) {
+  const parts = date.split('-');
+  const year = Number(parts[0]);
+  const month = Number(parts[1]);
+  const day = Number(parts[2]);
+  return `${year}年${month}月${day}日`;
+}
+
+// 格式化星期几
+function formatWeekday(day) {
+  switch (day) {
+    case '1':
+      return '星期一';
+    case '2':
+      return '星期二';
+    case '3':
+      return '星期三';
+    case '4':
+      return '星期四';
+    case '5':
+      return '星期五';
+    case '6':
+      return '星期六';
+    case '7':
+      return '星期日';
+    default:
+      return '';
+  }
+}
+
 // 初始化图表
 function initChart() {
   if (!forecastInfo.length) return;
