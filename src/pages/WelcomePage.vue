@@ -1,15 +1,21 @@
 <script setup>
   import {useRouter} from "vue-router";
   import {ref} from "vue";
+  import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 
   const router = useRouter();
-  const loading = ref(false);
-  const showLogin = ref(false);
+
+  const loading = ref(false); // 控制加载动画是否显示
+
+  // 登录表单
+  const showLogin = ref(false); // 控制登录窗口显示与否
   const username = ref('');
   const password = ref('');
-  const userType = ref('citizen'); // citizen 或 admin
-  const loginError = ref('');
+  const userType = ref('citizen'); // 默认用户类型为“市民”
+  const loginError = ref(''); // 登录失败提示文字
+  const isPasswordVisible = ref(false); // 密码默认不可见
 
+  // 登录成功后进入平台
   function enterPlatform () {
     loading.value = true;
     setTimeout(()=>{
@@ -17,11 +23,13 @@
     }, 1000)
   }
 
+  // 进入登录界面&取消登录
   function toggleLogin() {
-    showLogin.value = !showLogin.value;
+    showLogin.value = !showLogin.value; // 控制是否显示登录界面
     loginError.value = '';
   }
 
+  // 确认登录
   function handleLogin() {
     // 简单验证
     if (!username.value || !password.value) {
@@ -57,6 +65,11 @@
         loginError.value = '用户名或密码错误';
       }
     }
+  }
+
+  // 切换密码可见性
+  function changePasswordVisibility() {
+    isPasswordVisible.value = !isPasswordVisible.value;
   }
 </script>
 
@@ -111,10 +124,15 @@
           <label for="password">密码:</label>
           <input
             id="password"
-            type="password"
+            :type="isPasswordVisible ? 'text' : 'password'"
             v-model="password"
             placeholder="请输入密码"
             @keyup.enter="handleLogin"
+          />
+          <font-awesome-icon
+              :icon="isPasswordVisible ? 'eye-slash' : 'eye'"
+              class="isPasswordVisible"
+              @click="changePasswordVisibility"
           />
         </div>
 
@@ -260,6 +278,7 @@
   background: rgba(12, 28, 44, 0.8);
   backdrop-filter: blur(5px);
   z-index: 10;
+  user-select: none;
 }
 
 .login-form {
@@ -287,6 +306,12 @@
   color: #e0e0e0;
 }
 
+.isPasswordVisible{
+  position: absolute;
+  top: 463px;
+  left: 970px;
+}
+
 .user-type-selector {
   display: flex;
   gap: 20px;
@@ -299,8 +324,9 @@
   cursor: pointer;
 }
 
-.radio-label input {
+.radio-label input[type="radio"]:checked {
   cursor: pointer;
+  accent-color: rgba(0, 191, 255, 0.75);
 }
 
 .form-group input {
