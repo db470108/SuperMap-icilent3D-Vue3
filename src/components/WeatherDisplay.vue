@@ -1,29 +1,19 @@
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 import * as echarts from 'echarts';
+import {usePanelStore} from "@/store/panel.js";
 
-const weatherInfo = reactive({
-  temperature: '',
-  weather: '',
-  city: '',
-  humidity: '',
-  winddirection: '',
-  windpower: '',
-  reporttime: ''
-});
+const panelStore = usePanelStore();
 
-const forecastInfo = ref([]); // 天气预报信息
-const showDetailPanel = ref(false); // 控制详细面板显示
+const weatherInfo = reactive([]);
+
+const forecastInfo = reactive([]); // 天气预报信息
 let chart = null; // 图表实例
 
 // 切换详细面板显示
 function toggleDetailPanel() {
-  showDetailPanel.value = !showDetailPanel.value;
-
-  // 如果面板打开，获取详细天气信息
-  if (showDetailPanel.value) {
-    getForecastWeather('420100');
-  }
+  panelStore.togglePanel('weather');
+  console.log("当前打开的面板为：", panelStore.activePanel)
 }
 
 // 获取当前天气
@@ -55,7 +45,7 @@ const getForecastWeather = async (city) => {
     console.log('天气预报信息:', data);
     // 确保数据存在再赋值
     if (data.forecasts && data.forecasts.length > 0) {
-      forecastInfo.value = data.forecasts[0].casts;
+      Object.assign(forecastInfo, data.forecasts[0].casts);
     }
   } catch (error) {
     console.error('请求天气预报失败:', error);
@@ -64,7 +54,7 @@ const getForecastWeather = async (city) => {
 
 // 初始化图表
 function initChart() {
-  if (!forecastInfo.value.length) return;
+  if (!forecastInfo.length) return;
 
   // 使用 nextTick 确保 DOM 已更新
   setTimeout(() => {
@@ -78,9 +68,9 @@ function initChart() {
       chart = echarts.init(chartDom);
 
       // 处理数据
-      const dates = forecastInfo.value.map(item => item.date);
-      const highs = forecastInfo.value.map(item => parseInt(item.daytemp));
-      const lows = forecastInfo.value.map(item => parseInt(item.nighttemp));
+      const dates = forecastInfo.map(item => item.date);
+      const highs = forecastInfo.map(item => parseInt(item.daytemp));
+      const lows = forecastInfo.map(item => parseInt(item.nighttemp));
 
       const option = {
         title: {
@@ -164,7 +154,7 @@ function getWeatherIcon(weather) {
 
 // 关闭详细面板
 function closeDetailPanel() {
-  showDetailPanel.value = false;
+  panelStore.closePanel();
 }
 
 // 清理图表资源
@@ -177,10 +167,22 @@ function cleanupChart() {
 
 // 在面板打开动画完成后初始化图表
 function handleEnterFinished() {
-  if (showDetailPanel.value && forecastInfo.value.length > 0) {
+  if (panelStore.activePanel === 'weather' && forecastInfo.length > 0) {
     initChart();
   }
 }
+
+// 监听面板状态变化
+watch(() => panelStore.activePanel, (newPanel) => {
+    if (newPanel === 'weather') {
+      // 面板打开时获取天气预报数据
+      getForecastWeather('420100');
+    } else {
+      // 面板关闭时清理图表
+      cleanupChart();
+    }
+  }
+);
 
 onMounted(() => {
   // 获取当前天气
@@ -209,7 +211,7 @@ onMounted(() => {
       @after-leave="cleanupChart"
       @after-enter="handleEnterFinished"
     >
-      <div v-if="showDetailPanel" class="weather-detail-panel">
+      <div v-if="panelStore.activePanel === 'weather'" class="weather-detail-panel">
         <div class="panel-header">
           <h2>武汉市天气详情</h2>
           <button class="close-btn" @click="closeDetailPanel">
@@ -329,7 +331,7 @@ onMounted(() => {
 /* 详细天气面板 */
 .weather-detail-panel {
   position: absolute;
-  bottom: 100px;
+  bottom: 95px;
   right: 20px;
   width: 480px;
   max-height: 80vh;
@@ -431,10 +433,11 @@ onMounted(() => {
 .detail-label {
   font-size: 12px;
   color: #aaa;
+  font-weight: bold;
 }
 
 .detail-value {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: bold;
 }
 
