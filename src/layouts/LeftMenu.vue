@@ -27,7 +27,6 @@ import { useRouter } from 'vue-router';
     'logout'
   ]);
 
-  const router = useRouter();
 
   // 控制菜单展开/收起状态
   const isCollapse = ref(true);
