@@ -23,10 +23,6 @@ function toggleDetailPanel() {
   // 如果面板打开，获取详细天气信息
   if (showDetailPanel.value) {
     getForecastWeather('420100');
-    // 在下次DOM更新后初始化图表
-    setTimeout(() => {
-      initChart();
-    }, 100);
   }
 }
 
@@ -70,75 +66,83 @@ const getForecastWeather = async (city) => {
 function initChart() {
   if (!forecastInfo.value.length) return;
 
-  const chartDom = document.getElementById('weather-chart');
-  if (chartDom) {
-    chart = echarts.init(chartDom);
-
-    // 处理数据
-    const dates = forecastInfo.value.map(item => item.date);
-    const highs = forecastInfo.value.map(item => parseInt(item.daytemp));
-    const lows = forecastInfo.value.map(item => parseInt(item.nighttemp));
-
-    const option = {
-      title: {
-        text: '武汉未来天气预报',
-        textStyle: {
-          color: '#f4f0f0',
-          fontSize: 16
-        }
-      },
-      tooltip: {
-        trigger: 'axis'
-      },
-      legend: {
-        data: ['最高温度', '最低温度'],
-        textStyle: {
-          color: '#f4f0f0'
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: dates,
-        axisLabel: {
-          color: '#f4f0f0'
-        }
-      },
-      yAxis: {
-        type: 'value',
-        axisLabel: {
-          color: '#f4f0f0',
-          formatter: '{value} °C'
-        }
-      },
-      series: [
-        {
-          name: '最高温度',
-          type: 'line',
-          data: highs,
-          smooth: true,
-          itemStyle: { color: '#ff9900' },
-          areaStyle: { color: 'rgba(255, 153, 0, 0.3)' }
-        },
-        {
-          name: '最低温度',
-          type: 'line',
-          data: lows,
-          smooth: true,
-          itemStyle: { color: '#4aa8a8' },
-          areaStyle: { color: 'rgba(74, 168, 168, 0.3)' }
-        }
-      ]
-    };
-
-    chart.setOption(option);
-
-    // 监听窗口大小变化
-    window.addEventListener('resize', () => {
+  // 使用 nextTick 确保 DOM 已更新
+  setTimeout(() => {
+    const chartDom = document.getElementById('weather-chart');
+    if (chartDom) {
+      // 如果图表已经存在，先销毁
       if (chart) {
-        chart.resize();
+        chart.dispose();
       }
-    });
-  }
+
+      chart = echarts.init(chartDom);
+
+      // 处理数据
+      const dates = forecastInfo.value.map(item => item.date);
+      const highs = forecastInfo.value.map(item => parseInt(item.daytemp));
+      const lows = forecastInfo.value.map(item => parseInt(item.nighttemp));
+
+      const option = {
+        title: {
+          text: '武汉未来天气预报',
+          textStyle: {
+            color: '#f4f0f0',
+            fontSize: 16
+          }
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        legend: {
+          data: ['最高温度', '最低温度'],
+          textStyle: {
+            color: '#f4f0f0'
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: dates,
+          axisLabel: {
+            color: '#f4f0f0'
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            color: '#f4f0f0',
+            formatter: '{value} °C'
+          }
+        },
+        series: [
+          {
+            name: '最高温度',
+            type: 'line',
+            data: highs,
+            smooth: true,
+            itemStyle: { color: '#ff9900' },
+            areaStyle: { color: 'rgba(255, 153, 0, 0.3)' }
+          },
+          {
+            name: '最低温度',
+            type: 'line',
+            data: lows,
+            smooth: true,
+            itemStyle: { color: '#4aa8a8' },
+            areaStyle: { color: 'rgba(74, 168, 168, 0.3)' }
+          }
+        ]
+      };
+
+      chart.setOption(option);
+
+      // 监听窗口大小变化
+      window.addEventListener('resize', () => {
+        if (chart) {
+          chart.resize();
+        }
+      });
+    }
+  }, 100);
 }
 
 // 获取天气图标
@@ -161,9 +165,20 @@ function getWeatherIcon(weather) {
 // 关闭详细面板
 function closeDetailPanel() {
   showDetailPanel.value = false;
+}
+
+// 清理图表资源
+function cleanupChart() {
   if (chart) {
     chart.dispose();
     chart = null;
+  }
+}
+
+// 在面板打开动画完成后初始化图表
+function handleEnterFinished() {
+  if (showDetailPanel.value && forecastInfo.value.length > 0) {
+    initChart();
   }
 }
 
@@ -181,7 +196,7 @@ onMounted(() => {
 <template>
   <div>
     <!-- 简要天气信息 -->
-    <div class="weather-display" @click="toggleDetailPanel" v-if="weatherInfo.city">
+    <div class="weather-display" @click="toggleDetailPanel" v-if="weatherInfo.city" :title="'点击查看天气详情'">
       <font-awesome-icon :icon="getWeatherIcon(weatherInfo.weather)" class="weather-icon" />
       {{ weatherInfo.city }}
       {{ weatherInfo.weather }}
@@ -189,83 +204,89 @@ onMounted(() => {
     </div>
 
     <!-- 详细天气信息面板 -->
-    <div v-if="showDetailPanel" class="weather-detail-panel">
-      <div class="panel-header">
-        <h2>武汉市天气详情</h2>
-        <button class="close-btn" @click="closeDetailPanel">
-          <font-awesome-icon icon="xmark" />
-        </button>
-      </div>
-
-      <div class="current-weather">
-        <div class="current-main">
-          <font-awesome-icon :icon="getWeatherIcon(weatherInfo.weather)" class="large-weather-icon" />
-          <div class="temperature">{{ weatherInfo.temperature }}°C</div>
-          <div class="weather-description">{{ weatherInfo.weather }}</div>
+    <transition
+      name="weather-panel"
+      @after-leave="cleanupChart"
+      @after-enter="handleEnterFinished"
+    >
+      <div v-if="showDetailPanel" class="weather-detail-panel">
+        <div class="panel-header">
+          <h2>武汉市天气详情</h2>
+          <button class="close-btn" @click="closeDetailPanel">
+            <font-awesome-icon icon="xmark" />
+          </button>
         </div>
 
-        <div class="current-details">
-          <div class="detail-item">
-            <font-awesome-icon icon="tint" class="detail-icon" />
-            <div class="detail-info">
-              <div class="detail-label">湿度</div>
-              <div class="detail-value">{{ weatherInfo.humidity }}%</div>
-            </div>
+        <div class="current-weather">
+          <div class="current-main">
+            <font-awesome-icon :icon="getWeatherIcon(weatherInfo.weather)" class="large-weather-icon" />
+            <div class="temperature">{{ weatherInfo.temperature }}°C</div>
+            <div class="weather-description">{{ weatherInfo.weather }}</div>
           </div>
 
-          <div class="detail-item">
-            <font-awesome-icon icon="wind" class="detail-icon" />
-            <div class="detail-info">
-              <div class="detail-label">风向</div>
-              <div class="detail-value">{{ weatherInfo.winddirection }}</div>
+          <div class="current-details">
+            <div class="detail-item">
+              <font-awesome-icon icon="tint" class="detail-icon" />
+              <div class="detail-info">
+                <div class="detail-label">湿度</div>
+                <div class="detail-value">{{ weatherInfo.humidity }}%</div>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <font-awesome-icon icon="wind" class="detail-icon" />
+              <div class="detail-info">
+                <div class="detail-label">风向</div>
+                <div class="detail-value">{{ weatherInfo.winddirection }}</div>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <font-awesome-icon icon="wind" class="detail-icon" />
+              <div class="detail-info">
+                <div class="detail-label">风力</div>
+                <div class="detail-value">{{ weatherInfo.windpower }}</div>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <font-awesome-icon icon="clock" class="detail-icon" />
+              <div class="detail-info">
+                <div class="detail-label">更新时间</div>
+                <div class="detail-value">{{ weatherInfo.reporttime }}</div>
+              </div>
             </div>
           </div>
+        </div>
 
-          <div class="detail-item">
-            <font-awesome-icon icon="wind" class="detail-icon" />
-            <div class="detail-info">
-              <div class="detail-label">风力</div>
-              <div class="detail-value">{{ weatherInfo.windpower }}</div>
-            </div>
-          </div>
+        <!-- 天气图表 -->
+        <div class="weather-chart-container">
+          <div id="weather-chart" class="weather-chart"></div>
+        </div>
 
-          <div class="detail-item">
-            <font-awesome-icon icon="clock" class="detail-icon" />
-            <div class="detail-info">
-              <div class="detail-label">更新时间</div>
-              <div class="detail-value">{{ weatherInfo.reporttime }}</div>
+        <!-- 未来几天天气预报 -->
+        <div class="forecast">
+          <h3>未来几天预报</h3>
+          <div class="forecast-list">
+            <div
+              v-for="(forecast, index) in forecastInfo"
+              :key="index"
+              class="forecast-item"
+            >
+              <div class="forecast-date">{{ forecast.date }}</div>
+              <div class="forecast-weather">
+                <font-awesome-icon :icon="getWeatherIcon(forecast.dayweather)" class="forecast-icon" />
+              </div>
+              <div class="forecast-temp">
+                <span class="high-temp">{{ forecast.daytemp }}°</span>
+                <span class="low-temp">{{ forecast.nighttemp }}°</span>
+              </div>
+              <div class="forecast-desc">{{ forecast.dayweather }}</div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- 天气图表 -->
-      <div class="weather-chart-container">
-        <div id="weather-chart" class="weather-chart"></div>
-      </div>
-
-      <!-- 未来几天天气预报 -->
-      <div class="forecast">
-        <h3>未来几天预报</h3>
-        <div class="forecast-list">
-          <div
-            v-for="(forecast, index) in forecastInfo"
-            :key="index"
-            class="forecast-item"
-          >
-            <div class="forecast-date">{{ forecast.date }}</div>
-            <div class="forecast-weather">
-              <font-awesome-icon :icon="getWeatherIcon(forecast.dayweather)" class="forecast-icon" />
-            </div>
-            <div class="forecast-temp">
-              <span class="high-temp">{{ forecast.daytemp }}°</span>
-              <span class="low-temp">{{ forecast.nighttemp }}°</span>
-            </div>
-            <div class="forecast-desc">{{ forecast.dayweather }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
@@ -349,7 +370,7 @@ onMounted(() => {
 }
 
 .close-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  color: #e15151;
 }
 
 /* 当前天气 */
@@ -399,7 +420,7 @@ onMounted(() => {
 
 .detail-icon {
   font-size: 20px;
-  color: rgba(51, 153, 255, 0.5);
+  color: rgba(51, 153, 255, 0.7);
 }
 
 .detail-info {
@@ -486,5 +507,38 @@ onMounted(() => {
 .forecast-desc {
   font-size: 12px;
   color: #aaa;
+}
+
+/* 渐进过渡动画 */
+.weather-panel-enter-active {
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.weather-panel-leave-active {
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.weather-panel-enter-from {
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  filter: blur(5px);
+}
+
+.weather-panel-enter-to {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.weather-panel-leave-from {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+.weather-panel-leave-to {
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  filter: blur(5px);
 }
 </style>

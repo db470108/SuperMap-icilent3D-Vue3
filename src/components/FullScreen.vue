@@ -87,7 +87,7 @@
 
 /* 悬停时变边框颜色 */
 .icon-border:hover {
-  border-color: rgba(51, 153, 255, 0.6);
+  color: rgba(51, 153, 255, 0.7);
 }
 
 /* 激活时边框颜色 */
