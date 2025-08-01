@@ -46,6 +46,9 @@
 
 <!--         搜索框 -->
         <Search @fly-to-building="handleFlyToBuilding"/>
+
+<!--        天气显示-->
+        <WeatherDisplay/>
       </div>
 
     </div>
@@ -61,6 +64,7 @@
   import Search from "@/components/Search.vue";
   import LeftMenu from "@/layouts/LeftMenu.vue";
   import {useRouter} from "vue-router";
+  import WeatherDisplay from "@/components/WeatherDisplay.vue";
 
   // 获取用户信息
   const user = ref(null);
@@ -114,7 +118,7 @@
 
   // 场景设置
   const skyBoxMode = ref("auto"); // 默认为自动模式
-  const weatherMode = ref("clear");
+  const weatherMode = ref("auto"); // 默认为自动模式
 
   function handleChangeDayOrNight(val) {
     skyBoxMode.value = val;
