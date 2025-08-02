@@ -378,12 +378,6 @@ import {useWeatherStore} from "@/store/weather.js";
     applyWeather(props.weatherMode);
   }
 
-  function unloadSkyBox () {
-    let skyBox = viewer.scene.skyBox;
-    skyBox.show = false;
-    loadClearWeather(); // 禁用天气效果
-  }
-
   // 加载白天的天空盒
   function loadDaySkyBox () {
     console.log("加载白天天空盒");
