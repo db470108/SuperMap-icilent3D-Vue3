@@ -7,9 +7,9 @@ import {useWeatherStore} from "@/store/weather.js";
 const panelStore = usePanelStore();
 const weatherStore = useWeatherStore();
 
-const weatherInfo = reactive([]);
+const weatherInfo = reactive({}); // 实时天气信息{}对象
 
-const forecastInfo = reactive([]); // 天气预报信息
+const forecastInfo = ref([]); // 天气预报信息[]数组
 let chart = null; // 图表实例
 
 // 切换详细面板显示
@@ -50,7 +50,7 @@ const getForecastWeather = async (city) => {
     console.log('天气预报信息:', data);
     // 确保数据存在再赋值
     if (data.forecasts && data.forecasts.length > 0) {
-      Object.assign(forecastInfo, data.forecasts[0].casts);
+      forecastInfo.value = data.forecasts[0].casts;
     }
 
   } catch (error) {
@@ -91,7 +91,7 @@ function formatWeekday(day) {
 
 // 初始化图表
 function initChart() {
-  if (!forecastInfo.length) return;
+  if (!forecastInfo.value.length) return;
 
   // 使用 nextTick 确保 DOM 已更新
   setTimeout(() => {
@@ -105,9 +105,9 @@ function initChart() {
       chart = echarts.init(chartDom);
 
       // 处理数据
-      const dates = forecastInfo.map(item => item.date);
-      const highs = forecastInfo.map(item => parseInt(item.daytemp));
-      const lows = forecastInfo.map(item => parseInt(item.nighttemp));
+      const dates = forecastInfo.value.map(item => item.date);
+      const highs = forecastInfo.value.map(item => parseInt(item.daytemp));
+      const lows = forecastInfo.value.map(item => parseInt(item.nighttemp));
 
       const option = {
         title: {
@@ -204,7 +204,7 @@ function cleanupChart() {
 
 // 在面板打开动画完成后初始化图表
 function handleEnterFinished() {
-  if (panelStore.activePanel === 'weather' && forecastInfo.length > 0) {
+  if (panelStore.activePanel === 'weather' && forecastInfo.value.length > 0) {
     initChart();
   }
 }
@@ -223,7 +223,7 @@ watch(() => panelStore.activePanel, (newPanel) => {
 
 onMounted(() => {
   // 获取当前天气
-  getCurrentWeather('420100'); // 武汉市的 cityCode:420100
+  getCurrentWeather('440300'); // 武汉市的 cityCode:420100
 
   // 每30分钟更新一次天气
   setInterval(() => {
