@@ -122,18 +122,20 @@
 
         <div class="form-group">
           <label for="password">密码:</label>
-          <input
-            id="password"
-            :type="isPasswordVisible ? 'text' : 'password'"
-            v-model="password"
-            placeholder="请输入密码"
-            @keyup.enter="handleLogin"
-          />
-          <font-awesome-icon
-              :icon="isPasswordVisible ? 'eye-slash' : 'eye'"
-              class="isPasswordVisible"
-              @click="changePasswordVisibility"
-          />
+          <div class="password-wrapper">
+            <input
+                id="password"
+                :type="isPasswordVisible ? 'text' : 'password'"
+                v-model="password"
+                placeholder="请输入密码"
+                @keyup.enter="handleLogin"
+            />
+            <font-awesome-icon
+                :icon="isPasswordVisible ? 'eye-slash' : 'eye'"
+                class="isPasswordVisible"
+                @click="changePasswordVisibility"
+            />
+          </div>
         </div>
 
         <div v-if="loginError" class="error-message">
@@ -306,10 +308,22 @@
   color: #e0e0e0;
 }
 
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px; /* 给右边腾出空间显示图标 */
+}
+
 .isPasswordVisible{
   position: absolute;
-  top: 463px;
-  left: 970px;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+  cursor: pointer;
 }
 
 .user-type-selector {
@@ -322,6 +336,8 @@
   align-items: center;
   gap: 5px;
   cursor: pointer;
+  text-align: center;
+  flex-direction: column;
 }
 
 .radio-label input[type="radio"]:checked {
