@@ -223,7 +223,7 @@ watch(() => panelStore.activePanel, (newPanel) => {
 
 onMounted(() => {
   // 获取当前天气
-  getCurrentWeather('440300'); // 武汉市的 cityCode:420100
+  getCurrentWeather('420100'); // 武汉市的 cityCode:420100
 
   // 每30分钟更新一次天气
   setInterval(() => {
