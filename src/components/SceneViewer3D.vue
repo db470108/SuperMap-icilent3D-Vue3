@@ -95,8 +95,6 @@ import {useWeatherStore} from "@/store/weather.js";
     // WebGL启用色调映射
     viewer.scene.postProcessStages.fxaa.enabled = true;  // 先开启后期处理
     viewer.scene.highDynamicRange = true;  // 启用HDR
-    // 调整曝光（关键参数）
-    viewer.scene.exposure = 0.3;  // 降低曝光，默认1.0，建议0.3-0.8
 
     // 隐藏credits
     setTimeout(() => {
@@ -118,6 +116,7 @@ import {useWeatherStore} from "@/store/weather.js";
           url: 'https://api.mapbox.com/styles/v1/x02lgc32/cmduh0nqv00oe01rh1n0sddaj/tiles/512/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoieDAybGdjMzIiLCJhIjoiY21jbTBpejVtMGNjczJscXFqOGc0OHgxMSJ9.g2aByb1XDIrtSF66FgfAtA',
           tilingScheme: new SuperMap3D.WebMercatorTilingScheme(),
           tileWidth: 512,
+          tileHeight: 512,
           maximumLevel: 20,
           minimumLevel: 1,
 
@@ -226,9 +225,9 @@ import {useWeatherStore} from "@/store/weather.js";
         const pitch = viewer.camera.pitch; // 弧度，俯视是负值
         const pitchDeg = SuperMap3D.Math.toDegrees(pitch); // 转换为角度
 
-        const maxVisibleHeight = 2300; // 超过此高度时完全透明
+        const maxVisibleHeight = 5000; // 超过此高度时完全透明
         const minVisibleHeight = 800;  // 低于此高度时完全不透明
-        const pitchThreshold = -60; // 只有俯仰角小于 -30° 才会出现建筑
+        const pitchThreshold = -70; // 只有俯仰角小于 -30° 才会出现建筑
 
         const buildingsLayer = viewer.scene.layers.find('buildings_3D');
         if (!buildingsLayer) return;
