@@ -115,7 +115,7 @@ import {useWeatherStore} from "@/store/weather.js";
     // 添加Mapbox矢量底图
     viewer.imageryLayers.addImageryProvider(
         new SuperMap3D.UrlTemplateImageryProvider({
-          url: 'https://api.mapbox.com/styles/v1/x02lgc32/cmcw2j5kg004001qs87hddjb1/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoieDAybGdjMzIiLCJhIjoiY21jbTBpejVtMGNjczJscXFqOGc0OHgxMSJ9.g2aByb1XDIrtSF66FgfAtA',
+          url: 'https://api.mapbox.com/styles/v1/x02lgc32/cmduh0nqv00oe01rh1n0sddaj/tiles/512/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoieDAybGdjMzIiLCJhIjoiY21jbTBpejVtMGNjczJscXFqOGc0OHgxMSJ9.g2aByb1XDIrtSF66FgfAtA',
           tilingScheme: new SuperMap3D.WebMercatorTilingScheme(),
           tileWidth: 512,
           maximumLevel: 20,
