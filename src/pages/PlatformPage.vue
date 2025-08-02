@@ -124,7 +124,7 @@
 
   // 场景设置
   const skyBoxMode = ref("auto"); // 默认为自动模式
-  const weatherMode = ref("clear");
+  const weatherMode = ref("auto"); // 默认为自动模式
 
   function handleChangeDayOrNight(val) {
     skyBoxMode.value = val;
