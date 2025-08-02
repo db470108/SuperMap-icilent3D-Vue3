@@ -183,8 +183,8 @@ import { useRouter } from 'vue-router';
                 <el-menu-item index="1-2" @click="View2D">二维视角</el-menu-item>
               </el-sub-menu>
 
-              <!-- 图层管理对所有用户可见 -->
-              <el-sub-menu index="2">
+              <!-- 图层管理对行政人员可见 -->
+              <el-sub-menu index="2" v-if="userType === 'admin'">
                 <template #title>
                   <font-awesome-icon icon="layer-group"/>&nbsp;图层管理
                 </template>
@@ -222,19 +222,19 @@ import { useRouter } from 'vue-router';
                     </el-radio>
                   </el-menu-item>
 
-                  <el-menu-item index="3-1-1">
+                  <el-menu-item index="3-1-1" v-if="userType === 'admin'">
                     <el-radio value="clear" v-model="weatherMode" @change="changeWeatherMode">
                       晴天
                     </el-radio>
                   </el-menu-item>
 
-                  <el-menu-item index="3-1-2">
+                  <el-menu-item index="3-1-2" v-if="userType === 'admin'">
                     <el-radio value="rain" v-model="weatherMode" @change="changeWeatherMode">
                       雨天
                     </el-radio>
                   </el-menu-item>
 
-                  <el-menu-item index="3-1-3">
+                  <el-menu-item index="3-1-3" v-if="userType === 'admin'">
                     <el-radio value="snow" v-model="weatherMode" @change="changeWeatherMode">
                       雪天
                     </el-radio>
@@ -252,19 +252,19 @@ import { useRouter } from 'vue-router';
                     </el-radio>
                   </el-menu-item>
 
-                  <el-menu-item index="3-2-1">
+                  <el-menu-item index="3-2-1" v-if="userType === 'admin'">
                     <el-radio value="day" v-model="skyBoxMode" @change="changeDayOrNight">
                       白天
                     </el-radio>
                   </el-menu-item>
 
-                  <el-menu-item index="3-2-2">
+                  <el-menu-item index="3-2-2" v-if="userType === 'admin'">
                     <el-radio value="sunset" v-model="skyBoxMode" @change="changeDayOrNight">
                       傍晚
                     </el-radio>
                   </el-menu-item>
 
-                  <el-menu-item index="3-2-3">
+                  <el-menu-item index="3-2-3" v-if="userType === 'admin'">
                     <el-radio value="night" v-model="skyBoxMode" @change="changeDayOrNight">
                       夜晚
                     </el-radio>

@@ -14,6 +14,7 @@ import {useWeatherStore} from "@/store/weather.js";
   const SuperMap3D = window.SuperMap3D;
   let viewer;
   let timeCheckInterval = null; // 用于存储时间检查的定时器
+  let lastAlpha = 1;  // 用于存储上一次建筑物的透明度值
 
   // 接受PlatformPage传来的参数
   const props = defineProps({
@@ -218,6 +219,46 @@ import {useWeatherStore} from "@/store/weather.js";
         }
       }, SuperMap3D.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
+      // 监听相机高度变化，控制建筑物图层显隐
+      viewer.camera.changed.addEventListener(() => {
+        const height = viewer.camera.positionCartographic.height;
+
+        const pitch = viewer.camera.pitch; // 弧度，俯视是负值
+        const pitchDeg = SuperMap3D.Math.toDegrees(pitch); // 转换为角度
+
+        const maxVisibleHeight = 2300; // 超过此高度时完全透明
+        const minVisibleHeight = 800;  // 低于此高度时完全不透明
+        const pitchThreshold = -60; // 只有俯仰角小于 -30° 才会出现建筑
+
+        const buildingsLayer = viewer.scene.layers.find('buildings_3D');
+        if (!buildingsLayer) return;
+
+        // 不满足俯仰角要求则直接隐藏
+        if (pitchDeg < pitchThreshold) {
+          if (lastAlpha !== 0) {
+            buildingsLayer.style3D.fillForeColor.alpha = 0;
+            buildingsLayer.style3D.lineColor.alpha = 0;
+            lastAlpha = 0;
+          }
+          return;
+        }
+
+        // 计算透明度 (0 到 1 之间)
+        let alpha;
+        if (height > maxVisibleHeight) {
+          alpha = 0;
+        } else if (height < minVisibleHeight) {
+          alpha = 1;
+        } else {
+          alpha = 1 - (height - minVisibleHeight) / (maxVisibleHeight - minVisibleHeight);
+        }
+
+        // 避免频繁更新
+        if (Math.abs(alpha - lastAlpha) > 0.01) {
+          buildingsLayer.style3D.fillForeColor.alpha = alpha;
+          lastAlpha = alpha;
+        }
+      });
 
     })
 
@@ -290,7 +331,7 @@ import {useWeatherStore} from "@/store/weather.js";
       // 冷灰蓝主题
       layer.style3D.enableFill = true;
       layer.style3D.enableFillForeColor = true;
-      layer.style3D.fillForeColor = new SuperMap3D.Color(0.85, 0.85, 0.85, 1);
+      layer.style3D.fillForeColor = new SuperMap3D.Color(0.85, 0.85, 0.85, lastAlpha);
 
       // 深灰描边
       layer.style3D.enableLine = true;
