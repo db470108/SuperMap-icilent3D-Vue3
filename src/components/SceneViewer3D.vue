@@ -421,27 +421,27 @@ import {useWeatherStore} from "@/store/weather.js";
 
   // 天气的监视
   watch(() => weatherStore.currentWeather, (weather) => {
-    if (weather.includes('雨')) {
-      loadRainWeather();
-    } else if (weather.includes('雪')) {
-      loadSnowWeather();
-    } else {
-      loadClearWeather();
+    if (props.weatherMode === 'auto') {
+      loadAutoWeather();
     }
   })
 
   watch(() => props.weatherMode, (weather) => {
     applyWeather(weather);
-  })
+  }, { immediate: true })
   // 天空盒的天气的切换
   function applyWeather (weather) {
-    if (weather === 'clear') {
-      loadClearWeather();
-    } else if (weather === 'rain') {
-      loadRainWeather();
-    } else if (weather === 'snow') {
-      loadSnowWeather();
-    }
+    setTimeout(() => {
+      if (weather === 'clear') {
+        loadClearWeather();
+      } else if (weather === 'rain') {
+        loadRainWeather();
+      } else if (weather === 'snow') {
+        loadSnowWeather();
+      } else if (weather === 'auto') {
+        loadAutoWeather();
+      }
+    }, 200)
   }
   function loadClearWeather () {
     viewer.scene.postProcessStages.rain.enabled = false;
@@ -458,6 +458,15 @@ import {useWeatherStore} from "@/store/weather.js";
     viewer.scene.postProcessStages.snow.uniforms.angle = 1;
     viewer.scene.postProcessStages.snow.uniforms.speed = 1;
     viewer.scene.postProcessStages.rain.enabled = false;
+  }
+  function loadAutoWeather () {
+    if (weatherStore.currentWeather.includes('雨')) {
+      loadRainWeather();
+    } else if (weatherStore.currentWeather.includes('雪')) {
+      loadSnowWeather();
+    } else {
+      loadClearWeather();
+    }
   }
 
 
