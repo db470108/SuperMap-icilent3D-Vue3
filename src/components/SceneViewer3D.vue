@@ -137,7 +137,7 @@ import {useWeatherStore} from "@/store/weather.js";
       // 设置水体的风格
       if (waterLayer && waterLayer.waterParameter) {
         waterLayer.waterParameter.waveDirection = 45; // 设置水流方向为东北
-        waterLayer.waterParameter.color = SuperMap3D.Color.STEELBLUE; // 设置水体颜色
+        waterLayer.waterParameter.color = SuperMap3D.Color.fromBytes(135, 221, 255, 180); // 设置水体颜色
         waterLayer.waterParameter.waveStrength = SuperMap3D.WaveStrength.MODERATE;
         waterLayer.waterParameter.waterBodySize = SuperMap3D.WaterbodySize.LARGE;
         waterLayer.waterParameter.speed = 7;
