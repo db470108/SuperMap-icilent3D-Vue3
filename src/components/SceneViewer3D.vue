@@ -450,7 +450,7 @@ import {useWeatherStore} from "@/store/weather.js";
   function loadRainWeather () {
     viewer.scene.postProcessStages.rain.enabled = true;
     viewer.scene.postProcessStages.rain.uniforms.angle = 6.1;
-    viewer.scene.postProcessStages.rain.uniforms.speed = 5;
+    viewer.scene.postProcessStages.rain.uniforms.speed = 3;
     viewer.scene.postProcessStages.snow.enabled = false;
   }
   function loadSnowWeather () {
