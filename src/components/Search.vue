@@ -121,7 +121,7 @@
   z-index: 2000;
   position: absolute;
   top: 7px;
-  right: 277px;
+  right: 600px;
   user-select: none;
 }
 
@@ -158,7 +158,7 @@
   position: fixed;
   padding: 1px 1px;
   top: 8px;
-  right: 65px;
+  right: 390px;
   display: flex;
   gap: 20px;
   background: rgba(255, 255, 255, 0.08);
@@ -208,7 +208,7 @@
 .search-results {
   position: fixed;
   top: 50px;
-  right: 65px;
+  right: 390px;
   width: 245px;
   max-height: 300px;
   overflow-y: auto;
