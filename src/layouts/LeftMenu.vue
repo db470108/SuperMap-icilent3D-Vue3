@@ -1,8 +1,10 @@
 <script setup>
-import {ref, defineProps, defineEmits, computed, nextTick} from 'vue';
+import {ref, defineProps, defineEmits, computed, nextTick, watch} from 'vue';
 import { ElMenu, ElMenuItem, ElSubMenu, ElCol, ElRow } from 'element-plus';
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import { useRouter } from 'vue-router';
+import {usePanelStore} from "@/store/panel.js";
+
+  const panelStore = usePanelStore();
 
   // 接收用户类型和用户信息
   const props = defineProps({
@@ -24,7 +26,9 @@ import { useRouter } from 'vue-router';
     'changeSkyBox',
     'changeDayOrNight',
     'changeWeatherMode',
-    'logout'
+    'logout',
+    'changeSearchMode',
+    'closeInfoWindow'
   ]);
 
 
@@ -130,6 +134,25 @@ import { useRouter } from 'vue-router';
   const isLoggedIn = computed(() => {
     return props.user && props.user.loggedIn === true;
   });
+
+
+
+  // 搜索模式
+  let searchMode = ref('');
+
+  function changeSearchMode() {
+    panelStore.togglePanel(searchMode.value);
+    console.log("当前打开的面板为：", panelStore.activePanel);
+    emit('changeSearchMode', searchMode.value);
+    console.log("当前搜索模式为：", searchMode.value)
+    emit('closeInfoWindow')
+  }
+
+  watch(() => panelStore.activePanel, (newValue) => {
+    if (newValue !== 'keyWordSearch' && newValue !== 'doubleClickSearch') {
+      searchMode.value = null;
+    }
+  })
 </script>
 
 <template>
@@ -148,131 +171,154 @@ import { useRouter } from 'vue-router';
       >
         <el-row class="el-row">
           <el-col :span="24">
-            <el-menu
-                default-active="1"
-                class="el-menu"
-                mode="vertical"
-                :collapse="isCollapse"
-                background-color="rgba(5, 10, 25, 0.7)"
-                text-color="#f3f3f3"
-                active-text-color="rgba(51, 153, 255, 0.8)"
-            >
-              <!-- 用户信息区域 -->
-              <el-sub-menu index="0" v-if="isLoggedIn">
-                <template #title>
-                  <font-awesome-icon icon="user"/>&nbsp;用户管理
-                </template>
-                <el-menu-item index="0-1" disabled>
+            <el-scrollbar style="height: 100%">
+
+              <el-menu
+                  default-active="1"
+                  class="el-menu"
+                  mode="vertical"
+                  :collapse="isCollapse"
+                  background-color="rgba(5, 10, 25, 0.7)"
+                  text-color="#f3f3f3"
+                  active-text-color="rgba(51, 153, 255, 0.8)"
+              >
+                <!-- 用户信息区域 -->
+                <el-sub-menu index="0" v-if="isLoggedIn">
+                  <template #title>
+                    <font-awesome-icon icon="user"/>&nbsp;用户管理
+                  </template>
+                  <el-menu-item index="0-1" disabled>
                   <span class="user-name" v-if="userType === 'admin'">
                     行政人员
                   </span>
-                  <span class="user-name" v-else>
+                    <span class="user-name" v-else>
                     市民
                   </span>
-                </el-menu-item>
-                <el-menu-item index="0-2" @click="handleLogout">
-                  <font-awesome-icon icon="right-from-bracket"/>&nbsp;退出登录
-                </el-menu-item>
-              </el-sub-menu>
+                  </el-menu-item>
+                  <el-menu-item index="0-2" @click="handleLogout">
+                    <font-awesome-icon icon="right-from-bracket"/>&nbsp;退出登录
+                  </el-menu-item>
+                </el-sub-menu>
 
-              <el-sub-menu index="1">
-                <template #title>
-                  <font-awesome-icon icon="eye"/>&nbsp;视角控制
-                </template>
-                <el-menu-item index="1-1" @click="View3D">三维视角</el-menu-item>
-                <el-menu-item index="1-2" @click="View2D">二维视角</el-menu-item>
-              </el-sub-menu>
-
-              <!-- 图层管理对行政人员可见 -->
-              <el-sub-menu index="2" v-if="userType === 'admin'">
-                <template #title>
-                  <font-awesome-icon icon="layer-group"/>&nbsp;图层管理
-                </template>
-                <el-menu-item index="2-1">
-                  <el-checkbox label="建筑图层" v-model="showBuildings" @change="changeBuildingsVisibility"/>
-                </el-menu-item>
-
-                <el-menu-item index="2-2">
-                  <el-checkbox label="水系图层" v-model="showWater" @change="changeWaterVisibility"/>
-                </el-menu-item>
-
-                <el-menu-item index="2-3">
-                  <el-checkbox label="公路图层" v-model="showRoads" @change="changeRoadsVisibility"/>
-                </el-menu-item>
-
-                <el-menu-item index="2-4">
-                  <el-checkbox label="铁路图层" v-model="showRailways" @change="changeRailwaysVisibility"/>
-                </el-menu-item>
-              </el-sub-menu>
-
-              <!-- 场景设置对所有用户可见 -->
-              <el-sub-menu index="3">
-                <template #title>
-                  <font-awesome-icon icon="cloud"/>&nbsp;场景设置
-                </template>
-
-                <el-sub-menu index="3-1">
+                <el-sub-menu index="1">
                   <template #title>
-                    天气设置
+                    <font-awesome-icon icon="eye"/>&nbsp;视角控制
+                  </template>
+                  <el-menu-item index="1-1" @click="View3D">三维视角</el-menu-item>
+                  <el-menu-item index="1-2" @click="View2D">二维视角</el-menu-item>
+                </el-sub-menu>
+
+                <!-- 图层管理对行政人员可见 -->
+                <el-sub-menu index="2" v-if="userType === 'admin'">
+                  <template #title>
+                    <font-awesome-icon icon="layer-group"/>&nbsp;图层管理
+                  </template>
+                  <el-menu-item index="2-1">
+                    <el-checkbox label="建筑图层" v-model="showBuildings" @change="changeBuildingsVisibility"/>
+                  </el-menu-item>
+
+                  <el-menu-item index="2-2">
+                    <el-checkbox label="水系图层" v-model="showWater" @change="changeWaterVisibility"/>
+                  </el-menu-item>
+
+                  <el-menu-item index="2-3">
+                    <el-checkbox label="公路图层" v-model="showRoads" @change="changeRoadsVisibility"/>
+                  </el-menu-item>
+
+                  <el-menu-item index="2-4">
+                    <el-checkbox label="铁路图层" v-model="showRailways" @change="changeRailwaysVisibility"/>
+                  </el-menu-item>
+                </el-sub-menu>
+
+                <!-- 场景设置对所有用户可见 -->
+                <el-sub-menu index="3">
+                  <template #title>
+                    <font-awesome-icon icon="cloud"/>&nbsp;场景设置
                   </template>
 
-                  <el-menu-item index="3-1-0">
-                    <el-radio value="auto" v-model="weatherMode" @change="changeWeatherMode">
-                      自动
+                  <el-sub-menu index="3-1">
+                    <template #title>
+                      天气设置
+                    </template>
+
+                    <el-menu-item index="3-1-0">
+                      <el-radio value="auto" v-model="weatherMode" @change="changeWeatherMode">
+                        自动
+                      </el-radio>
+                    </el-menu-item>
+
+                    <el-menu-item index="3-1-1" v-if="userType === 'admin'">
+                      <el-radio value="clear" v-model="weatherMode" @change="changeWeatherMode">
+                        晴天
+                      </el-radio>
+                    </el-menu-item>
+
+                    <el-menu-item index="3-1-2" v-if="userType === 'admin'">
+                      <el-radio value="rain" v-model="weatherMode" @change="changeWeatherMode">
+                        雨天
+                      </el-radio>
+                    </el-menu-item>
+
+                    <el-menu-item index="3-1-3" v-if="userType === 'admin'">
+                      <el-radio value="snow" v-model="weatherMode" @change="changeWeatherMode">
+                        雪天
+                      </el-radio>
+                    </el-menu-item>
+                  </el-sub-menu>
+
+                  <el-sub-menu index="3-2">
+                    <template #title>
+                      时间设置
+                    </template>
+
+                    <el-menu-item index="3-2-0">
+                      <el-radio value="auto" v-model="skyBoxMode" @change="changeDayOrNight">
+                        自动
+                      </el-radio>
+                    </el-menu-item>
+
+                    <el-menu-item index="3-2-1" v-if="userType === 'admin'">
+                      <el-radio value="day" v-model="skyBoxMode" @change="changeDayOrNight">
+                        白天
+                      </el-radio>
+                    </el-menu-item>
+
+                    <el-menu-item index="3-2-2" v-if="userType === 'admin'">
+                      <el-radio value="sunset" v-model="skyBoxMode" @change="changeDayOrNight">
+                        傍晚
+                      </el-radio>
+                    </el-menu-item>
+
+                    <el-menu-item index="3-2-3" v-if="userType === 'admin'">
+                      <el-radio value="night" v-model="skyBoxMode" @change="changeDayOrNight">
+                        夜晚
+                      </el-radio>
+                    </el-menu-item>
+                  </el-sub-menu>
+                </el-sub-menu>
+
+                <el-sub-menu index="4">
+                  <template #title>
+                    <font-awesome-icon icon="search"/>&nbsp;地物查询
+                  </template>
+
+                  <el-menu-item index="4-1">
+                    <el-radio value="keyWordSearch" v-model="searchMode" @change="changeSearchMode">
+                      关键字搜索
                     </el-radio>
                   </el-menu-item>
 
-                  <el-menu-item index="3-1-1" v-if="userType === 'admin'">
-                    <el-radio value="clear" v-model="weatherMode" @change="changeWeatherMode">
-                      晴天
-                    </el-radio>
-                  </el-menu-item>
-
-                  <el-menu-item index="3-1-2" v-if="userType === 'admin'">
-                    <el-radio value="rain" v-model="weatherMode" @change="changeWeatherMode">
-                      雨天
-                    </el-radio>
-                  </el-menu-item>
-
-                  <el-menu-item index="3-1-3" v-if="userType === 'admin'">
-                    <el-radio value="snow" v-model="weatherMode" @change="changeWeatherMode">
-                      雪天
+                  <el-menu-item index="4-2">
+                    <el-radio value="doubleClickSearch" v-model="searchMode" @change="changeSearchMode">
+                      双击查询
                     </el-radio>
                   </el-menu-item>
                 </el-sub-menu>
 
-                <el-sub-menu index="3-2">
-                  <template #title>
-                    时间设置
-                  </template>
+              </el-menu>
 
-                  <el-menu-item index="3-2-0">
-                    <el-radio value="auto" v-model="skyBoxMode" @change="changeDayOrNight">
-                      自动
-                    </el-radio>
-                  </el-menu-item>
+            </el-scrollbar>
 
-                  <el-menu-item index="3-2-1" v-if="userType === 'admin'">
-                    <el-radio value="day" v-model="skyBoxMode" @change="changeDayOrNight">
-                      白天
-                    </el-radio>
-                  </el-menu-item>
-
-                  <el-menu-item index="3-2-2" v-if="userType === 'admin'">
-                    <el-radio value="sunset" v-model="skyBoxMode" @change="changeDayOrNight">
-                      傍晚
-                    </el-radio>
-                  </el-menu-item>
-
-                  <el-menu-item index="3-2-3" v-if="userType === 'admin'">
-                    <el-radio value="night" v-model="skyBoxMode" @change="changeDayOrNight">
-                      夜晚
-                    </el-radio>
-                  </el-menu-item>
-                </el-sub-menu>
-              </el-sub-menu>
-
-            </el-menu>
           </el-col>
         </el-row>
       </div>
@@ -344,7 +390,7 @@ import { useRouter } from 'vue-router';
   border-right: 1px solid rgba(51, 102, 204, 0.3);
   transition: all 0.3s ease;
   backdrop-filter: blur(12px);
-  background: rgba(5, 10, 25, 0.6); /* 深蓝毛玻璃 */
+  /*background: rgba(5, 10, 25, 0.6); !* 深蓝毛玻璃 *!*/
   border-bottom: 1px solid rgba(51, 102, 204, 0.3);
 }
 

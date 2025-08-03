@@ -12,6 +12,7 @@
             :show-railways="showRailways"
             :sky-box-mode="skyBoxMode"
             :weather-mode="weatherMode"
+            :search-mode="searchMode"
             @select-building="handleSelectBuilding"
         />
 
@@ -25,7 +26,9 @@
             @toggle-railwaysLayer="handleChangeRailwaysVisibility"
             @changeDayOrNight="handleChangeDayOrNight"
             @changeWeatherMode="handleChangeWeatherMode"
+            @changeSearchMode="handleChangeSearchMode"
             @logout="logout"
+            @closeInfoWindow="handleClose"
         />
 
 <!--         上层的横幅和按钮 -->
@@ -143,7 +146,10 @@
   function handleSelectBuilding(building) {
     console.log("接收到建筑信息:", building); // 调试输出
     selectedBuilding.value = building;
-    isBuildingInfoWindowOpen.value = true;
+    // 根据当前搜索模式设置面板状态
+    if (searchMode.value === 'doubleClickSearch' || searchMode.value === 'keyWordSearch') {
+      isBuildingInfoWindowOpen.value = true;
+    }
   }
 
   function handleClose() {
@@ -178,6 +184,12 @@
     if (weather.includes('晴')) {
       skyBoxMode.value = 'auto'; // 使用自动模式，根据时间切换
     }
+  }
+
+  // 处理搜索模式切换
+  const searchMode = ref('');
+  function handleChangeSearchMode(mode) {
+    searchMode.value = mode;
   }
 </script>
 

@@ -1,13 +1,24 @@
 <script setup>
-  import { ref } from 'vue';
+import {ref, watch} from 'vue';
   import axios from "@/utils/axios.js";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+  import {usePanelStore} from "@/store/panel.js";
 
   const searchBoxVisible = ref(false);  // 搜索框是否可见
   const searchQuery = ref('');  // 存储用户输入的搜索关键词
   const searchResults = ref([]);  // 存储搜索结果列表
   const showResult = ref(false);  // 控制搜索结果面板的显示与隐藏
   let searchTimeout = null; // 用于防抖的定时器引用
+
+  const panelStore = usePanelStore();
+
+  watch(() => panelStore.activePanel, (newPanel) => {
+    if (newPanel === 'keyWordSearch') {
+      toggleSearchBox();
+    } else {
+      searchBoxVisible.value = false;
+    }
+  })
 
   function toggleSearchBox() {
     searchBoxVisible.value = !searchBoxVisible.value;
@@ -18,7 +29,6 @@
         showResult.value = searchResults.value.length > 0;
       }
     }
-
   }
 
   // 实时搜索
@@ -63,9 +73,8 @@
   const emit = defineEmits(["fly-to-building"])
 
   // 清空输入框内容
-  function clearInput() {
-    searchQuery.value = "";
-    showResult.value = false;
+  function closeKeyWordSearch() {
+    panelStore.closePanel();
   }
 
 </script>
@@ -73,32 +82,27 @@
 <template>
   <!-- 搜索按钮 -->
   <div class="search">
-    <button
-        class="icon-button"
-        @click="toggleSearchBox"
-        :title="'地物查询'"
-    >
-      <font-awesome-icon icon="magnifying-glass" :class="['icon-border', {active: searchBoxVisible}]"/>
-    </button>
 
-
+<!--    输入框-->
     <transition name="fade-slide" mode="out-in">
       <div class="search-input-container" v-if="searchBoxVisible">
-        <input
+        <el-input
             class="search-input"
             type="text"
             placeholder="查找地点"
             v-model="searchQuery"
             @input="handleInput"
-        >
-        <button class="clearInput" :title="'清空输入'" @click="clearInput">
+            clearable
+        />
+        <button class="closeKeyWordSearch" :title="'关闭'" @click="closeKeyWordSearch">
           <font-awesome-icon icon="xmark"/>
         </button>
       </div>
     </transition>
 
+<!--    结果列表-->
     <transition name="fade-slide" mode="out-in">
-      <div class="search-results" v-if="(showResult && searchResults.length > 0)">
+      <div class="search-results" v-if="(showResult && searchResults.length > 0 && searchBoxVisible)">
         <div
             class="result-item"
             v-for="building in searchResults"
@@ -120,108 +124,77 @@
   display: inline-block;
   z-index: 2000;
   position: absolute;
-  top: 7px;
-  right: 600px;
+  top: 50px;
+  right: 50px;
   user-select: none;
-}
-
-.icon-button {
-  all: unset;
-  cursor: pointer;
-}
-
-.icon-button:disabled {
-  pointer-events: none;
-}
-
-.icon-border {
-  font-size: 20px;
-  color: white;
-  border: 2px solid transparent;
-  border-radius: 4px;
-  padding: 3px;
-  transition: border-color 0.3s ease;
-}
-
-/* 悬停时变边框颜色 */
-.icon-border:hover {
-  border-color: #4aa8a8;
-}
-
-/* 激活时边框颜色 */
-.icon-border.active {
-  border-color: #4aa8a8;
 }
 
 /* 横向弹出菜单 */
 .search-input-container {
-  position: fixed;
+  position: relative;
+  width: 327px;
   padding: 1px 1px;
-  top: 8px;
-  right: 390px;
   display: flex;
   gap: 20px;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  color: white;
+  background: rgba(5, 10, 25, 0.6);
+  backdrop-filter: blur(12px);
+  color: #f4f0f0;
   z-index: 3000;
+  border: 1px solid #f4f0f0;
+  border-radius: 12px;
 }
 
 .search-input {
-  padding: 5px 15px;
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(5, 10, 25, 0.6);
-  color: white;
+  padding: 10px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  color: #f4f0f0;
   font-size: 14px;
   outline: none;
-  backdrop-filter: blur(10px);
+  width: 90%;
 }
 
 .search-input::placeholder {
   color: rgba(255, 255, 255, 0.6);
 }
 
-.search-input:focus {
-  border-color: #4aa8a8;
-  box-shadow: 0 0 0 2px #4aa8a8;
-}
 
-.clearInput {
+.closeKeyWordSearch {
   position: absolute;
-  top: 6px;
-  right: 8px;
+  top: 16px;
+  right: 5px;
   background: transparent;
   border: none;
   color: white;
-  font-size: 16px;
+  font-size: 20px;
   cursor: pointer;
   z-index: 1000;
 }
 
-.clearInput:hover {
-  color: #4aa8a8;
+.closeKeyWordSearch:hover {
+  color: #e15151;
 }
 
 /* 搜索结果样式 */
 .search-results {
   position: fixed;
-  top: 50px;
-  right: 390px;
-  width: 245px;
-  max-height: 300px;
+  top: 108px;
+  right: 50px;
+  width: 327px;
+  max-height: 600px;
   overflow-y: auto;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(10px);
-  border-radius: 10px;
+  background: rgba(5, 10, 25, 0.6);
+  backdrop-filter: blur(12px);
   z-index: 3000;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid #f4f0f0;
+  border-radius: 12px;
 }
 
 .result-item {
   padding: 10px 15px;
-  color: white;
+  color: #f4f0f0;
   cursor: pointer;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -231,12 +204,12 @@
 }
 
 .result-item:hover {
-  background: rgba(74, 168, 168, 0.3);
+  background: rgba(51, 153, 255, 0.5);
 }
 
 .location-dot {
   font-size: 15px;
-  color: rgb(19, 58, 142);
+  color: #f4f0f0;
 }
 
 /* 动画增强 */
@@ -257,6 +230,7 @@
 .fade-slide-leave-active {
   animation: fadeInScale 0.3s reverse;
 }
+
 
 
 

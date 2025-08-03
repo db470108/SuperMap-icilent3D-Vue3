@@ -1,6 +1,7 @@
 <script setup>
   import { defineEmits } from "vue";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+  import {usePanelStore} from "@/store/panel.js";
 
   const props = defineProps({
     building: {
@@ -9,16 +10,19 @@
     }
   });
 
+  const panelStore = usePanelStore();
+
   const emit = defineEmits(['close']);
 
   function close() {
     emit('close');
+    panelStore.closePanel();
   }
 
 </script>
 
 <template>
-  <div v-if="props.building" class="info-window">
+  <div v-if="props.building && (panelStore.activePanel === 'doubleClickSearch' || panelStore.activePanel === 'keyWordSearch')" class="info-window">
     <div class="info-card">
         <button class="close-btn" @click="close">
           <font-awesome-icon icon="xmark"/>
@@ -34,9 +38,7 @@
         <div class="longitude-latitude">
           坐标位置：
           <br>
-          {{ props.building.longitude_X.toFixed(6) }} 东
-          <br>
-          {{ props.building.latitude_Y.toFixed(6) }} 北
+          {{ props.building.longitude_X.toFixed(6) }} 东 &nbsp;&nbsp;{{ props.building.latitude_Y.toFixed(6) }} 北
         </div>
 
     </div>
@@ -46,21 +48,21 @@
 <style scoped>
 .info-window {
   position: fixed;
-  top: 100px;
-  right: 350px;
+  top: 108px;
+  right: 385px;
   z-index: 9999;
 }
 
 .info-card {
-  background: rgba(255, 255, 255, 0.08);
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   color: white;
   width: 240px;
   animation: fadeIn 0.3s ease;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #f4f0f0;
+  background: rgba(5, 10, 25, 0.6);
+  backdrop-filter: blur(12px);
 }
 
 .info-card h3 {
@@ -83,7 +85,7 @@
 }
 
 .info-card li strong{
-  color: rgb(19, 58, 142);
+  color: #f4f0f0;
 }
 
 .close-btn {

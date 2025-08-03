@@ -25,6 +25,7 @@ import {useWeatherStore} from "@/store/weather.js";
     skyBoxMode: String,
     weatherMode: String,
     isBuildingInfoWindowOpen: Boolean,
+    searchMode: String,
   })
 
   const emit = defineEmits(['select-building']);
@@ -50,8 +51,8 @@ import {useWeatherStore} from "@/store/weather.js";
       viewer.camera.flyToBoundingSphere(boundingSphere,{
         offset: new SuperMap3D.HeadingPitchRange(
             SuperMap3D.Math.toRadians(0),    // 方向角
-            SuperMap3D.Math.toRadians(-50),  // 俯仰角
-            1500                             // 距离
+            SuperMap3D.Math.toRadians(-40),  // 俯仰角
+            800                             // 距离
         ),
         duration: 3 // 飞行时间，单位秒
       });
@@ -195,28 +196,37 @@ import {useWeatherStore} from "@/store/weather.js";
 
       // 添加点击事件监听，使用 pick 方法获取点击建筑物的属性信息
       const handler = new SuperMap3D.ScreenSpaceEventHandler(viewer.scene.canvas);
+      watch(() => props.searchMode, (newValue) => {
+        if (newValue === 'doubleClickSearch') {
+          handler.setInputAction((movement) => {
+            // 使用 viewer.pick 选取建筑物要素
+            let pickedFeature = viewer.scene.pick(movement.position);
 
-      handler.setInputAction((movement) => {
-        // 使用 viewer.pick 选取建筑物要素
-        let pickedFeature = viewer.scene.pick(movement.position);
+            if (pickedFeature && pickedFeature.primitive._name === 'buildings_3D') {
+              let pickedId = pickedFeature.id;
+              console.log("点击的id：", pickedId)
+              async function fetchBuildingInfo(pickedId) {
+                const response = await axios({
+                  method: 'GET',
+                  url: `/buildings/${pickedId}`
+                })
+                console.log("返回的属性信息：", response.data)
+                emit('select-building', response.data)
+              }
+              fetchBuildingInfo(pickedId)
 
-        if (pickedFeature.primitive._name === 'buildings_3D') {
-          let pickedId = pickedFeature.id;
-          console.log("点击的id：", pickedId)
-          async function fetchBuildingInfo(pickedId) {
-            const response = await axios({
-              method: 'GET',
-              url: `/buildings/${pickedId}`
-            })
-            console.log("返回的属性信息：", response.data)
-            emit('select-building', response.data)
-          }
-          fetchBuildingInfo(pickedId)
-
+            } else {
+              console.warn("未点击到建筑物")
+            }
+          }, SuperMap3D.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
         } else {
-          console.warn("未点击到建筑物")
+          const buildingsLayer = viewer.scene.layers.find('buildings_3D');
+          if (buildingsLayer) {
+            buildingsLayer.setSelection([]); // 清除所有选中
+          }
         }
-      }, SuperMap3D.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+      })
+
 
       // 监听相机高度变化，控制建筑物图层显隐
       viewer.camera.changed.addEventListener(() => {

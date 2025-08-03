@@ -1,17 +1,25 @@
 <script setup>
   import {onMounted, ref} from "vue";
 
-  let currentTime = ref("")
+  const currentTime = ref('');
 
   function updateTime() {
     const now = new Date();
-    currentTime.value = now.toLocaleString();
+    const date = now.toLocaleString().split(" ")[0];
+    const time = now.toLocaleString().split(" ")[1];
+    const year = date.split("/")[0];
+    const month = date.split("/")[1];
+    const day = date.split("/")[2];
+    return `${year}年${month}月${day}日 ${time}`;
   }
 
   onMounted(() => {
-    updateTime();
-    setInterval(updateTime, 1000); // 每秒更新
+    currentTime.value = updateTime(); // 初始赋值
+    setInterval(() => {
+      currentTime.value = updateTime(); // 每秒更新响应式变量
+    }, 1000);
   });
+
 </script>
 
 <template>

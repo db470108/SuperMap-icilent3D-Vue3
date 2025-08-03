@@ -15,7 +15,7 @@ let chart = null; // 图表实例
 // 切换详细面板显示
 function toggleDetailPanel() {
   panelStore.togglePanel('weather');
-  console.log("当前打开的面板为：", panelStore.activePanel)
+  console.log("当前打开的面板为：", panelStore.activePanel);
 }
 
 // 获取当前天气
@@ -235,7 +235,13 @@ onMounted(() => {
 <template>
   <div>
     <!-- 简要天气信息 -->
-    <div class="weather-display" @click="toggleDetailPanel" v-if="weatherInfo.city" :title="'点击查看天气详情'">
+    <div
+        class="weather-display"
+        :class="{ active: panelStore.activePanel === 'weather'}"
+        @click="toggleDetailPanel"
+        v-if="weatherInfo.city"
+        :title="'点击查看天气详情'"
+    >
       <font-awesome-icon :icon="getWeatherIcon(weatherInfo.weather)" class="weather-icon" />
       {{ weatherInfo.city }}
       {{ weatherInfo.weather }}
@@ -352,6 +358,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+.weather-display.active {
+  box-shadow: 0 0 10px #f4f0f0;
 }
 
 .weather-icon {

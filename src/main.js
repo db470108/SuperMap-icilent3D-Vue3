@@ -26,7 +26,8 @@ import {
     faTemperatureHigh,
     faTemperatureLow,
     faClock,
-    faEyeSlash
+    faEyeSlash,
+    faMinus
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import ElementPlus from 'element-plus'
@@ -58,7 +59,8 @@ library.add(
     faTemperatureLow,
     faClock,
     faEye,
-    faEyeSlash
+    faEyeSlash,
+    faMinus
 );
 
 // 创建 Vue 应用
