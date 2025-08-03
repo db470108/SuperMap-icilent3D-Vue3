@@ -16,6 +16,7 @@
 
 <template>
   <div class="time-display">
+    <font-awesome-icon icon="clock" class="detail-icon" />
     {{currentTime}}
   </div>
 </template>
@@ -23,8 +24,8 @@
 <style scoped>
   .time-display {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    top: 6px;
+    right: 220px;
     font-size: 14px;
     background-color: rgba(5, 10, 25, 0.6);
     padding: 6px 12px;
@@ -35,9 +36,9 @@
     animation: glow 2s ease-in-out infinite;
   }
 
-  @keyframes glow {
-    0% { text-shadow: 0 0 5px #00e6ff; }
-    50% { text-shadow: 0 0 15px #00e6ff; }
-    100% { text-shadow: 0 0 5px #00e6ff; }
+  .detail-icon {
+    font-size: 20px;
+    color: #f4f0f0;
   }
+
 </style>

@@ -339,8 +339,8 @@ onMounted(() => {
 <style scoped>
 .weather-display {
   position: absolute;
-  bottom: 60px;
-  right: 20px;
+  top: 6px;
+  right: 50px;
   font-size: 14px;
   background-color: rgba(5, 10, 25, 0.6);
   padding: 6px 12px;
@@ -356,32 +356,26 @@ onMounted(() => {
 
 .weather-icon {
   font-size: 16px;
-  color: rgba(51, 153, 255, 0.7);
+  color: #f4f0f0;
 }
 
 .weather-display:hover {
   cursor: pointer;
   background-color: rgba(5, 10, 25, 0.8);
-  box-shadow: 0 0 10px #00e6ff;
+  box-shadow: 0 0 10px #f4f0f0;
   transition: all 0.3s ease-in-out;
-}
-
-@keyframes glow {
-  0% { text-shadow: 0 0 5px #00e6ff; }
-  50% { text-shadow: 0 0 15px #00e6ff; }
-  100% { text-shadow: 0 0 5px #00e6ff; }
 }
 
 /* 详细天气面板 */
 .weather-detail-panel {
   position: absolute;
-  bottom: 100px;
+  top: 50px;
   right: 20px;
   width: 460px;
   max-height: 80vh;
   background: rgba(5, 10, 25, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(58, 112, 214, 0.65);
+  border: 1px solid #f4f0f0;
   border-radius: 12px;
   padding: 20px;
   color: #f4f0f0;
@@ -403,7 +397,8 @@ onMounted(() => {
 .panel-header h2 {
   margin: 0;
   font-size: 20px;
-  color: rgba(51, 153, 255, 0.7);
+  /*color: rgba(51, 153, 255, 0.7);*/
+  color: #f4f0f0;
 }
 
 .close-btn {
@@ -434,7 +429,8 @@ onMounted(() => {
 
 .large-weather-icon {
   font-size: 48px;
-  color: rgba(51, 153, 255, 0.7);
+  /*color: rgba(51, 153, 255, 0.7);*/
+  color: #f4f0f0;
   margin-bottom: 10px;
 }
 
@@ -467,7 +463,8 @@ onMounted(() => {
 
 .detail-icon {
   font-size: 20px;
-  color: rgba(51, 153, 255, 0.7);
+  /*color: rgba(51, 153, 255, 0.7);*/
+  color: #f4f0f0;
 }
 
 .detail-info {
@@ -504,7 +501,8 @@ onMounted(() => {
 
 .forecast h3 {
   margin: 0 0 15px 0;
-  color: rgba(51, 153, 255, 0.7);
+  /*color: rgba(51, 153, 255, 0.7);*/
+  color: #f4f0f0;
   font-size: 18px;
 }
 
@@ -538,7 +536,8 @@ onMounted(() => {
 
 .forecast-icon {
   font-size: 24px;
-  color: rgba(51, 153, 255, 0.7);
+  /*color: rgba(51, 153, 255, 0.7);*/
+  color: #f4f0f0;
   margin: 5px 0;
 }
 
