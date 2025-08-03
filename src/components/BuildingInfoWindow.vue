@@ -18,7 +18,7 @@
 </script>
 
 <template>
-  <div v-if="props.building" class="info-window" :style="windowStyle">
+  <div v-if="props.building" class="info-window">
     <div class="info-card">
         <button class="close-btn" @click="close">
           <font-awesome-icon icon="xmark"/>
