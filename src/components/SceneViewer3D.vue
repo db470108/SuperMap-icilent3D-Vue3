@@ -15,6 +15,8 @@ import {useWeatherStore} from "@/store/weather.js";
   let viewer;
   let timeCheckInterval = null; // 用于存储时间检查的定时器
   let lastAlpha = 1;  // 用于存储上一次建筑物的透明度值
+  /*let lastCenter = null;
+  let lastUpdateTime = 0;*/
 
   // 接受PlatformPage传来的参数
   const props = defineProps({
@@ -81,6 +83,47 @@ import {useWeatherStore} from "@/store/weather.js";
   defineExpose({
     flyToBuilding
   });
+
+  // 根据视角改变建筑物透明度的方法
+  function updateBuildingsAlpha() {
+    const height = viewer.camera.positionCartographic.height;
+
+    const pitch = viewer.camera.pitch; // 弧度，俯视是负值
+    const pitchDeg = SuperMap3D.Math.toDegrees(pitch); // 转换为角度
+
+    const maxVisibleHeight = 5000; // 超过此高度时完全透明
+    const minVisibleHeight = 800;  // 低于此高度时完全不透明
+    const pitchThreshold = -70; // 只有俯仰角小于 -30° 才会出现建筑
+
+    const buildingsLayer = viewer.scene.layers.find('buildings_3D');
+    if (!buildingsLayer) return;
+
+    // 不满足俯仰角要求则直接隐藏
+    if (pitchDeg < pitchThreshold) {
+      if (lastAlpha !== 0) {
+        buildingsLayer.style3D.fillForeColor.alpha = 0;
+        buildingsLayer.style3D.lineColor.alpha = 0;
+        lastAlpha = 0;
+      }
+      return;
+    }
+
+    // 计算透明度 (0 到 1 之间)
+    let alpha;
+    if (height > maxVisibleHeight) {
+      alpha = 0;
+    } else if (height < minVisibleHeight) {
+      alpha = 1;
+    } else {
+      alpha = 1 - (height - minVisibleHeight) / (maxVisibleHeight - minVisibleHeight);
+    }
+
+    // 避免频繁更新
+    if (Math.abs(alpha - lastAlpha) > 0.01) {
+      buildingsLayer.style3D.fillForeColor.alpha = alpha;
+      lastAlpha = alpha;
+    }
+  }
 
   onMounted(()=> {
     viewer = new SuperMap3D.Viewer('SceneViewer3D-Container', {
@@ -230,43 +273,42 @@ import {useWeatherStore} from "@/store/weather.js";
 
       // 监听相机高度变化，控制建筑物图层显隐
       viewer.camera.changed.addEventListener(() => {
-        const height = viewer.camera.positionCartographic.height;
+        // 根据视角，改变建筑物透明度
+        updateBuildingsAlpha();
 
-        const pitch = viewer.camera.pitch; // 弧度，俯视是负值
-        const pitchDeg = SuperMap3D.Math.toDegrees(pitch); // 转换为角度
+        /*// 根据屏幕位置显示标签
+        const now = Date.now();
+        if (now - lastUpdateTime < 500) return; // 500ms 节流
+        lastUpdateTime = now;
 
-        const maxVisibleHeight = 5000; // 超过此高度时完全透明
-        const minVisibleHeight = 800;  // 低于此高度时完全不透明
-        const pitchThreshold = -70; // 只有俯仰角小于 -30° 才会出现建筑
+        const canvas = viewer.scene.canvas;
+        const screenCenter = new SuperMap3D.Cartesian2(canvas.width / 2, canvas.height / 2);
+        const cartesian = viewer.scene.pickPosition(screenCenter);
 
-        const buildingsLayer = viewer.scene.layers.find('buildings_3D');
-        if (!buildingsLayer) return;
-
-        // 不满足俯仰角要求则直接隐藏
-        if (pitchDeg < pitchThreshold) {
-          if (lastAlpha !== 0) {
-            buildingsLayer.style3D.fillForeColor.alpha = 0;
-            buildingsLayer.style3D.lineColor.alpha = 0;
-            lastAlpha = 0;
-          }
-          return;
+        if (SuperMap3D.defined(cartesian)) {
+          const centerPoint = SuperMap3D.Cartographic.fromCartesian(cartesian);
+          const centerPoint_Lon = SuperMap3D.Math.toDegrees(centerPoint.longitude);
+          const centerPoint_Lat = SuperMap3D.Math.toDegrees(centerPoint.latitude);
+          const height = centerPoint.height;
+          // console.log("屏幕中心经纬度：", centerPoint_Lon, centerPoint_Lat, height);
         }
 
-        // 计算透明度 (0 到 1 之间)
-        let alpha;
-        if (height > maxVisibleHeight) {
-          alpha = 0;
-        } else if (height < minVisibleHeight) {
-          alpha = 1;
-        } else {
-          alpha = 1 - (height - minVisibleHeight) / (maxVisibleHeight - minVisibleHeight);
-        }
-
-        // 避免频繁更新
-        if (Math.abs(alpha - lastAlpha) > 0.01) {
-          buildingsLayer.style3D.fillForeColor.alpha = alpha;
-          lastAlpha = alpha;
-        }
+        // 添加标签
+        let labelCollection = viewer.scene.primitives.add(new SuperMap3D.LabelCollection());
+        let lon = SuperMap3D.Math.toRadians(114.285895);
+        let lat = SuperMap3D.Math.toRadians(30.581270);
+        let buildingsHeight = 183 + 10;
+        labelCollection.add({
+          position : SuperMap3D.Cartesian3.fromDegrees(114.285895, 30.581270, buildingsHeight),
+          text : '新佳丽时尚广场',
+          font : '20px Helvetica',
+          fillColor: SuperMap3D.Color.SKYBLUE,
+          outlineColor: SuperMap3D.Color.GREEN,
+          outlineWidth: 2,
+          scale: 1.0,
+          style: SuperMap3D.LabelStyle.FILL_AND_OUTLINE,
+          verticalOrigin: SuperMap3D.VerticalOrigin.BOTTOM
+        })*/
       });
 
     })

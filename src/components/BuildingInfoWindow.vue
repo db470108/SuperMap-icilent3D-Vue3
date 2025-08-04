@@ -27,7 +27,7 @@
         <button class="close-btn" @click="close">
           <font-awesome-icon icon="xmark"/>
         </button>
-        <h3>地物属性信息</h3>
+        <h3>地物属性信息：{{ props.building.category }}</h3>
         <ul>
           <li>名称：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.name }} </strong></li>
           <li>楼层数：<strong> {{ props.building.type === "未录入" ? "未知" : props.building.floor }} </strong></li>
