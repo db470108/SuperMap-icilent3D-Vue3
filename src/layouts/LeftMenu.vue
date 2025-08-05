@@ -1,5 +1,5 @@
 <script setup>
-import {ref, defineProps, defineEmits, computed, nextTick, watch} from 'vue';
+import {ref, computed, nextTick, watch} from 'vue';
 import { ElMenu, ElMenuItem, ElSubMenu, ElCol, ElRow } from 'element-plus';
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {usePanelStore} from "@/store/panel.js";
