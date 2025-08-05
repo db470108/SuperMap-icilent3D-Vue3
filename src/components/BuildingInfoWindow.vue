@@ -1,5 +1,4 @@
 <script setup>
-  import { defineEmits } from "vue";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import {usePanelStore} from "@/store/panel.js";
 
