@@ -336,7 +336,7 @@ import {useWeatherStore} from "@/store/weather.js";
     // 根据小时数判断时间段
     if (hours >= 6 && hours < 16) {
       return 'day'; // 白天 (6:00-16:00)
-    } else if (hours >= 7 && hours < 18) {
+    } else if (hours >= 16 && hours < 19) {
       return 'sunset'; // 日落 (16:00-19:00)
     } else {
       return 'night'; // 夜晚 (19:00-6:00)
