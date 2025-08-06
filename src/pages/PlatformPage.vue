@@ -155,6 +155,10 @@
   function handleClose() {
     selectedBuilding.value = null;
     isBuildingInfoWindowOpen.value = false;
+    const buildingsLayer = viewer.scene.layers.find('buildings_3D');
+    if (buildingsLayer) {
+      buildingsLayer.setSelection([]); // 清除所有选中
+    }
   }
 
   // 添加SceneViewer3D的引用
