@@ -555,7 +555,7 @@ import {useWeatherStore} from "@/store/weather.js";
     const weather = weatherStore.currentWeather;
     if (weather && weather.includes('雨')) {
       loadRainWeather();
-    } else if (weatherStore.currentWeather.includes('雪')) {
+    } else if (weather && weather.includes('雪')) {
       loadSnowWeather();
     } else {
       loadClearWeather();

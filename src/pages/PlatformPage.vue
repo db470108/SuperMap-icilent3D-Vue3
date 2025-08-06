@@ -48,7 +48,10 @@
         />
 
 <!--         搜索框 -->
-        <Search @fly-to-building="handleFlyToBuilding"/>
+        <Search
+            @fly-to-building="handleFlyToBuilding"
+            @close="handleClose"
+        />
 
 <!--         天气显示 -->
         <WeatherDisplay />

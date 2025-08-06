@@ -12,8 +12,6 @@ import {ref, watch} from 'vue';
 
   const panelStore = usePanelStore();
 
-  defineEmits(["close"])
-
   watch(() => panelStore.activePanel, (newPanel) => {
     if (newPanel === 'keyWordSearch') {
       toggleSearchBox();
@@ -72,7 +70,10 @@ import {ref, watch} from 'vue';
     // 发送事件到父组件
     emit('fly-to-building', building);
   }
-  const emit = defineEmits(["fly-to-building"])
+  const emit = defineEmits([
+      "fly-to-building",
+      "close",
+  ])
 
   // 关闭输入框
   function closeKeyWordSearch() {
