@@ -552,7 +552,8 @@ import {useWeatherStore} from "@/store/weather.js";
     viewer.scene.postProcessStages.rain.enabled = false;
   }
   function loadAutoWeather () {
-    if (weatherStore.currentWeather.includes('雨')) {
+    const weather = weatherStore.currentWeather;
+    if (weather && weather.includes('雨')) {
       loadRainWeather();
     } else if (weatherStore.currentWeather.includes('雪')) {
       loadSnowWeather();
