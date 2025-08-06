@@ -33,7 +33,7 @@
   .time-display {
     position: absolute;
     top: 6px;
-    right: 220px;
+    right: 210px;
     font-size: 14px;
     background-color: rgba(5, 10, 25, 0.6);
     padding: 6px 12px;
