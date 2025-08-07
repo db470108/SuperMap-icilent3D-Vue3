@@ -153,6 +153,14 @@ import {usePanelStore} from "@/store/panel.js";
       searchMode.value = null;
     }
   })
+
+
+
+  // 打开酒店周边POI板块
+  function openPanel(panel) {
+    panelStore.togglePanel(panel);
+    console.log("当前打开的面板为：", panelStore.activePanel);
+  }
 </script>
 
 <template>
