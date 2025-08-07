@@ -315,6 +315,24 @@ import {usePanelStore} from "@/store/panel.js";
                   </el-menu-item>
                 </el-sub-menu>
 
+                <el-sub-menu index="5">
+                  <template #title>
+                    <font-awesome-icon icon="people-group"/>&nbsp;便民服务
+                  </template>
+
+                  <el-menu-item index="5-1" @click="openPanel('weather')">
+                    <font-awesome-icon icon="cloud"/>&nbsp;天气预报
+                  </el-menu-item>
+
+                  <el-menu-item index="5-2" @click="openPanel('poiAroundHotel')">
+                      <font-awesome-icon icon="hotel"/>&nbsp;酒店周边POI
+                  </el-menu-item>
+
+                  <el-menu-item index="5-3" @click="openPanel('houseRenting')">
+                    <font-awesome-icon icon="house"/>&nbsp;租房中心
+                  </el-menu-item>
+                </el-sub-menu>
+
               </el-menu>
 
             </el-scrollbar>
