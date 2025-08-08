@@ -382,7 +382,7 @@ onMounted(() => {
   top: 50px;
   right: 20px;
   width: 460px;
-  max-height: 80vh;
+  max-height: 690px;
   background: rgba(5, 10, 25, 0.85);
   backdrop-filter: blur(12px);
   border: 1px solid #f4f0f0;
