@@ -55,6 +55,11 @@
 
 <!--         天气显示 -->
         <WeatherDisplay />
+
+<!--        酒店附近POI检索-->
+        <POIAroundHotel
+            @flyToHotel="handleFlyToBuilding"
+        />
       </div>
 
     </div>
@@ -71,10 +76,15 @@
   import LeftMenu from "@/layouts/LeftMenu.vue";
   import WeatherDisplay from "@/components/WeatherDisplay.vue";
   import {useRouter} from "vue-router";
+  import POIAroundHotel from "@/components/POIAroundHotel.vue";
+  import {usePanelStore} from "@/store/panel.js";
 
   // 获取用户信息
   const user = ref(null);
   const userType = ref('citizen'); // 默认为市民
+
+  // 获取当前板块
+  const panelStore = usePanelStore()
 
   onMounted(() => {
     // 从localStorage获取用户信息
