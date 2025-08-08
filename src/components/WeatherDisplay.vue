@@ -533,7 +533,7 @@ onMounted(() => {
 }
 
 .forecast-date {
-  font-size: 13px;
+  font-size: 12px;
   color: white;
   margin-bottom: 5px;
 }
