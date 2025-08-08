@@ -17,6 +17,21 @@
   const hotelList = ref([]);  // 酒店结果列表
   let searchTimeout = null; // 用于防抖的定时器引用
   const enterDis = ref(); // 输入的距离
+  const buildingsWithinDistance = ref([]); // 搜索的结果
+  const categories = ref([
+    {label: '饭馆', value: '饭馆'},
+    {label: '酒店', value: '酒店'},
+    {label: '购物场所', value: '购物场所'},
+    {label: '娱乐场所', value: '娱乐场所'},
+    {label: '服务机构', value: '服务机构'},
+    {label: '企业', value: '企业'},
+    {label: '社区', value: '社区'},
+    {label: '医疗', value: '医疗'},
+    {label: '学校', value: '学校'},
+    {label: '政府机构', value: '政府机构'},
+  ]);
+  const selectedCategory = ref(''); // 选择的筛选类型
+
   // 搜索按钮是否可用
   const isSearchButtonEnabled = ref(computed(() => {
     return hotelName.value !== '' && Number(enterDis.value) > 0;
@@ -62,6 +77,27 @@
     if (hotel.name === hotelName.value) {
       emit('flyToHotel', hotel);
       showSearchResults.value = true;
+      // 执行搜索
+      searchBuildingsWithinDistance(hotel);
+    }
+  }
+
+  // 搜索酒店周边的地点
+  async function searchBuildingsWithinDistance(hotel) {
+    try {
+      const response = await axios({
+        method: 'GET',
+        url: '/buildings/searchBuildingsWithinDistance',
+        params: {
+          longitudeX: hotel.longitude_X,
+          latitudeY: hotel.latitude_Y,
+          distance: enterDis.value,
+        }
+      })
+      buildingsWithinDistance.value = response.data;
+    } catch (error) {
+      console.error("搜索周边POI出错" + error);
+      buildingsWithinDistance.value = [];
     }
   }
 
@@ -143,12 +179,43 @@
 
   <transition name="fade-slide" mode="out-in">
     <div class="search-results" v-if="showSearchResults && panelStore.activePanel === 'poiAroundHotel'">
-      <div class="search-results-header">
-        <h2>找到以下周边地点：</h2>
-        <button class="close-btn" @click="closeSearchResults">
-          <font-awesome-icon icon="minus"/>
-        </button>
-      </div>
+        <div class="search-results-header">
+          <h2>找到以下周边地点：</h2>
+          <el-select v-model="selectedCategory" placeholder="筛选类型" style="width: 150px">
+            <el-option
+                v-for="category in categories"
+                :key="category.value"
+                :label="category.label"
+                :value="category.value"
+            />
+          </el-select>
+          <button class="close-btn" @click="closeSearchResults">
+            <font-awesome-icon icon="minus"/>
+          </button>
+        </div>
+
+        <div class="result-list">
+          <div
+            class="poi-item"
+            v-for="poi in buildingsWithinDistance.filter(p => {
+              return (!selectedCategory || p.category === selectedCategory)
+            })"
+            :key="poi.id"
+            v-show="poi.distance > 0 && poi.category !== null && poi.name !== '未知' && poi.name !== null"
+            >
+            <div class="poi-name">{{poi.name}}</div>
+            <div class="poi-category">{{poi.category}}</div>
+            <div class="poi-distance">{{poi.distance.toFixed(0)}}米</div>
+          </div>
+
+          <div
+              class="no-results"
+              v-if="buildingsWithinDistance.filter(p => {
+                return (!selectedCategory || p.category === selectedCategory)
+              }).length === 0">
+            未找到周边地点
+          </div>
+        </div>
     </div>
   </transition>
 
@@ -285,12 +352,49 @@
   margin-bottom: 5px;
   padding-bottom: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 2000;
 }
 
 .search-results-header h2 {
   margin: 0;
   font-size: 15px;
   color: #f4f0f0;
+}
+
+.result-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.poi-item {
+  padding: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.poi-item:last-child {
+  border-bottom: none;
+}
+
+.poi-name {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.poi-category {
+  font-size: 12px;
+  color: #ccc;
+  margin: 3px 0;
+}
+
+.poi-distance {
+  font-size: 12px;
+  color: #aaa;
+}
+
+.no-results {
+  text-align: center;
+  padding: 20px;
+  color: #aaa;
 }
 
 /* 渐进过渡动画 */
