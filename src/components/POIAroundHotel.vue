@@ -19,6 +19,7 @@
   const enterDis = ref(); // 输入的距离
   const buildingsWithinDistance = ref([]); // 搜索的结果
   const categories = ref([
+    {label: '所有结果', value: ''},
     {label: '饭馆', value: '饭馆'},
     {label: '酒店', value: '酒店'},
     {label: '购物场所', value: '购物场所'},
@@ -65,7 +66,11 @@
     }, 300)
   }
 
-  const emit = defineEmits(['flyToHotel']);
+  const emit = defineEmits([
+      'flyToHotel',
+      'flyToPOI'
+  ]);
+
   // 点击列表中的酒店后将输入框的输入框内容设置为选中
   function selectHotel(hotel) {
     hotelName.value = hotel.name;
@@ -80,6 +85,11 @@
       // 执行搜索
       searchBuildingsWithinDistance(hotel);
     }
+  }
+
+  // 点击POI后飞往POI
+  function flyToPOI(poi) {
+    emit('flyToPOI', poi);
   }
 
   // 搜索酒店周边的地点
@@ -181,7 +191,7 @@
     <div class="search-results" v-if="showSearchResults && panelStore.activePanel === 'poiAroundHotel'">
         <div class="search-results-header">
           <h2>找到以下周边地点：</h2>
-          <el-select v-model="selectedCategory" placeholder="筛选类型" style="width: 150px">
+          <el-select v-model="selectedCategory" placeholder="筛选类型" style="width: 180px" :teleported="false">
             <el-option
                 v-for="category in categories"
                 :key="category.value"
@@ -202,6 +212,7 @@
             })"
             :key="poi.id"
             v-show="poi.distance > 0 && poi.category !== null && poi.name !== '未知' && poi.name !== null"
+            @click="flyToPOI(poi)"
             >
             <div class="poi-name">{{poi.name}}</div>
             <div class="poi-category">{{poi.category}}</div>
@@ -332,7 +343,7 @@
   top: 340px;
   right: 20px;
   width: 380px;
-  height: 270px;
+  height: 370px;
   background: rgba(5, 10, 25, 0.85);
   backdrop-filter: blur(12px);
   border: 1px solid #f4f0f0;
@@ -362,17 +373,22 @@
 }
 
 .result-list {
-  max-height: 200px;
+  height: 320px;
   overflow-y: auto;
 }
 
 .poi-item {
   padding: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
 }
 
 .poi-item:last-child {
   border-bottom: none;
+}
+
+.poi-item:hover {
+  background: rgba(51, 153, 255, 0.5);
 }
 
 .poi-name {

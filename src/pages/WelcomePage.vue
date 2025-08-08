@@ -104,7 +104,7 @@
             </label>
             <label class="radio-label">
               <input type="radio" v-model="userType" value="admin">
-              行政人员
+              管理员
             </label>
           </div>
         </div>
@@ -150,7 +150,7 @@
         <div class="demo-accounts">
           <p>演示账户:</p>
           <p>市民: citizen / 123456</p>
-          <p>行政人员: admin / 123456</p>
+          <p>管理员: admin / 123456</p>
         </div>
       </div>
     </div>

@@ -197,7 +197,7 @@ import {usePanelStore} from "@/store/panel.js";
                   </template>
                   <el-menu-item index="0-1" disabled>
                   <span class="user-name" v-if="userType === 'admin'">
-                    行政人员
+                    管理员
                   </span>
                     <span class="user-name" v-else>
                     市民
@@ -333,7 +333,7 @@ import {usePanelStore} from "@/store/panel.js";
                   </el-menu-item>
 
                   <el-menu-item index="5-2" @click="openPanel('poiAroundHotel')">
-                      <font-awesome-icon icon="hotel"/>&nbsp;酒店周边POI
+                      <font-awesome-icon icon="hotel"/>&nbsp;酒店附近地点
                   </el-menu-item>
 
                   <el-menu-item index="5-3" @click="openPanel('houseRenting')">

@@ -59,6 +59,7 @@
 <!--        酒店附近POI检索-->
         <POIAroundHotel
             @flyToHotel="handleFlyToBuilding"
+            @flyToPOI="handleFlyToBuilding"
         />
       </div>
 

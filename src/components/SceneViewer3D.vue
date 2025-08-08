@@ -53,7 +53,7 @@ import {useWeatherStore} from "@/store/weather.js";
       viewer.camera.flyToBoundingSphere(boundingSphere,{
         offset: new SuperMap3D.HeadingPitchRange(
             SuperMap3D.Math.toRadians(0),    // 方向角
-            SuperMap3D.Math.toRadians(-40),  // 俯仰角
+            SuperMap3D.Math.toRadians(-50),  // 俯仰角
             800                             // 距离
         ),
         duration: 3 // 飞行时间，单位秒
