@@ -87,7 +87,7 @@ app.use(ElementPlus)
 app.use(pinia)
 
 // 设置暗黑模式
-document.documentElement.classList.add('dark')
+// document.documentElement.classList.add('dark')
 
 // 挂载应用
 app.mount('#app')

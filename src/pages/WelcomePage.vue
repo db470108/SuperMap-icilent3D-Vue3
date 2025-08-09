@@ -2,10 +2,13 @@
   import {useRouter} from "vue-router";
   import {ref} from "vue";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
+  import {useUserStore} from "@/store/user.js";
 
   const router = useRouter();
 
   const loading = ref(false); // 控制加载动画是否显示
+
+  const userStore = useUserStore();
 
   // 登录表单
   const showLogin = ref(false); // 控制登录窗口显示与否
@@ -48,6 +51,7 @@
           loggedIn: true
         }));
         enterPlatform();
+        userStore.setCurrentUser(username.value);
       } else {
         loginError.value = '用户名或密码错误';
       }
@@ -61,6 +65,7 @@
           loggedIn: true
         }));
         enterPlatform();
+        userStore.setCurrentUser(username.value);
       } else {
         loginError.value = '用户名或密码错误';
       }

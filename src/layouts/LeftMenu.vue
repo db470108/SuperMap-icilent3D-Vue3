@@ -31,6 +31,20 @@ import {usePanelStore} from "@/store/panel.js";
     'closeInfoWindow'
   ]);
 
+  //根据用户类型显示不同主题
+  const themeType = ref([
+    {backgroundColor: '', textColor: ''}
+  ]);
+  watch(() => props.userType, (newType) => {
+    if (newType === 'admin') {
+      themeType.value.backgroundColor = 'rgba(5, 10, 25, 0.7)';
+      themeType.value.textColor = '#f4f0f0';
+    } else if (newType === 'citizen') {
+      themeType.value.textColor = 'black';
+      themeType.value.backgroundColor = '#f4f0f0';
+    }
+  })
+
 
   // 控制菜单展开/收起状态
   const isCollapse = ref(true);
@@ -186,8 +200,8 @@ import {usePanelStore} from "@/store/panel.js";
                   class="el-menu"
                   mode="vertical"
                   :collapse="isCollapse"
-                  background-color="rgba(5, 10, 25, 0.7)"
-                  text-color="#f3f3f3"
+                  :background-color="themeType.backgroundColor"
+                  :text-color="themeType.textColor"
                   active-text-color="rgba(51, 153, 255, 0.8)"
               >
                 <!-- 用户信息区域 -->
@@ -367,9 +381,8 @@ import {usePanelStore} from "@/store/panel.js";
   left: 10px;
   width: 35px;
   height: 35px;
-  background: rgba(5, 10, 25, 0.6);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(51, 102, 204, 0.3);
+  border: 1.5px solid rgba(51, 102, 204, 0.3);
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -428,7 +441,7 @@ import {usePanelStore} from "@/store/panel.js";
 
 .user-name {
   font-weight: bold;
-  color: #6cd5fd;
+  color: #009eff;
   font-size: 18px;
 }
 </style>

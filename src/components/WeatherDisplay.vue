@@ -3,9 +3,27 @@ import { onMounted, reactive, ref, watch } from "vue";
 import * as echarts from 'echarts';
 import {usePanelStore} from "@/store/panel.js";
 import {useWeatherStore} from "@/store/weather.js";
+import {useUserStore} from "@/store/user.js";
 
 const panelStore = usePanelStore();
 const weatherStore = useWeatherStore();
+const userStore = useUserStore(); //用户类型
+
+//根据用户类型显示不同主题
+const themeType = ref([
+  {backgroundColor: '', textColor: '', iconColor: ''}
+]);
+watch(() => userStore.currentUser, (newType) => {
+  if (newType === 'admin') {
+    themeType.value.textColor = '#f4f0f0';
+    themeType.value.backgroundColor = 'rgba(5, 10, 25, 0.7)';
+    themeType.value.iconColor = '#f4f0f0';
+  } else if (newType === 'citizen') {
+    themeType.value.textColor = '#454545';
+    themeType.value.backgroundColor = '#f4f0f0';
+    themeType.value.iconColor = '#409EFF';
+  }
+}, {immediate: true})
 
 const weatherInfo = reactive({}); // 实时天气信息{}对象
 
@@ -113,7 +131,7 @@ function initChart() {
         title: {
           text: '武汉未来天气预报',
           textStyle: {
-            color: '#f4f0f0',
+            color: themeType.value.textColor,
             fontSize: 16
           }
         },
@@ -121,22 +139,23 @@ function initChart() {
           trigger: 'axis'
         },
         legend: {
-          data: ['最高温度', '最低温度'],
-          textStyle: {
-            color: '#f4f0f0'
-          }
+          data: [
+            {name: '最高温度', textStyle: { color: themeType.value.textColor }},
+            {name: '最低温度', textStyle: { color: themeType.value.textColor }}
+          ],
+
         },
         xAxis: {
           type: 'category',
           data: dates,
           axisLabel: {
-            color: '#f4f0f0'
+            color: themeType.value.textColor,
           }
         },
         yAxis: {
           type: 'value',
           axisLabel: {
-            color: '#f4f0f0',
+            color: themeType.value.textColor,
             formatter: '{value} °C'
           }
         },
@@ -254,9 +273,12 @@ onMounted(() => {
       @after-leave="cleanupChart"
       @after-enter="handleEnterFinished"
     >
-      <div v-if="panelStore.activePanel === 'weather'" class="weather-detail-panel">
+      <div
+          v-if="panelStore.activePanel === 'weather'"
+          :class="[userStore.currentUser === 'admin' ? 'weather-detail-panel-theme-admin' : 'weather-detail-panel-theme-citizen']"
+      >
         <div class="panel-header">
-          <h2>武汉市天气详情</h2>
+          <h2 :class="[userStore.currentUser === 'admin' ? 'weather-h2-theme-admin' : 'weather-h2-theme-citizen']">武汉市天气详情</h2>
           <button class="close-btn" @click="closeDetailPanel">
             <font-awesome-icon icon="xmark" />
           </button>
@@ -264,41 +286,52 @@ onMounted(() => {
 
         <div class="current-weather">
           <div class="current-main">
-            <font-awesome-icon :icon="getWeatherIcon(weatherInfo.weather)" class="large-weather-icon" />
-            <div class="temperature">{{ weatherInfo.temperature }}°C</div>
-            <div class="weather-description">{{ weatherInfo.weather }}</div>
+            <font-awesome-icon
+                :icon="getWeatherIcon(weatherInfo.weather)"
+                :class="[userStore.currentUser === 'admin' ? 'large-icon-theme-admin' : 'large-icon-theme-citizen']"
+            />
+            <div
+                :class="[userStore.currentUser === 'admin' ? 'temperature-theme-admin' : 'temperature-theme-citizen']"
+            >
+              {{ weatherInfo.temperature }}°C
+            </div>
+            <div
+                :class="[userStore.currentUser === 'admin' ? 'weather-description-theme-admin' : 'weather-description-theme-citizen']"
+            >
+              {{ weatherInfo.weather }}
+            </div>
           </div>
 
           <div class="current-details">
             <div class="detail-item">
-              <font-awesome-icon icon="tint" class="detail-icon" />
+              <font-awesome-icon icon="tint" :class="[userStore.currentUser === 'admin' ? 'detail-icon-theme-admin' : 'detail-icon-theme-citizen']" />
               <div class="detail-info">
-                <div class="detail-label">湿度</div>
-                <div class="detail-value">{{ weatherInfo.humidity }}%</div>
+                <div :class="[userStore.currentUser === 'admin' ? 'detail-label-theme-admin' : 'detail-label-theme-citizen']">湿度</div>
+                <div :class="[userStore.currentUser === 'admin' ? 'detail-value-theme-admin' : 'detail-value-theme-citizen']">{{ weatherInfo.humidity }}%</div>
               </div>
             </div>
 
             <div class="detail-item">
-              <font-awesome-icon icon="wind" class="detail-icon" />
+              <font-awesome-icon icon="wind" :class="[userStore.currentUser === 'admin' ? 'detail-icon-theme-admin' : 'detail-icon-theme-citizen']" />
               <div class="detail-info">
-                <div class="detail-label">风向</div>
-                <div class="detail-value">{{ weatherInfo.winddirection }}</div>
+                <div :class="[userStore.currentUser === 'admin' ? 'detail-label-theme-admin' : 'detail-label-theme-citizen']">风向</div>
+                <div :class="[userStore.currentUser === 'admin' ? 'detail-value-theme-admin' : 'detail-value-theme-citizen']">{{ weatherInfo.winddirection }}</div>
               </div>
             </div>
 
             <div class="detail-item">
-              <font-awesome-icon icon="wind" class="detail-icon" />
+              <font-awesome-icon icon="wind" :class="[userStore.currentUser === 'admin' ? 'detail-icon-theme-admin' : 'detail-icon-theme-citizen']" />
               <div class="detail-info">
-                <div class="detail-label">风力</div>
-                <div class="detail-value">{{ weatherInfo.windpower }}</div>
+                <div :class="[userStore.currentUser === 'admin' ? 'detail-label-theme-admin' : 'detail-label-theme-citizen']">风力</div>
+                <div :class="[userStore.currentUser === 'admin' ? 'detail-value-theme-admin' : 'detail-value-theme-citizen']">{{ weatherInfo.windpower }}</div>
               </div>
             </div>
 
             <div class="detail-item">
-              <font-awesome-icon icon="clock" class="detail-icon" />
+              <font-awesome-icon icon="clock" :class="[userStore.currentUser === 'admin' ? 'detail-icon-theme-admin' : 'detail-icon-theme-citizen']" />
               <div class="detail-info">
-                <div class="detail-label">更新时间</div>
-                <div class="detail-value">
+                <div :class="[userStore.currentUser === 'admin' ? 'detail-label-theme-admin' : 'detail-label-theme-citizen']">更新时间</div>
+                <div :class="[userStore.currentUser === 'admin' ? 'detail-value-theme-admin' : 'detail-value-theme-citizen']">
                   {{
                     weatherInfo.reporttime.split('-')[0] + "/" +
                     weatherInfo.reporttime.split('-')[1] + "/" +
@@ -317,23 +350,25 @@ onMounted(() => {
 
         <!-- 未来几天天气预报 -->
         <div class="forecast">
-          <h3>未来几天预报</h3>
+          <h3 :class="[userStore.currentUser === 'admin' ? 'forecast-h3-theme-admin' : 'forecast-h3-theme-citizen']">未来几天预报</h3>
           <div class="forecast-list">
             <div
               v-for="(forecast, index) in forecastInfo"
               :key="index"
               class="forecast-item"
             >
-              <div class="forecast-date">{{ formatDate(forecast.date) }}</div>
-              <div class="forecast-day">{{ formatWeekday(forecast.week) }}</div>
+              <div :class="[userStore.currentUser === 'admin' ? 'forecast-date-theme-admin' : 'forecast-date-theme-citizen']">{{ formatDate(forecast.date) }}</div>
+              <div :class="[userStore.currentUser === 'admin' ? 'forecast-day-theme-admin' : 'forecast-day-theme-citizen']">{{ formatWeekday(forecast.week) }}</div>
               <div class="forecast-weather">
-                <font-awesome-icon :icon="getWeatherIcon(forecast.dayweather)" class="forecast-icon" />
+                <font-awesome-icon
+                    :icon="getWeatherIcon(forecast.dayweather)"
+                    :class="[userStore.currentUser === 'admin' ? 'forecast-icon-theme-admin' : 'forecast-icon-theme-citizen']" />
               </div>
               <div class="forecast-temp">
                 <span class="high-temp">{{ forecast.daytemp }}°</span>
                 <span class="low-temp">{{ forecast.nighttemp }}°</span>
               </div>
-              <div class="forecast-desc">{{ forecast.dayweather }}</div>
+              <div :class="[userStore.currentUser === 'admin' ? 'forecast-desc-theme-admin' : 'forecast-desc-theme-citizen']">{{ forecast.dayweather }}</div>
             </div>
           </div>
         </div>
@@ -348,7 +383,8 @@ onMounted(() => {
   top: 6px;
   right: 50px;
   font-size: 14px;
-  background-color: rgba(5, 10, 25, 0.6);
+  /*background-color: rgba(5, 10, 25, 0.6);*/
+  border: 1px solid rgba(51, 102, 204, 0.3);
   padding: 6px 12px;
   border-radius: 8px;
   color: #f4f0f0;
@@ -371,13 +407,30 @@ onMounted(() => {
 
 .weather-display:hover {
   cursor: pointer;
-  background-color: rgba(5, 10, 25, 0.8);
+  /*background-color: rgba(5, 10, 25, 0.8);*/
   box-shadow: 0 0 10px #f4f0f0;
   transition: all 0.3s ease-in-out;
 }
 
 /* 详细天气面板 */
-.weather-detail-panel {
+.weather-detail-panel-theme-citizen {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  width: 460px;
+  max-height: 690px;
+  background: #f4f0f0;
+  backdrop-filter: blur(12px);
+  border: 1px solid #f4f0f0;
+  border-radius: 12px;
+  padding: 20px;
+  z-index: 10000;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  user-select: none;
+}
+
+.weather-detail-panel-theme-admin {
   position: absolute;
   top: 50px;
   right: 20px;
@@ -388,7 +441,6 @@ onMounted(() => {
   border: 1px solid #f4f0f0;
   border-radius: 12px;
   padding: 20px;
-  color: #f4f0f0;
   z-index: 10000;
   overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -404,17 +456,22 @@ onMounted(() => {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.panel-header h2 {
+.weather-h2-theme-citizen {
   margin: 0;
   font-size: 20px;
-  /*color: rgba(51, 153, 255, 0.7);*/
+  color: #454545;
+}
+
+.weather-h2-theme-admin {
+  margin: 0;
+  font-size: 20px;
   color: #f4f0f0;
 }
 
 .close-btn {
   background: transparent;
   border: none;
-  color: #f4f0f0;
+  color: #454545;
   font-size: 20px;
   cursor: pointer;
   padding: 5px;
@@ -437,22 +494,41 @@ onMounted(() => {
   padding: 10px;
 }
 
-.large-weather-icon {
+.large-icon-theme-citizen {
   font-size: 48px;
   /*color: rgba(51, 153, 255, 0.7);*/
+  color: #409EFF;
+  margin-bottom: 10px;
+}
+
+.large-icon-theme-admin {
+  font-size: 48px;
   color: #f4f0f0;
   margin-bottom: 10px;
 }
 
-.temperature {
+.temperature-theme-citizen {
   font-size: 36px;
   font-weight: bold;
   margin-bottom: 5px;
+  color: #454545;
 }
 
-.weather-description {
+.temperature-theme-admin {
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #f4f0f0;
+}
+
+.weather-description-theme-citizen {
   font-size: 18px;
-  color: #aaa;
+  color: #454545;
+}
+
+.weather-description-theme-admin {
+  font-size: 18px;
+  color: #f4f0f0;
 }
 
 .current-details {
@@ -471,9 +547,13 @@ onMounted(() => {
   border-radius: 8px;
 }
 
-.detail-icon {
+.detail-icon-theme-citizen {
   font-size: 20px;
-  /*color: rgba(51, 153, 255, 0.7);*/
+  color: #409EFF;
+}
+
+.detail-icon-theme-admin {
+  font-size: 20px;
   color: #f4f0f0;
 }
 
@@ -482,15 +562,28 @@ onMounted(() => {
   flex-direction: column;
 }
 
-.detail-label {
+.detail-label-theme-citizen {
   font-size: 12px;
-  color: #aaa;
+  color: #454545;
   font-weight: bold;
 }
 
-.detail-value {
+.detail-label-theme-admin {
+  font-size: 12px;
+  color: #f4f0f0;
+  font-weight: bold;
+}
+
+.detail-value-theme-citizen {
   font-size: 15px;
   font-weight: bold;
+  color: #454545;
+}
+
+.detail-value-theme-admin {
+  font-size: 15px;
+  font-weight: bold;
+  color: #f4f0f0;
 }
 
 /* 天气图表 */
@@ -509,9 +602,14 @@ onMounted(() => {
   margin-top: 20px;
 }
 
-.forecast h3 {
+.forecast-h3-theme-citizen {
   margin: 0 0 15px 0;
-  /*color: rgba(51, 153, 255, 0.7);*/
+  color: #454545;
+  font-size: 18px;
+}
+
+.forecast-h3-theme-admin {
+  margin: 0 0 15px 0;
   color: #f4f0f0;
   font-size: 18px;
 }
@@ -532,21 +630,39 @@ onMounted(() => {
   text-align: center;
 }
 
-.forecast-date {
+.forecast-date-theme-citizen {
   font-size: 12px;
-  color: white;
+  color: #454545;
   margin-bottom: 5px;
 }
 
-.forecast-day {
+.forecast-date-theme-admin {
+  font-size: 12px;
+  color: #f4f0f0;
+  margin-bottom: 5px;
+}
+
+.forecast-day-theme-citizen {
   font-size: 13px;
-  color: white;
+  color: #454545;
   margin-bottom: 5px;
 }
 
-.forecast-icon {
+.forecast-day-theme-admin {
+  font-size: 13px;
+  color: #f4f0f0;
+  margin-bottom: 5px;
+}
+
+.forecast-icon-theme-citizen {
   font-size: 24px;
   /*color: rgba(51, 153, 255, 0.7);*/
+  color: #409EFF;
+  margin: 5px 0;
+}
+
+.forecast-icon-theme-admin {
+  font-size: 24px;
   color: #f4f0f0;
   margin: 5px 0;
 }
@@ -567,9 +683,14 @@ onMounted(() => {
   color: rgba(51, 153, 255, 0.7);
 }
 
-.forecast-desc {
+.forecast-desc-theme-citizen {
   font-size: 12px;
-  color: white;
+  color: #454545;
+  font-weight: bold;
+}
+.forecast-desc-theme-admin {
+  font-size: 12px;
+  color: #f4f0f0;
   font-weight: bold;
 }
 
