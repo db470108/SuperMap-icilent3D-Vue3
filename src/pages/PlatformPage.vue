@@ -61,6 +61,11 @@
             @flyToHotel="handleFlyToBuilding"
             @flyToPOI="handleFlyToBuilding"
         />
+
+<!--        租房中心-->
+        <HouseRenting
+            @flyToHouse="handleFlyToBuilding"
+        />
       </div>
 
     </div>
@@ -79,6 +84,7 @@
   import {useRouter} from "vue-router";
   import POIAroundHotel from "@/components/POIAroundHotel.vue";
   import {usePanelStore} from "@/store/panel.js";
+  import HouseRenting from "@/components/HouseRenting.vue";
 
   // 获取用户信息
   const user = ref(null);
@@ -118,6 +124,8 @@
     userType.value = 'citizen';
     // 跳转到欢迎页面
     router.push('/welcome');
+    //关闭所有模块
+    panelStore.closePanel();
   }
 
   // 图层管理

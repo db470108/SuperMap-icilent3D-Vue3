@@ -3,6 +3,7 @@ import {ref, watch} from 'vue';
   import axios from "@/utils/axios.js";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import {usePanelStore} from "@/store/panel.js";
+import {useUserStore} from "@/store/user.js";
 
   const searchBoxVisible = ref(false);  // 搜索框是否可见
   const searchQuery = ref('');  // 存储用户输入的搜索关键词
@@ -11,6 +12,7 @@ import {ref, watch} from 'vue';
   let searchTimeout = null; // 用于防抖的定时器引用
 
   const panelStore = usePanelStore();
+  const userStore = useUserStore();
 
   watch(() => panelStore.activePanel, (newPanel) => {
     if (newPanel === 'keyWordSearch') {
@@ -89,7 +91,10 @@ import {ref, watch} from 'vue';
 
 <!--    输入框-->
     <transition name="fade-slide" mode="out-in">
-      <div class="search-input-container" v-if="searchBoxVisible">
+      <div
+          :class="[userStore.currentUser === 'admin' ? 'search-input-container-theme-admin' : 'search-input-container-theme-citizen']"
+          v-if="searchBoxVisible"
+      >
         <el-input
             class="search-input"
             type="text"
@@ -98,7 +103,9 @@ import {ref, watch} from 'vue';
             @input="handleInput"
             clearable
         />
-        <button class="closeKeyWordSearch" :title="'关闭'" @click="closeKeyWordSearch">
+        <button
+            :class="[userStore.currentUser === 'admin' ? 'closeKeyWordSearch-theme-admin' : 'closeKeyWordSearch-theme-citizen']"
+            :title="'关闭'" @click="closeKeyWordSearch">
           <font-awesome-icon icon="xmark"/>
         </button>
       </div>
@@ -106,14 +113,20 @@ import {ref, watch} from 'vue';
 
 <!--    结果列表-->
     <transition name="fade-slide" mode="out-in">
-      <div class="search-results" v-if="(showResult && searchResults.length > 0 && searchBoxVisible)">
+      <div
+          :class="[userStore.currentUser === 'admin' ? 'search-results-theme-admin' : 'search-results-theme-citizen']"
+          v-if="(showResult && searchResults.length > 0 && searchBoxVisible)">
         <div
-            class="result-item"
+            :class="[userStore.currentUser === 'admin' ? 'result-item-theme-admin' : 'result-item-theme-citizen']"
             v-for="building in searchResults"
             :key="building.id"
             @click="selectBuilding(building)"
           >
-          <font-awesome-icon icon="location-dot" class="location-dot"/> {{ building.name }}
+          <font-awesome-icon
+              icon="location-dot"
+              :class="[userStore.currentUser === 'admin' ? 'location-dot-theme-admin' : 'location-dot-theme-citizen']"
+          />
+          {{ building.name }}
         </div>
       </div>
     </transition>
@@ -134,13 +147,27 @@ import {ref, watch} from 'vue';
 }
 
 /* 横向弹出菜单 */
-.search-input-container {
+.search-input-container-theme-admin {
   position: relative;
   width: 327px;
   padding: 1px 1px;
   display: flex;
   gap: 20px;
   background: rgba(5, 10, 25, 0.6);
+  backdrop-filter: blur(12px);
+  color: #f4f0f0;
+  z-index: 3000;
+  border: 1px solid #f4f0f0;
+  border-radius: 12px;
+}
+
+.search-input-container-theme-citizen {
+  position: relative;
+  width: 327px;
+  padding: 1px 1px;
+  display: flex;
+  gap: 20px;
+  background: #f4f0f0;
   backdrop-filter: blur(12px);
   color: #f4f0f0;
   z-index: 3000;
@@ -164,7 +191,7 @@ import {ref, watch} from 'vue';
 }
 
 
-.closeKeyWordSearch {
+.closeKeyWordSearch-theme-admin {
   position: absolute;
   top: 16px;
   right: 5px;
@@ -176,12 +203,25 @@ import {ref, watch} from 'vue';
   z-index: 1000;
 }
 
-.closeKeyWordSearch:hover {
+.closeKeyWordSearch-theme-citizen {
+  position: absolute;
+  top: 16px;
+  right: 5px;
+  background: transparent;
+  border: none;
+  color: black;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+.closeKeyWordSearch-theme-admin:hover,
+.closeKeyWordSearch-theme-citizen:hover {
   color: #e15151;
 }
 
 /* 搜索结果样式 */
-.search-results {
+.search-results-theme-admin {
   position: fixed;
   top: 108px;
   right: 50px;
@@ -196,24 +236,53 @@ import {ref, watch} from 'vue';
   border-radius: 12px;
 }
 
-.result-item {
+.search-results-theme-citizen {
+  position: fixed;
+  top: 108px;
+  right: 50px;
+  width: 327px;
+  max-height: 600px;
+  overflow-y: auto;
+  background: #f4f0f0;
+  backdrop-filter: blur(12px);
+  z-index: 3000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid #f4f0f0;
+  border-radius: 12px;
+}
+
+.result-item-theme-admin {
   padding: 10px 15px;
   color: #f4f0f0;
   cursor: pointer;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.result-item:last-child {
+.result-item-theme-citizen {
+  padding: 10px 15px;
+  color: #454545;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.result-item-theme-admin:last-child,
+.result-item-theme-citizen:last-child {
   border-bottom: none;
 }
 
-.result-item:hover {
+.result-item-theme-admin:hover,
+.result-item-theme-citizen:hover {
   background: rgba(51, 153, 255, 0.5);
 }
 
-.location-dot {
+.location-dot-theme-admin {
   font-size: 15px;
   color: #f4f0f0;
+}
+
+.location-dot-theme-citizen {
+  font-size: 15px;
+  color: #409EFF;
 }
 
 /* 动画增强 */

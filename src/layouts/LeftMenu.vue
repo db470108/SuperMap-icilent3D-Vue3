@@ -41,7 +41,7 @@ import {usePanelStore} from "@/store/panel.js";
       themeType.value.textColor = '#f4f0f0';
     } else if (newType === 'citizen') {
       themeType.value.textColor = 'black';
-      themeType.value.backgroundColor = '#f4f0f0';
+      themeType.value.backgroundColor = 'rgba(244, 240, 240, 0.85)';
     }
   })
 

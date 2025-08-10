@@ -3,9 +3,12 @@
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import {computed, ref, watch} from "vue";
   import axios from "@/utils/axios.js";
+  import {useUserStore} from "@/store/user.js";
 
   // 控制面板是否显示
   const panelStore = usePanelStore();
+  // 根据不同登录身份，加载不同内容和主题
+  const userStore = useUserStore();
 
   // 关闭面板
   function closePanel() {
@@ -122,15 +125,26 @@
 <template>
 
   <transition name="fade-slide" mode="out-in">
-    <div class="enter-info-panel" v-if="panelStore.activePanel === 'poiAroundHotel'">
-      <div class="panel-header">
+    <div
+        :class="[userStore.currentUser === 'admin' ? 'enter-info-panel-theme-admin' : 'enter-info-panel-theme-citizen']"
+        v-if="panelStore.activePanel === 'poiAroundHotel'"
+    >
+      <div
+          :class="[userStore.currentUser === 'admin' ? 'panel-header-theme-admin' : 'panel-header-theme-citizen']"
+
+      >
         <h2>酒店周边地点搜索</h2>
-        <button class="close-btn" @click="closePanel">
+        <button
+            :class="[userStore.currentUser === 'admin' ? 'close-btn-theme-admin' : 'close-btn-theme-citizen']"
+            @click="closePanel"
+        >
           <font-awesome-icon icon="xmark"/>
         </button>
       </div>
 
-      <div class="search-hotel">
+      <div
+          :class="[userStore.currentUser === 'admin' ? 'search-hotel-theme-admin' : 'search-hotel-theme-citizen']"
+      >
           酒店/宾馆 名称：
         <el-input
             type="text"
@@ -143,19 +157,26 @@
       </div>
 
       <transition name="fade-slide" mode="out-in">
-        <div class="hotel-list">
+        <div
+            :class="[userStore.currentUser === 'admin' ? 'hotel-list-theme-admin' : 'hotel-list-theme-citizen']"
+        >
           <div
-            class="result-item"
+              :class="[userStore.currentUser === 'admin' ? 'result-item-theme-admin' : 'result-item-theme-citizen']"
             v-for="hotel in hotelList "
             :key="hotel.id"
             @click="selectHotel(hotel)"
             >
-              <font-awesome-icon icon="hotel" class="icon-hotel"/> {{ hotel.name }}
+              <font-awesome-icon
+                  icon="hotel"
+                  :class="[userStore.currentUser === 'admin' ? 'icon-hotel-theme-admin' : 'icon-hotel-theme-citizen']"
+              /> {{ hotel.name }}
           </div>
         </div>
       </transition>
 
-      <div class="enter-dis">
+      <div
+          :class="[userStore.currentUser === 'admin' ? 'enter-dis-theme-admin' : 'enter-dis-theme-citizen']"
+      >
         搜索距离：
         <el-input
             type="number"
@@ -188,8 +209,13 @@
   </transition>
 
   <transition name="fade-slide" mode="out-in">
-    <div class="search-results" v-if="showSearchResults && panelStore.activePanel === 'poiAroundHotel'">
-        <div class="search-results-header">
+    <div
+        :class="[userStore.currentUser === 'admin' ? 'search-results-theme-admin' : 'search-results-theme-citizen']"
+        v-if="showSearchResults && panelStore.activePanel === 'poiAroundHotel'"
+    >
+        <div
+            :class="[userStore.currentUser === 'admin' ? 'search-results-header-theme-admin' : 'search-results-header-theme-citizen']"
+        >
           <h2>找到以下周边地点：</h2>
           <el-select v-model="selectedCategory" placeholder="筛选类型" style="width: 180px" :teleported="false">
             <el-option
@@ -199,14 +225,17 @@
                 :value="category.value"
             />
           </el-select>
-          <button class="close-btn" @click="closeSearchResults">
+          <button
+              :class="[userStore.currentUser === 'admin' ? 'close-btn-theme-admin' : 'close-btn-theme-citizen']"
+              @click="closeSearchResults"
+          >
             <font-awesome-icon icon="minus"/>
           </button>
         </div>
 
         <div class="result-list">
           <div
-            class="poi-item"
+              :class="[userStore.currentUser === 'admin' ? 'poi-item-theme-admin' : 'poi-item-theme-citizen']"
             v-for="poi in buildingsWithinDistance.filter(p => {
               return (!selectedCategory || p.category === selectedCategory)
             })"
@@ -214,13 +243,25 @@
             v-show="poi.distance > 0 && poi.category !== null && poi.name !== '未知' && poi.name !== null"
             @click="flyToPOI(poi)"
             >
-            <div class="poi-name">{{poi.name}}</div>
-            <div class="poi-category">{{poi.category}}</div>
-            <div class="poi-distance">{{poi.distance.toFixed(0)}}米</div>
+            <div
+                :class="[userStore.currentUser === 'admin' ? 'poi-name-theme-admin' : 'poi-name-theme-citizen']"
+            >
+              {{poi.name}}
+            </div>
+            <div
+                :class="[userStore.currentUser === 'admin' ? 'poi-category-theme-admin' : 'poi-category-theme-citizen']"
+            >
+              {{poi.category}}
+            </div>
+            <div
+                :class="[userStore.currentUser === 'admin' ? 'poi-distance-theme-admin' : 'poi-distance-theme-citizen']"
+            >
+              {{poi.distance.toFixed(0)}}米
+            </div>
           </div>
 
           <div
-              class="no-results"
+              :class="[userStore.currentUser === 'admin' ? 'no-result-theme-admin' : 'no-result-theme-citizen']"
               v-if="buildingsWithinDistance.filter(p => {
                 return (!selectedCategory || p.category === selectedCategory)
               }).length === 0">
@@ -236,7 +277,7 @@
 </template>
 
 <style scoped>
-.enter-info-panel {
+.enter-info-panel-theme-admin {
   position: absolute;
   top: 50px;
   right: 20px;
@@ -254,7 +295,25 @@
   user-select: none;
 }
 
-.panel-header {
+.enter-info-panel-theme-citizen {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  width: 380px;
+  height: 255px;
+  background: #f4f0f0;
+  backdrop-filter: blur(12px);
+  border: 1px solid #f4f0f0;
+  border-radius: 12px;
+  padding: 15px;
+  color: #f4f0f0;
+  z-index: 10000;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  user-select: none;
+}
+
+.panel-header-theme-admin {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -263,13 +322,28 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.panel-header h2 {
+.panel-header-theme-admin h2 {
   margin: 0;
   font-size: 15px;
   color: #f4f0f0;
 }
 
-.close-btn {
+.panel-header-theme-citizen {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(69, 69, 69, 0.2);
+}
+
+.panel-header-theme-citizen h2 {
+  margin: 0;
+  font-size: 15px;
+  color: #454545;
+}
+
+.close-btn-theme-admin {
   background: transparent;
   border: none;
   color: #f4f0f0;
@@ -279,16 +353,33 @@
   border-radius: 4px;
 }
 
-.close-btn:hover {
+.close-btn-theme-citizen {
+  background: transparent;
+  border: none;
+  color: #454545;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+}
+
+.close-btn-theme-admin:hover,
+.close-btn-theme-citizen:hover {
   color: #e15151;
 }
 
-.search-hotel {
+.search-hotel-theme-admin {
   font-size: 13px;
+  color: #f4f0f0;
+}
+
+.search-hotel-theme-citizen {
+  font-size: 13px;
+  color: #454545;
 }
 
 /* 搜索结果样式 */
-.hotel-list {
+.hotel-list-theme-admin {
   position: absolute;
   top: 100px;
   right: 20px;
@@ -303,7 +394,22 @@
   border-radius: 6px;
 }
 
-.result-item {
+.hotel-list-theme-citizen {
+  position: absolute;
+  top: 100px;
+  right: 20px;
+  width: 375px;
+  height: 130px;
+  overflow-y: auto;
+  background: #f4f0f0;
+  backdrop-filter: blur(12px);
+  z-index: 3000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(117, 117, 117, 0.65);
+  border-radius: 6px;
+}
+
+.result-item-theme-admin {
   padding: 10px 15px;
   color: #f4f0f0;
   cursor: pointer;
@@ -311,23 +417,46 @@
   font-size: 13px;
 }
 
-.result-item:last-child {
+.result-item-theme-citizen {
+  padding: 10px 15px;
+  color: #454545;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+}
+
+.result-item-theme-admin:last-child,
+.result-item-theme-citizen:last-child {
   border-bottom: none;
 }
 
-.result-item:hover {
+.result-item-theme-admin:hover,
+.result-item-theme-citizen:hover {
   background: rgba(51, 153, 255, 0.5);
 }
 
-.icon-hotel {
+.icon-hotel-theme-admin {
   font-size: 13px;
   color: #f4f0f0;
 }
 
-.enter-dis {
+.icon-hotel-theme-citizen {
+  font-size: 13px;
+  color: #409EFF;
+}
+
+.enter-dis-theme-admin {
   font-size: 13px;
   position: fixed;
-  bottom: 10px
+  bottom: 10px;
+  color: #f4f0f0;
+}
+
+.enter-dis-theme-citizen {
+  font-size: 13px;
+  position: fixed;
+  bottom: 10px;
+  color: #454545;
 }
 
 .buttons {
@@ -338,7 +467,7 @@
   gap: 20px;
 }
 
-.search-results {
+.search-results-theme-admin {
   position: absolute;
   top: 340px;
   right: 20px;
@@ -356,7 +485,35 @@
   user-select: none;
 }
 
-.search-results-header {
+.search-results-theme-citizen {
+  position: absolute;
+  top: 340px;
+  right: 20px;
+  width: 380px;
+  height: 370px;
+  background: #f4f0f0;
+  backdrop-filter: blur(12px);
+  border: 1px solid #f4f0f0;
+  border-radius: 12px;
+  padding: 15px;
+  color: #f4f0f0;
+  z-index: 10000;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  user-select: none;
+}
+
+.search-results-header-theme-citizen{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(69, 69, 69, 0.2);
+  z-index: 2000;
+}
+
+.search-results-header-theme-admin {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -366,10 +523,16 @@
   z-index: 2000;
 }
 
-.search-results-header h2 {
+.search-results-header-theme-admin h2 {
   margin: 0;
   font-size: 15px;
   color: #f4f0f0;
+}
+
+.search-results-header-theme-citizen h2 {
+  margin: 0;
+  font-size: 15px;
+  color: #454545;
 }
 
 .result-list {
@@ -377,40 +540,72 @@
   overflow-y: auto;
 }
 
-.poi-item {
+.poi-item-theme-citizen {
+  padding: 10px;
+  border-bottom: 1px solid rgba(69, 69, 69, 0.2);
+  cursor: pointer;
+}
+
+.poi-item-theme-admin {
   padding: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
 }
 
-.poi-item:last-child {
+.poi-item-theme-citizen:last-child,
+.poi-item-theme-admin:last-child {
   border-bottom: none;
 }
 
-.poi-item:hover {
+.poi-item-theme-citizen:hover,
+.poi-item-theme-admin:hover {
   background: rgba(51, 153, 255, 0.5);
 }
 
-.poi-name {
+.poi-name-theme-admin {
   font-weight: bold;
   font-size: 14px;
+  color: #f4f0f0;
 }
 
-.poi-category {
+.poi-name-theme-citizen {
+  font-weight: bold;
+  font-size: 14px;
+  color: #454545;
+}
+
+.poi-category-theme-admin {
   font-size: 12px;
   color: #ccc;
   margin: 3px 0;
 }
 
-.poi-distance {
+.poi-category-theme-citizen {
+  font-size: 12px;
+  color: #454545;
+  margin: 3px 0;
+}
+
+.poi-distance-theme-admin {
   font-size: 12px;
   color: #aaa;
 }
 
-.no-results {
+.poi-distance-theme-citizen {
+  font-size: 12px;
+  color: #454545;
+}
+
+.no-result-theme-admin {
   text-align: center;
   padding: 20px;
   color: #aaa;
+}
+
+.no-result-theme-citizen {
+  text-align: center;
+  padding: 20px;
+  color: #454545;
 }
 
 /* 渐进过渡动画 */
