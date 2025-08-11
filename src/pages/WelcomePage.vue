@@ -326,7 +326,8 @@ body {
 }
 
 .left h1 {
-    font-size: 3.5rem;
+    font-size: 3.4rem;
+    display: flex;
     margin: 0;
     color: #00bfff;
     line-height: 1.2;
