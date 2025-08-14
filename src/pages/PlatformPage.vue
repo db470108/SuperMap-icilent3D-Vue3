@@ -5,6 +5,7 @@
       <div class="main-container" id="main-container">
 <!--         图层加载 -->
         <SceneViewer3D
+            v-if="pageStore.activePage === 'scene-viewer-3d'"
             ref="sceneViewer3DRef"
             :show-buildings="showBuildings"
             :show-water="showWater"
@@ -18,7 +19,6 @@
 
 <!--       侧边菜单 -->
         <LeftMenu
-            :user-type="userType"
             :user="user"
             @toggle-buildingsLayer="handleChangeBuildingsVisibility"
             @toggle-waterLayer="handleChangeWaterVisibility"
@@ -66,6 +66,15 @@
         <HouseRenting
             @flyToHouse="handleFlyToBuilding"
         />
+
+<!--        出现导航-->
+        <Navigation/>
+
+<!--        高德地图-->
+        <AMapPage
+          v-if="pageStore.activePage === 'amap'"
+        />
+
       </div>
 
     </div>
@@ -84,21 +93,24 @@
   import {useRouter} from "vue-router";
   import POIAroundHotel from "@/components/POIAroundHotel.vue";
   import {usePanelStore} from "@/store/panel.js";
+  import  {usePageStore} from "@/store/page.js"
   import HouseRenting from "@/components/HouseRenting.vue";
+  import Navigation from "@/components/Navigation.vue";
+  import AMapPage from "@/pages/AMapPage.vue";
 
   // 获取用户信息
   const user = ref(null);
-  const userType = ref('citizen'); // 默认为市民
 
   // 获取当前板块
   const panelStore = usePanelStore()
+  // 获取当前页面
+  const pageStore = usePageStore();
 
   onMounted(() => {
     // 从localStorage获取用户信息
     const userData = JSON.parse(localStorage.getItem('user'));
     if (userData && userData.loggedIn) {
       user.value = userData;
-      userType.value = userData.type;
     } else {
       // 如果没有有效的用户信息，重定向到登录页
       router.push('/welcome');
@@ -121,7 +133,6 @@
     localStorage.removeItem('user');
     // 清空用户状态
     user.value = null;
-    userType.value = 'citizen';
     // 跳转到欢迎页面
     router.push('/welcome');
     //关闭所有模块

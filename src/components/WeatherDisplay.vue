@@ -384,7 +384,7 @@ onMounted(() => {
   right: 50px;
   font-size: 14px;
   /*background-color: rgba(5, 10, 25, 0.6);*/
-  border: 1px solid rgba(51, 102, 204, 0.3);
+  border: 1px solid rgba(54, 171, 243, 0.84);
   padding: 6px 12px;
   border-radius: 8px;
   color: #f4f0f0;
@@ -397,7 +397,7 @@ onMounted(() => {
 }
 
 .weather-display.active {
-  box-shadow: 0 0 10px #f4f0f0;
+  box-shadow: 0 0 10px rgba(54, 171, 243, 0.84);
 }
 
 .weather-icon {
@@ -407,8 +407,8 @@ onMounted(() => {
 
 .weather-display:hover {
   cursor: pointer;
-  /*background-color: rgba(5, 10, 25, 0.8);*/
-  box-shadow: 0 0 10px #f4f0f0;
+  box-shadow: 0 0 10px rgba(54, 171, 243, 0.84);
+  transform: scale(1.05);
   transition: all 0.3s ease-in-out;
 }
 

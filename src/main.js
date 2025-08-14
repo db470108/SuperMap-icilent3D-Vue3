@@ -33,9 +33,14 @@ import {
     faPeopleGroup,
     faHotel,
     faHouse,
+    faMapLocationDot,
+    faBridge,
+    faLocationArrow,
+    faArrowLeftLong,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import ElementPlus from 'element-plus'
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css' // 引入暗黑模式CSS变量
 import { createPinia } from "pinia";
@@ -69,6 +74,10 @@ library.add(
     faPeopleGroup,
     faHotel,
     faHouse,
+    faMapLocationDot,
+    faBridge,
+    faLocationArrow,
+    faArrowLeftLong,
 );
 
 // 创建 Vue 应用
@@ -82,8 +91,12 @@ app.component("font-awesome-icon", FontAwesomeIcon);
 // 使用路由
 app.use(router)
 
-// 使用 Element Plus并设置暗黑模式
+// 使用 Element Plus
 app.use(ElementPlus)
+// 引入Element Plus 图标
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
 
 // 使用Pinia
 app.use(pinia)

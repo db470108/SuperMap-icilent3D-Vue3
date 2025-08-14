@@ -315,41 +315,44 @@
         </button>
       </div>
 
-      <div
-          class="house-item"
-          v-for="(house, index) in housesInfo"
-          :key="index"
-      >
+      <el-scrollbar height="555px">
+        <div
+            class="house-item"
+            v-for="(house, index) in housesInfo"
+            :key="index"
+        >
 
-        <img :src="house.img" :alt="house.name">
-        <div class="house-info">
-          <div class="house-title">
-            <span>{{ house.name }}</span>
-            <span class="house-price">{{ house.price}}元/月</span>
-          </div>
+          <img :src="house.img" :alt="house.name">
+          <div class="house-info">
+            <div class="house-title">
+              <span>{{ house.name }}</span>
+              <span class="house-price">{{ house.price}}元/月</span>
+            </div>
 
-          <div class="house-detail">
+            <div class="house-detail">
               <span>{{ house.district }} / </span>
               <span>{{ house.area }}㎡ / </span>
               <span>{{ house.orientation }} / </span>
               <span>{{ house.room }}</span>
-          </div>
-
-          <div class="btn-row">
-            <div class="flt-to-location-btn">
-              <el-button type="success" @click="flyToHouse(house)">
-                查看位置
-              </el-button>
             </div>
 
-            <div class="detail-btn">
-              <el-button type="primary" :title="'前往贝壳找房'" @click.stop="goToLink(house)">了解详情</el-button>
+            <div class="btn-row">
+              <div class="flt-to-location-btn">
+                <el-button type="success" @click="flyToHouse(house)">
+                  查看位置
+                </el-button>
+              </div>
+
+              <div class="detail-btn">
+                <el-button type="primary" :title="'前往贝壳找房'" @click.stop="goToLink(house)">了解详情</el-button>
+              </div>
             </div>
+
           </div>
 
         </div>
+      </el-scrollbar>
 
-      </div>
     </div>
   </transition>
 
@@ -362,10 +365,8 @@
   top: 50px;
   right: 20px;
   width: 450px;
-  height: 555px;
   border-radius: 12px;
   padding: 15px;
-  overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   user-select: none;
 }
@@ -480,6 +481,7 @@
 /* 主题样式 */
 .theme-citizen {
   background: #f4f0f0;
+  backdrop-filter: blur(12px);
   color: #454545;
 }
 .theme-citizen .panel-header {
@@ -491,6 +493,7 @@
 
 .theme-admin {
   background: rgba(5, 10, 25, 0.85);
+  backdrop-filter: blur(12px);
   color: #f4f0f0;
 }
 .theme-admin .panel-header {

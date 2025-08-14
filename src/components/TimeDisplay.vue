@@ -32,11 +32,10 @@
 <style scoped>
   .time-display {
     position: absolute;
-    top: 6px;
+    top: 5px;
     right: 210px;
     font-size: 14px;
-    /*background-color: rgba(5, 10, 25, 0.6);*/
-    border: 1px solid rgba(51, 102, 204, 0.3);
+    border: 1px solid rgba(54, 171, 243, 0.84);
     padding: 6px 12px;
     border-radius: 8px;
     color: #f4f0f0;

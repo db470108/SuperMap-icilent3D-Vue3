@@ -3,15 +3,17 @@ import {ref, computed, nextTick, watch} from 'vue';
 import { ElMenu, ElMenuItem, ElSubMenu, ElCol, ElRow } from 'element-plus';
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {usePanelStore} from "@/store/panel.js";
+import {useRouter} from "vue-router";
+import {usePageStore} from "@/store/page.js";
+import {useUserStore} from "@/store/user.js";
 
   const panelStore = usePanelStore();
+  const pageStore = usePageStore();
+  const userStore = useUserStore();
+  const router = useRouter();
 
   // 接收用户类型和用户信息
   const props = defineProps({
-    userType: {
-      type: String,
-      default: 'citizen'
-    },
     user: {
       type: Object,
       default: null
@@ -35,7 +37,7 @@ import {usePanelStore} from "@/store/panel.js";
   const themeType = ref([
     {backgroundColor: '', textColor: ''}
   ]);
-  watch(() => props.userType, (newType) => {
+  watch(() => userStore.currentUser, (newType) => {
     if (newType === 'admin') {
       themeType.value.backgroundColor = 'rgba(5, 10, 25, 0.7)';
       themeType.value.textColor = '#f4f0f0';
@@ -43,13 +45,15 @@ import {usePanelStore} from "@/store/panel.js";
       themeType.value.textColor = 'black';
       themeType.value.backgroundColor = 'rgba(244, 240, 240, 0.85)';
     }
-  })
+  }, {immediate: true});
 
 
   // 控制菜单展开/收起状态
   const isCollapse = ref(true);
   // 控制菜单是否可见
   const isMenuVisible = ref(false);
+  // 控制菜单按钮是否禁用
+  const isMenuBtnDisabled = ref(false);
 
   // 切换菜单状态
   function toggleMenu() {
@@ -168,6 +172,16 @@ import {usePanelStore} from "@/store/panel.js";
     }
   })
 
+  // 打开高德地图
+  function openPage(page) {
+    pageStore.togglePage(page);
+    isCollapse.value = true;
+    isMenuVisible.value = false;
+  }
+  // 实时监听菜单按钮是否可用
+  watch(() => pageStore.activePage, (newValue) => {
+    isMenuBtnDisabled.value = newValue !== 'scene-viewer-3d';
+  })
 
 
   // 打开酒店周边POI板块
@@ -175,12 +189,17 @@ import {usePanelStore} from "@/store/panel.js";
     panelStore.togglePanel(panel);
     console.log("当前打开的面板为：", panelStore.activePanel);
   }
+
+  // 打开走进武汉网站
+  function knowMoreAboutWuhan() {
+    window.open('https://www.wuhan.gov.cn/zjwh/', '_blank');
+  }
 </script>
 
 <template>
   <div class="left-menu-wrapper">
     <!-- 菜单切换按钮 -->
-    <div class="menu-toggle-btn" @click="toggleMenu">
+    <div class="menu-toggle-btn" @click="!isMenuBtnDisabled && toggleMenu()" v-show="pageStore.activePage === 'scene-viewer-3d'">
       <span v-if="isCollapse"><font-awesome-icon icon="fa-solid fa-bars" /></span>
       <span v-else><font-awesome-icon icon="fa-solid fa-xmark" /></span>
     </div>
@@ -210,7 +229,7 @@ import {usePanelStore} from "@/store/panel.js";
                     <font-awesome-icon icon="user"/>&nbsp;用户管理
                   </template>
                   <el-menu-item index="0-1" disabled>
-                  <span class="user-name" v-if="userType === 'admin'">
+                  <span class="user-name" v-if="userStore.currentUser === 'admin'">
                     管理员
                   </span>
                     <span class="user-name" v-else>
@@ -231,7 +250,7 @@ import {usePanelStore} from "@/store/panel.js";
                 </el-sub-menu>
 
                 <!-- 图层管理对行政人员可见 -->
-                <el-sub-menu index="2" v-if="userType === 'admin'">
+                <el-sub-menu index="2" v-if="userStore.currentUser === 'admin'">
                   <template #title>
                     <font-awesome-icon icon="layer-group"/>&nbsp;图层管理
                   </template>
@@ -269,19 +288,19 @@ import {usePanelStore} from "@/store/panel.js";
                       </el-radio>
                     </el-menu-item>
 
-                    <el-menu-item index="3-1-1" v-if="userType === 'admin'">
+                    <el-menu-item index="3-1-1" v-if="userStore.currentUser === 'admin'">
                       <el-radio value="clear" v-model="weatherMode" @change="changeWeatherMode">
                         晴天
                       </el-radio>
                     </el-menu-item>
 
-                    <el-menu-item index="3-1-2" v-if="userType === 'admin'">
+                    <el-menu-item index="3-1-2" v-if="userStore.currentUser === 'admin'">
                       <el-radio value="rain" v-model="weatherMode" @change="changeWeatherMode">
                         雨天
                       </el-radio>
                     </el-menu-item>
 
-                    <el-menu-item index="3-1-3" v-if="userType === 'admin'">
+                    <el-menu-item index="3-1-3" v-if="userStore.currentUser === 'admin'">
                       <el-radio value="snow" v-model="weatherMode" @change="changeWeatherMode">
                         雪天
                       </el-radio>
@@ -299,19 +318,19 @@ import {usePanelStore} from "@/store/panel.js";
                       </el-radio>
                     </el-menu-item>
 
-                    <el-menu-item index="3-2-1" v-if="userType === 'admin'">
+                    <el-menu-item index="3-2-1" v-if="userStore.currentUser === 'admin'">
                       <el-radio value="day" v-model="skyBoxMode" @change="changeDayOrNight">
                         白天
                       </el-radio>
                     </el-menu-item>
 
-                    <el-menu-item index="3-2-2" v-if="userType === 'admin'">
+                    <el-menu-item index="3-2-2" v-if="userStore.currentUser === 'admin'">
                       <el-radio value="sunset" v-model="skyBoxMode" @change="changeDayOrNight">
                         傍晚
                       </el-radio>
                     </el-menu-item>
 
-                    <el-menu-item index="3-2-3" v-if="userType === 'admin'">
+                    <el-menu-item index="3-2-3" v-if="userStore.currentUser === 'admin'">
                       <el-radio value="night" v-model="skyBoxMode" @change="changeDayOrNight">
                         夜晚
                       </el-radio>
@@ -346,12 +365,27 @@ import {usePanelStore} from "@/store/panel.js";
                     <font-awesome-icon icon="cloud"/>&nbsp;天气预报
                   </el-menu-item>
 
-                  <el-menu-item index="5-2" @click="openPanel('poiAroundHotel')">
-                      <font-awesome-icon icon="hotel"/>&nbsp;酒店附近地点
+                  <el-menu-item index="5-2" @click="openPage('amap')">
+                    <font-awesome-icon icon="location-arrow"/>&nbsp;出行导航
                   </el-menu-item>
 
                   <el-menu-item index="5-3" @click="openPanel('houseRenting')">
                     <font-awesome-icon icon="house"/>&nbsp;租房中心
+                  </el-menu-item>
+
+                </el-sub-menu>
+
+                <el-sub-menu index="6">
+                  <template #title>
+                    <font-awesome-icon icon="bridge"/>&nbsp;武汉通
+                  </template>
+
+                  <el-menu-item index="6-1" @click="openPanel('poiAroundHotel')">
+                    <font-awesome-icon icon="hotel"/>&nbsp;酒店附近地点查询
+                  </el-menu-item>
+
+                  <el-menu-item index="6-2" @click="knowMoreAboutWuhan">
+                    <font-awesome-icon icon="map-location-dot"/>&nbsp;走进武汉
                   </el-menu-item>
                 </el-sub-menu>
 
@@ -377,24 +411,25 @@ import {usePanelStore} from "@/store/panel.js";
 
 .menu-toggle-btn {
   position: absolute;
-  top: 3px;
+  top: 4px;
   left: 10px;
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
   backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(51, 102, 204, 0.3);
+  border: 1.5px solid rgba(54, 171, 243, 0.84);
   border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   color: white;
   font-size: 20px;
   z-index: 1001; /* 确保按钮在BannerBar之上 */
 }
 
 .menu-toggle-btn:hover {
-  border-color: rgba(51, 102, 204, 0.6);
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(54, 171, 243, 0.84);
+  transition: all 0.3s ease-in-out;
   transform: scale(1.05);
 }
 

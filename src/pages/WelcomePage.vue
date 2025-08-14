@@ -3,6 +3,7 @@
   import {ref} from "vue";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import {useUserStore} from "@/store/user.js";
+  import {Warning} from "@element-plus/icons-vue";
 
   const router = useRouter();
 
@@ -14,7 +15,6 @@
   const showLogin = ref(false); // 控制登录窗口显示与否
   const username = ref('');
   const password = ref('');
-  const userType = ref('citizen'); // 默认用户类型为“市民”
   const loginError = ref(''); // 登录失败提示文字
   const isPasswordVisible = ref(false); // 密码默认不可见
 
@@ -41,7 +41,6 @@
     }
 
     // 模拟登录验证
-    if (userType.value === 'citizen') {
       // 市民账户验证
       if (username.value === 'citizen' && password.value === '123456') {
         // 保存用户信息到本地存储
@@ -55,7 +54,6 @@
       } else {
         loginError.value = '用户名或密码错误';
       }
-    } else if (userType.value === 'admin') {
       // 行政人员账户验证
       if (username.value === 'admin' && password.value === '123456') {
         // 保存用户信息到本地存储
@@ -69,7 +67,6 @@
       } else {
         loginError.value = '用户名或密码错误';
       }
-    }
   }
 
   // 切换密码可见性
@@ -101,7 +98,7 @@
             <h1>武汉市智慧城市可视化平台</h1>
             <h2>Wuhan City Visualization Platform</h2>
             <p>
-                本平台融合城市三维可视化、数据治理、应急管理、智能决策等功能<br>
+                本平台融合城市三维可视化、数据查询、便民服务等功能<br>
                 打造数字孪生下的城市运行新范式。
             </p>
             <div class="buttons">
@@ -123,19 +120,6 @@
         <div v-if="showLogin && !loading" class="login-container">
             <div class="login-form">
                 <h2>用户登录</h2>
-                <div class="form-group">
-                    <label>用户类型:</label>
-                    <div class="user-type-selector">
-                        <label class="radio-label">
-                            <input type="radio" v-model="userType" value="citizen">
-                            市民
-                        </label>
-                        <label class="radio-label">
-                            <input type="radio" v-model="userType" value="admin">
-                            管理员
-                        </label>
-                    </div>
-                </div>
 
                 <div class="form-group">
                     <label for="username">用户名:</label>
@@ -166,9 +150,16 @@
                     </div>
                 </div>
 
-                <div v-if="loginError" class="error-message">
-                    {{ loginError }}
+              <div class="error-container">
+                <div v-show="loginError" class="error-message">
+                    <el-icon style="font-size: 20px; align-items: center">
+                      <Warning />
+                    </el-icon>
+
+                  {{ loginError }}
                 </div>
+              </div>
+
 
                 <div class="form-actions">
                     <button @click="handleLogin" class="submit-btn">登录</button>
@@ -228,6 +219,7 @@ body {
     align-items: center;
     position: relative;
     overflow: hidden;
+    user-select: none;
 }
 
 /* 背景装饰元素 */
@@ -558,7 +550,7 @@ body {
 .form-actions {
     display: flex;
     gap: 15px;
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 .submit-btn, .cancel-btn {
@@ -594,11 +586,20 @@ body {
     border-color: #00bfff;
 }
 
+.error-container {
+  height: 5px;
+  margin-top: 10px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
 .error-message {
-    color: #ff6b6b;
-    text-align: center;
-    margin: 20px 0 5px;
-    font-size: 0.95rem;
+  color: #ff6b6b;
+  text-align: center;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
 }
 
 .demo-accounts {
