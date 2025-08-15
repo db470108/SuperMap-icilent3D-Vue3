@@ -165,12 +165,9 @@
 
         startAutoComplete.on('select', (e) => {
           startInput.value = e.poi.name;
-          startPlace = e.poi;
-          console.log("起点是：", startPlace)
         });
         endAutoComplete.on('select', (e) => {
           endInput.value = e.poi.name;
-          endPlace = e.poi;
         });
 
         // 三种地图导航方式
