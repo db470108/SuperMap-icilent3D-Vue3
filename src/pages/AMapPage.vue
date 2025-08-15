@@ -329,5 +329,10 @@
   padding: 10px;
 }
 
+/* 隐藏前往高德地图查看链接 */
+:deep(.amap-call) {
+  display: none !important;
+}
+
 
 </style>
