@@ -175,6 +175,9 @@ import {useUserStore} from "@/store/user.js";
   // 打开高德地图
   function openPage(page) {
     pageStore.togglePage(page);
+    // 关闭其他模块
+    panelStore.closePanel();
+    // 收起菜单
     isCollapse.value = true;
     isMenuVisible.value = false;
   }

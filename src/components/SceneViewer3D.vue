@@ -14,18 +14,18 @@ import {usePageStore} from "@/store/page.js";
   const pageStore = usePageStore();
 
   // 当加载此页面时调整默认视角
-  watch(() => pageStore.activePage, (newPage) => {
-    if (newPage === 'scene-viewer-3d') {
-      viewer.camera.setView({
-        destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.51, 2000), // 武汉中心点
-        orientation: {
-          heading: SuperMap3D.Math.toRadians(0),
-          pitch: SuperMap3D.Math.toRadians(-10),
-          roll: 0
-        },
-      });
-    }
-  })
+    watch(() => pageStore.activePage, (newPage) => {
+      if (newPage === 'scene-viewer-3d') {
+        viewer.camera.setView({
+          destination: SuperMap3D.Cartesian3.fromDegrees(114.29, 30.51, 2000), // 武汉中心点
+          orientation: {
+            heading: SuperMap3D.Math.toRadians(0),
+            pitch: SuperMap3D.Math.toRadians(-10),
+            roll: 0
+          },
+        });
+      }
+    })
 
   const SuperMap3D = window.SuperMap3D;
   let viewer;
