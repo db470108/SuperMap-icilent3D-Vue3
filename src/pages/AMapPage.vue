@@ -163,6 +163,16 @@
         const startAutoComplete = new AMap.AutoComplete(startAutoOptions);
         const endAutoComplete = new AMap.AutoComplete(endAutoOptions);
 
+        startAutoComplete.on('select', (e) => {
+          startInput.value = e.poi.name;
+          startPlace = e.poi;
+          console.log("起点是：", startPlace)
+        });
+        endAutoComplete.on('select', (e) => {
+          endInput.value = e.poi.name;
+          endPlace = e.poi;
+        });
+
         // 三种地图导航方式
         driving = new AMap.Driving({ map: map, panel: 'route-panel'});
         walking = new AMap.Walking({ map: map, panel: 'route-panel'});
