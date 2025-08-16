@@ -111,6 +111,8 @@
     const userData = JSON.parse(localStorage.getItem('user'));
     if (userData && userData.loggedIn) {
       user.value = userData;
+      userType.value = userData.type;
+      userStore.setCurrentUser(userType.value);
     } else {
       // 如果没有有效的用户信息，重定向到登录页
       router.push('/welcome');
