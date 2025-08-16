@@ -14,12 +14,32 @@
   let driving = null;
   let walking = null;
   let transfer = null;
+  let riding = null;
 
   let startInput = ref(''); // 起点
   let endInput = ref(''); // 终点
-  let mode = ref('');  // 出行方式
+  let trafficMode = ref('driving');  // 出行方式
   let showNavigation = ref(false); // 默认隐藏导航面板
   let hasNavigated = ref(false); // 是否已经导航过
+
+  // 驾车出行策略
+  let drivingPolicies = ref([
+    { label: "时间短", value: 0 }, // 最短时间
+    { label: "费用少", value: 1 }, // 最低费用
+    { label: "距离短", value: 2 }, // 最短距离
+    { label: "考虑实时路况", value: 3 }, // 考虑实时路况
+  ]);
+  let selectedDrivingPolicy = ref(0);  // 选中的驾车出行策略
+
+  // 公共交通出行策略
+  let transferPolicies = ref([
+    { label: "时间短", value: 0 }, // 最短时间
+    { label: "费用少", value: 1 }, // 最低费用
+    { label: "换乘少", value: 2 }, // 最少换乘
+    { label: "步行少", value: 3 }, // 最少步行
+    { label: "不坐地铁", value: 5 },  // 不坐地铁
+  ]);
+  let selectedTransferPolicy = ref(0); // 选中的公共交通出行策略
 
   // 离开高德地图，回到平台页面
   function exitAMap() {
@@ -54,13 +74,19 @@
           if (status === 'complete' && resultEnd.info === 'OK') {
             const end = resultEnd.geocodes[0].location;
 
+            // 显示导航面板
+            showNavigation.value = true;
+            // 已经导航过
+            hasNavigated.value = true;
 
-            if (mode.value === 'driving') {
+            if (trafficMode.value === 'driving') {
               driving.search(start, end);
-            } else if (mode.value === 'walking') {
+            } else if (trafficMode.value === 'walking') {
               walking.search(start, end);
-            } else if (mode.value === 'transfer') {
+            } else if (trafficMode.value === 'transfer') {
               transfer.search(start, end);
+            } else if (trafficMode.value === 'riding') {
+              riding.search(start, end);
             }
           } else {
             alert("终点地址无法解析");
@@ -70,29 +96,40 @@
         alert("起点地址无法解析");
       }
     })
-    // 显示导航面板
-    showNavigation.value = true;
-    // 已经导航过
-    hasNavigated.value = true;
+
+  }
+
+  function initDriving() {
+    driving = new AMap.Driving({
+      policy: selectedDrivingPolicy.value,
+      map: map,
+      panel: 'route-panel',
+    });
+  }
+  function initTransfer() {
+    transfer = new AMap.Transfer({
+      policy: selectedTransferPolicy.value,
+      map: map, panel: 'route-panel',
+      city: '武汉'
+    });
   }
 
 
   // 开始导航后，切换模式后，重新开始导航
-    watch(() => mode.value, (newMode) => {
-      if (hasNavigated.value) {
-        if (newMode === 'driving') {
-          walking?.clear();
-          transfer?.clear();
-        } else if (newMode === 'walking') {
-          driving?.clear();
-          transfer?.clear();
-        } else if (newMode === 'transfer') {
-          driving?.clear();
-          walking?.clear();
-        }
-        startNavigation();
-      }
+    watch(() => trafficMode.value, (newMode) => {
+      if (!hasNavigated) return;
+
+      // 清除旧路线
+      driving?.clear();
+      walking?.clear();
+      riding?.clear();
+      transfer?.clear();
+
+      // 立即导航
+      startNavigation();
+
     })
+
 
 
   onMounted(() => {
@@ -128,6 +165,7 @@
           "AMap.Driving",
           "AMap.Walking",
           "AMap.Transfer",
+          "AMap.Riding",
       ], function () { //异步同时加载多个插件
         // 放大缩小
         const toolBar = new AMap.ToolBar();
@@ -170,11 +208,46 @@
           endInput.value = e.poi.name;
         });
 
-        // 三种地图导航方式
-        driving = new AMap.Driving({ map: map, panel: 'route-panel'});
-        walking = new AMap.Walking({ map: map, panel: 'route-panel'});
-        transfer = new AMap.Transfer({ map: map, panel: 'route-panel', city: '武汉'});
+        driving = new AMap.Driving({
+          policy: selectedDrivingPolicy.value,
+          map: map,
+          panel: 'route-panel',
+        });
 
+        walking = new AMap.Walking({
+          map: map,
+          panel: 'route-panel'
+        });
+
+        riding = new AMap.Riding({
+          map: map,
+          panel: 'route-panel'
+        });
+
+        transfer = new AMap.Transfer({
+          policy: selectedTransferPolicy.value,
+          map: map, panel: 'route-panel',
+          city: '武汉'
+        });
+
+
+        // 切换出行策略后执行一次导航
+        watch(() => selectedDrivingPolicy.value, (value) => {
+          console.log( value)
+          if (trafficMode.value === 'driving') {
+            driving?.clear();
+            initDriving();
+            startNavigation();
+          }
+        });
+
+        watch(() => selectedTransferPolicy.value, (value) => {
+          if (trafficMode.value === 'transfer') {
+            transfer?.clear();
+            initTransfer();
+            startNavigation();
+          }
+        })
 
 
       });
@@ -231,11 +304,32 @@
             clearable
         />
 
-        <el-select v-model="mode" placeholder="请选择出行方式">
-          <el-option label="驾车" value="driving"/>
-          <el-option label="步行" value="walking"/>
-          <el-option label="公共交通" value="transfer"/>
-        </el-select>
+        <div class="mode-select">
+          <el-select v-model="trafficMode" placeholder="选择出行方式">
+            <el-option label="驾车" value="driving"/>
+            <el-option label="步行" value="walking"/>
+            <el-option label="骑行" value="riding"/>
+            <el-option label="公共交通" value="transfer"/>
+          </el-select>
+
+          <el-select v-model="selectedDrivingPolicy" placeholder="选择出行策略" v-if="trafficMode === 'driving'">
+            <el-option
+              v-for="item in drivingPolicies"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+
+          <el-select v-model="selectedTransferPolicy" placeholder="选择出行策略" v-if="trafficMode === 'transfer'">
+            <el-option
+                v-for="item in transferPolicies"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+            />
+          </el-select>
+        </div>
 
         <el-button type="primary" @click="startNavigation">开始导航</el-button>
 
@@ -311,6 +405,13 @@
 
 .input {
   width: 100%;
+}
+
+.mode-select {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 280px;
 }
 
 #route-panel {
