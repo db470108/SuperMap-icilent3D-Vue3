@@ -97,14 +97,17 @@
   import HouseRenting from "@/components/HouseRenting.vue";
   import Navigation from "@/components/Navigation.vue";
   import AMapPage from "@/pages/AMapPage.vue";
+  import {useUserStore} from "@/store/user.js";
 
   // 获取用户信息
   const user = ref(null);
+  const userType = ref('citizen');
 
   // 获取当前板块
   const panelStore = usePanelStore()
   // 获取当前页面
   const pageStore = usePageStore();
+  const userStore = useUserStore();
 
   onMounted(() => {
     // 从localStorage获取用户信息
