@@ -21,6 +21,7 @@
   let trafficMode = ref('driving');  // 出行方式
   let showNavigation = ref(false); // 默认隐藏导航面板
   let hasNavigated = ref(false); // 是否已经导航过
+  let unsupportedRoute = ref(false); // 是否不支持当前路线
 
   // 驾车出行策略
   let drivingPolicies = ref([
@@ -63,7 +64,7 @@
 
     // 地理编码起点
     const geocoder = new AMap.Geocoder({
-      city: "武汉"
+      city: ""
     });
     geocoder.getLocation(startInput.value, function (status, resultStart) {
       if (status === 'complete' && resultStart.info === 'OK') {
@@ -74,19 +75,34 @@
           if (status === 'complete' && resultEnd.info === 'OK') {
             const end = resultEnd.geocodes[0].location;
 
-            // 显示导航面板
-            showNavigation.value = true;
+            // 重置状态
+            showNavigation.value = false;
+            unsupportedRoute.value = false;
             // 已经导航过
             hasNavigated.value = true;
 
             if (trafficMode.value === 'driving') {
+              showNavigation.value = true;
               driving.search(start, end);
             } else if (trafficMode.value === 'walking') {
-              walking.search(start, end);
+              showNavigation.value = true;
+              walking.search(start, end, function(status, result) {
+                if (status !== 'complete' || result.info !== 'OK') {
+                  showNavigation.value = false;
+                  unsupportedRoute.value = true;
+                }
+              });
             } else if (trafficMode.value === 'transfer') {
+              showNavigation.value = true;
               transfer.search(start, end);
             } else if (trafficMode.value === 'riding') {
-              riding.search(start, end);
+              showNavigation.value = true;
+              riding.search(start, end, function(status, result) {
+                if (status !== 'complete' || result.info !== 'OK') {
+                  showNavigation.value = false;
+                  unsupportedRoute.value = true;
+                }
+              });
             }
           } else {
             alert("终点地址无法解析");
@@ -337,6 +353,7 @@
 
 <!--      路线面板-->
       <div id="route-panel" v-if="showNavigation"></div>
+      <div class="unsupported-route" v-if="unsupportedRoute">不支持当前路线</div>
 
     </div>
 
@@ -425,6 +442,21 @@
   z-index: 5000;
   border-radius: 8px;
   padding: 10px;
+}
+
+.unsupported-route {
+  position: absolute;
+  top: 150px;
+  right: 5px;
+  width: 300px;
+  background: white;
+  z-index: 5000;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 /* 隐藏前往高德地图查看链接 */
