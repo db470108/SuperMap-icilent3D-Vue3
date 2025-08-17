@@ -1,6 +1,6 @@
 <script setup>
   import AMapLoader from "@amap/amap-jsapi-loader";
-  import {onMounted, onUnmounted, ref, watch} from "vue";
+  import {computed, onMounted, onUnmounted, ref, watch} from "vue";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import {usePageStore} from "@/store/page.js";
   import {usePanelStore} from "@/store/panel.js";
@@ -22,6 +22,9 @@
   let showNavigation = ref(false); // 默认隐藏导航面板
   let hasNavigated = ref(false); // 是否已经导航过
   let unsupportedRoute = ref(false); // 是否不支持当前路线
+  let isStartSelected = ref(false); // 起点是否选择
+  let isEndSelected = ref(false); // 终点是否选择
+  let isButtonDisabled = computed(() => !(isStartSelected.value && isEndSelected.value)); // 开始导航按钮是否可用
 
   // 驾车出行策略
   let drivingPolicies = ref([
@@ -62,56 +65,60 @@
       return;
     }
 
-    // 地理编码起点
-    const geocoder = new AMap.Geocoder({
-      city: ""
-    });
-    geocoder.getLocation(startInput.value, function (status, resultStart) {
-      if (status === 'complete' && resultStart.info === 'OK') {
-        const start = resultStart.geocodes[0].location;
+    if (isStartSelected.value && isEndSelected.value) {
+      // 地理编码起点
+      const geocoder = new AMap.Geocoder({
+        city: "全国"
+      });
+      geocoder.getLocation(startInput.value, function (status, resultStart) {
+        if (status === 'complete' && resultStart.info === 'OK') {
+          const start = resultStart.geocodes[0].location;
 
-        // 地理编码终点
-        geocoder.getLocation(endInput.value, function (status, resultEnd) {
-          if (status === 'complete' && resultEnd.info === 'OK') {
-            const end = resultEnd.geocodes[0].location;
+          // 地理编码终点
+          geocoder.getLocation(endInput.value, function (status, resultEnd) {
+            if (status === 'complete' && resultEnd.info === 'OK') {
+              const end = resultEnd.geocodes[0].location;
 
-            // 重置状态
-            showNavigation.value = false;
-            unsupportedRoute.value = false;
-            // 已经导航过
-            hasNavigated.value = true;
+              // 重置状态
+              showNavigation.value = false;
+              unsupportedRoute.value = false;
+              // 已经导航过
+              hasNavigated.value = true;
 
-            if (trafficMode.value === 'driving') {
-              showNavigation.value = true;
-              driving.search(start, end);
-            } else if (trafficMode.value === 'walking') {
-              showNavigation.value = true;
-              walking.search(start, end, function(status, result) {
-                if (status !== 'complete' || result.info !== 'OK') {
-                  showNavigation.value = false;
-                  unsupportedRoute.value = true;
-                }
-              });
-            } else if (trafficMode.value === 'transfer') {
-              showNavigation.value = true;
-              transfer.search(start, end);
-            } else if (trafficMode.value === 'riding') {
-              showNavigation.value = true;
-              riding.search(start, end, function(status, result) {
-                if (status !== 'complete' || result.info !== 'OK') {
-                  showNavigation.value = false;
-                  unsupportedRoute.value = true;
-                }
-              });
+              if (trafficMode.value === 'driving') {
+                showNavigation.value = true;
+                driving.search(start, end);
+              } else if (trafficMode.value === 'walking') {
+                showNavigation.value = true;
+                walking.search(start, end, function(status, result) {
+                  if (status !== 'complete' || result.info !== 'OK') {
+                    showNavigation.value = false;
+                    unsupportedRoute.value = true;
+                  }
+                });
+              } else if (trafficMode.value === 'transfer') {
+                showNavigation.value = true;
+                transfer.search(start, end);
+              } else if (trafficMode.value === 'riding') {
+                showNavigation.value = true;
+                riding.search(start, end, function(status, result) {
+                  if (status !== 'complete' || result.info !== 'OK') {
+                    showNavigation.value = false;
+                    unsupportedRoute.value = true;
+                  }
+                });
+              }
+            } else {
+              alert("终点地址无法解析");
             }
-          } else {
-            alert("终点地址无法解析");
-          }
-        })
-      } else {
-        alert("起点地址无法解析");
-      }
-    })
+          })
+        } else {
+          alert("起点地址无法解析");
+        }
+      })
+    }
+
+
 
   }
 
@@ -145,6 +152,20 @@
       startNavigation();
 
     })
+
+  // 输入框内容改变时，重置按钮状态
+  watch(() => startInput.value, (value) => {
+    if (!value) {
+      isStartSelected.value = false;
+      showNavigation.value = false;
+    }
+  })
+  watch(() => endInput.value, (value) => {
+    if (!value) {
+      isEndSelected.value = false;
+      showNavigation.value = false;
+    }
+  })
 
 
 
@@ -209,19 +230,23 @@
         const startAutoOptions = {
           input: 'startInput',
           city: '武汉',
+          citylimit: true,
         };
         const endAutoOptions = {
           input: 'endInput',
           city: '武汉',
+          citylimit: true,
         };
         const startAutoComplete = new AMap.AutoComplete(startAutoOptions);
         const endAutoComplete = new AMap.AutoComplete(endAutoOptions);
 
         startAutoComplete.on('select', (e) => {
           startInput.value = e.poi.name;
+          isStartSelected.value = true;
         });
         endAutoComplete.on('select', (e) => {
           endInput.value = e.poi.name;
+          isEndSelected.value = true;
         });
 
         driving = new AMap.Driving({
@@ -347,7 +372,7 @@
           </el-select>
         </div>
 
-        <el-button type="primary" @click="startNavigation">开始导航</el-button>
+        <el-button type="primary" @click="startNavigation" :disabled="isButtonDisabled">开始导航</el-button>
 
       </div>
 
