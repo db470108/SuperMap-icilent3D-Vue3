@@ -180,7 +180,8 @@
         .then((AMap) => {
           map = new AMap.Map("amap-container", {
             viewMode: "3D",
-            zoom: 16,
+            zoom: 17, // 缩放等级
+            pitch: 60, // 倾斜角度
             center: [114.308228, 30.54223],
           });
         })
