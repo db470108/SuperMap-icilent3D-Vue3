@@ -1,6 +1,6 @@
 <script setup>
   import AMapLoader from "@amap/amap-jsapi-loader";
-  import {computed, onMounted, onUnmounted, ref, watch} from "vue";
+  import {computed, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
   import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   import {usePageStore} from "@/store/page.js";
   import {usePanelStore} from "@/store/panel.js";
@@ -156,17 +156,13 @@
     })
 
   // 输入框内容改变时，重置按钮状态
-  watch(() => startInput.value, (value) => {
-    if (!value) {
+  watch(() => startInput.value, () => {
       isStartSelected.value = false;
       showNavigation.value = false;
-    }
   })
-  watch(() => endInput.value, (value) => {
-    if (!value) {
+  watch(() => endInput.value, () => {
       isEndSelected.value = false;
       showNavigation.value = false;
-    }
   })
 
 
@@ -244,11 +240,15 @@
 
         startAutoComplete.on('select', (e) => {
           startInput.value = e.poi.name;
-          isStartSelected.value = true;
+          nextTick(() => {
+            isStartSelected.value = true;
+          })
         });
         endAutoComplete.on('select', (e) => {
           endInput.value = e.poi.name;
-          isEndSelected.value = true;
+          nextTick(() => {
+            isEndSelected.value = true;
+          })
         });
 
         driving = new AMap.Driving({
