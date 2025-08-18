@@ -68,7 +68,7 @@
     if (isStartSelected.value && isEndSelected.value) {
       // 地理编码起点
       const geocoder = new AMap.Geocoder({
-        city: "全国"
+        city: "武汉"
       });
       geocoder.getLocation(startInput.value, function (status, resultStart) {
         if (status === 'complete' && resultStart.info === 'OK') {
@@ -127,12 +127,14 @@
       policy: selectedDrivingPolicy.value,
       map: map,
       panel: 'route-panel',
+      city: '武汉'
     });
   }
   function initTransfer() {
     transfer = new AMap.Transfer({
       policy: selectedTransferPolicy.value,
-      map: map, panel: 'route-panel',
+      map: map,
+      panel: 'route-panel',
       city: '武汉'
     });
   }
