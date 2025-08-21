@@ -197,6 +197,11 @@ import {useUserStore} from "@/store/user.js";
   function knowMoreAboutWuhan() {
     window.open('https://www.wuhan.gov.cn/zjwh/', '_blank');
   }
+
+  // 打开gdp大屏
+  function openBigScreen() {
+    window.open('https://ai.goviewlink.com/chart/preview/cmehalatv00dd5yv03a60tfzm', '_blank');
+  }
 </script>
 
 <template>
@@ -391,6 +396,10 @@ import {useUserStore} from "@/store/user.js";
                     <font-awesome-icon icon="map-location-dot"/>&nbsp;走进武汉
                   </el-menu-item>
                 </el-sub-menu>
+
+                <el-menu-item index="7" v-if="userStore.currentUser === 'admin'" @click="openBigScreen">
+                  <font-awesome-icon icon="coins"/> &nbsp;武汉经济数据大屏
+                </el-menu-item>
 
               </el-menu>
 

@@ -37,6 +37,7 @@ import {
     faBridge,
     faLocationArrow,
     faArrowLeftLong,
+    faCoins,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import ElementPlus from 'element-plus'
@@ -78,6 +79,7 @@ library.add(
     faBridge,
     faLocationArrow,
     faArrowLeftLong,
+    faCoins,
 );
 
 // 创建 Vue 应用
