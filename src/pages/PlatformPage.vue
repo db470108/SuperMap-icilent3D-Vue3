@@ -9,8 +9,6 @@
             ref="sceneViewer3DRef"
             :show-buildings="showBuildings"
             :show-water="showWater"
-            :show-roads="showRoads"
-            :show-railways="showRailways"
             :sky-box-mode="skyBoxMode"
             :weather-mode="weatherMode"
             :search-mode="searchMode"
@@ -22,8 +20,6 @@
             :user="user"
             @toggle-buildingsLayer="handleChangeBuildingsVisibility"
             @toggle-waterLayer="handleChangeWaterVisibility"
-            @toggle-roadsLayer="handleChangeRoadsVisibility"
-            @toggle-railwaysLayer="handleChangeRailwaysVisibility"
             @changeDayOrNight="handleChangeDayOrNight"
             @changeWeatherMode="handleChangeWeatherMode"
             @changeSearchMode="handleChangeSearchMode"
@@ -147,20 +143,12 @@
   // 图层管理
   const showBuildings = ref(true);
   const showWater = ref(true);
-  const showRoads = ref(true);
-  const showRailways = ref(true);
 
   function handleChangeBuildingsVisibility(val) {
     showBuildings.value = val;
   }
   function handleChangeWaterVisibility(val) {
     showWater.value = val;
-  }
-  function handleChangeRoadsVisibility(val) {
-    showRoads.value = val;
-  }
-  function handleChangeRailwaysVisibility(val) {
-    showRailways.value = val;
   }
 
   // 场景设置

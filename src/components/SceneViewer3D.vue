@@ -38,8 +38,6 @@ import {usePageStore} from "@/store/page.js";
   const props = defineProps({
     showBuildings: Boolean,
     showWater: Boolean,
-    showRoads: Boolean,
-    showRailways: Boolean,
     skyBoxMode: String,
     weatherMode: String,
     isBuildingInfoWindowOpen: Boolean,
@@ -145,7 +143,24 @@ import {usePageStore} from "@/store/page.js";
     viewer = new SuperMap3D.Viewer('SceneViewer3D-Container', {
       imageryProvider: false, // 取消默认底图
       sceneMode: SuperMap3D.SceneMode.SCENE3D,
-      infoBox: false
+      infoBox: false,
+      // 提高渲染质量的设置
+      shadows: true,
+      shadowMapDarkness: 0.3,
+      shadowMapSize: 2048, // 增加阴影贴图分辨率
+      terrainExaggeration: 1.0,
+      // 启用各种抗锯齿选项
+      contextOptions: {
+        webgl: {
+          antialias: true,
+          alpha: true,
+          preserveDrawingBuffer: true,
+          failIfMajorPerformanceCaveat: false
+        }
+      },
+      // 提高渲染精度
+      resolutionScale: 1.0,
+      useBrowserRecommendedResolution: false,
     });
     window.viewer = viewer;
     viewer.scene.skyAtmosphere.show = false; // 开启大气层
@@ -179,7 +194,9 @@ import {usePageStore} from "@/store/page.js";
           tileHeight: 512,
           maximumLevel: 20,
           minimumLevel: 1,
-
+          // 提高纹理质量
+          enablePickFeatures: true,
+          hasAlphaChannel: true
         })
     );
 
@@ -190,8 +207,6 @@ import {usePageStore} from "@/store/page.js";
       window.sceneLayer = layer;
 
       let waterLayer = viewer.scene.layers.find('water@wuhan');
-      let roadsLayer = viewer.scene.layers.find('roads@wuhan');
-      let railwaysLayer = viewer.scene.layers.find('railways@wuhan');
 
       // 设置水体的风格
       if (waterLayer && waterLayer.waterParameter) {
@@ -205,17 +220,6 @@ import {usePageStore} from "@/store/page.js";
         console.warn("未获取到水面图层或水面图层不具备waterParameter属性")
       }
 
-      // 设置公路风格
-      if (roadsLayer) {
-        console.log("公路加载完毕")
-        console.log("公路属性：", roadsLayer);
-      }
-
-      // 设置铁路风格
-      if (railwaysLayer) {
-        console.log("铁路加载完毕")
-        console.log("铁路属性：", railwaysLayer);
-      }
     })
 
     // 添加建筑物三维瓦片缓存
@@ -431,31 +435,6 @@ import {usePageStore} from "@/store/page.js";
     waterLayer.visible = false;
   }
 
-  // 公路图层的监视
-  watch(() => props.showRoads, (value) => {
-    value ? loadRoads() : unloadRoads();
-  })
-  function loadRoads () {
-    let roadsLayer = viewer.scene.layers.find('roads@wuhan');
-    roadsLayer.visible = true;
-  }
-  function unloadRoads () {
-    let roadsLayer = viewer.scene.layers.find('roads@wuhan');
-    roadsLayer.visible = false;
-  }
-
-  // 公路图层的监视
-  watch(() => props.showRailways, (value) => {
-    value ? loadRailways() : unloadRailways();
-  });
-  function loadRailways() {
-    let railwaysLayer = viewer.scene.layers.find('railways@wuhan');
-    railwaysLayer.visible = true;
-  }
-  function unloadRailways() {
-    let railwaysLayer = viewer.scene.layers.find('railways@wuhan');
-    railwaysLayer.visible = false;
-  }
 
   // 天空盒模式的监视
   watch(() => props.skyBoxMode, (mode) => {

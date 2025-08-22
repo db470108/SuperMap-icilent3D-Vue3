@@ -23,8 +23,6 @@ import {useUserStore} from "@/store/user.js";
   const emit = defineEmits([
     'toggle-buildingsLayer',
     'toggle-waterLayer',
-    'toggle-roadsLayer',
-    'toggle-railwaysLayer',
     'changeSkyBox',
     'changeDayOrNight',
     'changeWeatherMode',
@@ -108,8 +106,6 @@ import {useUserStore} from "@/store/user.js";
   // 图层管理
   const showBuildings = ref(true);
   const showWater = ref(true);
-  const showRoads = ref(true);
-  const showRailways = ref(true);
 
   function changeBuildingsVisibility() {
     emit('toggle-buildingsLayer', showBuildings.value);
@@ -119,13 +115,6 @@ import {useUserStore} from "@/store/user.js";
     emit('toggle-waterLayer', showWater.value);
   }
 
-  function changeRoadsVisibility() {
-    emit('toggle-roadsLayer', showRoads.value);
-  }
-
-  function changeRailwaysVisibility() {
-    emit('toggle-railwaysLayer', showRailways.value);
-  }
 
   // 切换天气和时间
   // 默认为自动模式
@@ -263,20 +252,13 @@ import {useUserStore} from "@/store/user.js";
                     <font-awesome-icon icon="layer-group"/>&nbsp;图层管理
                   </template>
                   <el-menu-item index="2-1">
-                    <el-checkbox label="建筑图层" v-model="showBuildings" @change="changeBuildingsVisibility"/>
+                    <el-checkbox label="三维建筑图层" v-model="showBuildings" @change="changeBuildingsVisibility"/>
                   </el-menu-item>
 
                   <el-menu-item index="2-2">
                     <el-checkbox label="水系图层" v-model="showWater" @change="changeWaterVisibility"/>
                   </el-menu-item>
 
-                  <el-menu-item index="2-3">
-                    <el-checkbox label="公路图层" v-model="showRoads" @change="changeRoadsVisibility"/>
-                  </el-menu-item>
-
-                  <el-menu-item index="2-4">
-                    <el-checkbox label="铁路图层" v-model="showRailways" @change="changeRailwaysVisibility"/>
-                  </el-menu-item>
                 </el-sub-menu>
 
                 <!-- 场景设置对所有用户可见 -->
